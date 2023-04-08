@@ -22,10 +22,10 @@ public class MemberController {
         memberRepository.save(member);
         return "update OK";
     }
-    @PostMapping("/api/item/login")
+    @PostMapping("/api/login")
     @ResponseBody
     public List<Member> login(@RequestBody Member member){
-        List<Member> user = memberRepository.findByName(member.getName());
+        List<Member> user = memberRepository.findByEmail(member.getEmail());
 
 
         return user;
