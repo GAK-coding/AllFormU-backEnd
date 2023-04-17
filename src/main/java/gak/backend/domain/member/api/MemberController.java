@@ -1,7 +1,7 @@
-package gak.backend.member.api;
+package gak.backend.domain.member.api;
 
-import gak.backend.member.dao.MemberRepository;
-import gak.backend.member.model.Member;
+import gak.backend.domain.member.dao.MemberRepository;
+import gak.backend.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

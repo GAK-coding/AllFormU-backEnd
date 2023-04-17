@@ -1,4 +1,4 @@
-package gak.backend.member.application;
+package gak.backend.domain.member.application;
 
 import org.springframework.stereotype.Service;
 
