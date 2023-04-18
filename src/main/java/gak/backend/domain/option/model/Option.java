@@ -1,4 +1,4 @@
-package gak.backend.domain.option;
+package gak.backend.domain.option.model;
 
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;

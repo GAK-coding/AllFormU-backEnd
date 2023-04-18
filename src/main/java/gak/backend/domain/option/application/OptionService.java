@@ -1,4 +1,4 @@
-package gak.backend.domain.member.application;
+package gak.backend.domain.option.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,5 +8,5 @@ import org.springframework.validation.annotation.Validated;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class MemberService {
+public class OptionService {
 }

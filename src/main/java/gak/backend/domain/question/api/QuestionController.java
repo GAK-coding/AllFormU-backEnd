@@ -1,12 +1,13 @@
-package gak.backend.domain.member.application;
+package gak.backend.domain.question.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RestController;
 
-@Service
+@RestController
 @Slf4j
+@Validated
 @RequiredArgsConstructor
-public class MemberService {
+public class QuestionController {
 }
