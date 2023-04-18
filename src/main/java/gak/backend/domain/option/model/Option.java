@@ -18,7 +18,7 @@ public class Option extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
-    private boolean response;
+    private boolean content;
     private boolean answer;
     private boolean quiz;
 }
