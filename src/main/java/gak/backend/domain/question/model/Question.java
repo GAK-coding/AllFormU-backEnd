@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+//TODO img 추가해야함.
 
 @Entity
 @Getter
@@ -32,6 +33,7 @@ public class Question extends BaseTime {
 
     private String title;
     private String content;
+    private boolean required;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type")
