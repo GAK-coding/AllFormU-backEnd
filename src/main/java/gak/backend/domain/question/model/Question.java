@@ -3,7 +3,7 @@ package gak.backend.domain.question.model;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.model.BaseTime;
-import gak.backend.domain.option.model.Option;
+import gak.backend.domain.option.model.Selection;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class Question extends BaseTime {
     private Form form;
 
     @OneToMany(mappedBy = "question")
-    private List<Option> options = new ArrayList<>();
+    private List<Selection> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "question")
     private List<Description> descriptions = new ArrayList<>();
