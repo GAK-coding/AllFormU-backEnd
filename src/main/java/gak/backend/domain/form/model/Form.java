@@ -32,11 +32,11 @@ public class Form extends BaseTime {
     private String content;
 
     // =========변경 가능-----------
-    @ManyToOne
-    @JoinColumn(name = "form_id")
-    private Form parent;
-    @OneToMany(mappedBy = "parent") //cascade = CascadeType.ALL, orphanRemoval = true) 변경 가능
-    private List<Form> child = new ArrayList<>();
+//    @ManyToOne
+//    @JoinColumn(name = "form_id")
+//    private Form parent;
+//    @OneToMany(mappedBy = "parent") //cascade = CascadeType.ALL, orphanRemoval = true) 변경 가능
+//    private List<Form> child = new ArrayList<>();
     //==========================
 
     private LocalDateTime createdTime;
