@@ -30,6 +30,7 @@ public class Form extends BaseTime {
 
     private String title;
     private String content;
+    private boolean required;
 
     // =========변경 가능-----------
 //    @ManyToOne
