@@ -37,6 +37,10 @@ public class Member extends BaseTime{
     @Column(name = "role_type")
     private Role role;
 
+    @Enumerated
+    @Column(name = "member_status")
+    private Status status;
+
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
 

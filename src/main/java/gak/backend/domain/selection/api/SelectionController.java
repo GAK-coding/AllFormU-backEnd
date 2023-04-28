@@ -1,4 +1,4 @@
-package gak.backend.domain.option.api;
+package gak.backend.domain.selection.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-public class OptionController {
+public class SelectionController {
 }
