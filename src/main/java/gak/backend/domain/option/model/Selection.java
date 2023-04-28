@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Option extends BaseTime {
+public class Selection extends BaseTime {
     @Id
     @GeneratedValue
     @Column(name = "option_id")
