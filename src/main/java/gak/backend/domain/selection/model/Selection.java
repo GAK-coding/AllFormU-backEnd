@@ -1,4 +1,4 @@
-package gak.backend.domain.option.model;
+package gak.backend.domain.selection.model;
 
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 public class Selection extends BaseTime {
     @Id
     @GeneratedValue
-    @Column(name = "option_id")
+    @Column(name = "selection_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
-    private boolean response;
+    private boolean content;
     private boolean answer;
     private boolean quiz;
 }

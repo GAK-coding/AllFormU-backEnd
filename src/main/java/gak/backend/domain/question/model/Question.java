@@ -3,6 +3,7 @@ package gak.backend.domain.question.model;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.model.BaseTime;
+import gak.backend.domain.selection.model.Selection;
 import gak.backend.domain.option.model.Selection;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+//TODO img 추가해야함.
 
 @Entity
 @Getter
@@ -32,6 +34,7 @@ public class Question extends BaseTime {
 
     private String title;
     private String content;
+    private boolean required;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type")

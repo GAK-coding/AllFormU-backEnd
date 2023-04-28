@@ -17,29 +17,29 @@ import java.util.Optional;
 @Validated
 public class MemberController {
 
-    @Autowired
-    MemberRepository memberRepository;
-    @PostMapping("/api/signup")
-    public String add(@RequestBody Member member){
-        memberRepository.save(member);
-        return "update OK";
-    }
-    @PostMapping("/api/login")
-    @ResponseBody
-    public List<Member> login(@RequestBody Member member){
-        List<Member> user = memberRepository.findByEmail(member.getEmail());
-
-
-        return user;
-    }
-    @GetMapping("/api/item")
-    public List<Member> get(){
-        return memberRepository.findAll();
-    }
-
-    @GetMapping("/api/item/{id}")
-    public Optional<Member> getId(@PathVariable("id")Long id){
-        return memberRepository.findById(id);
-    }
+//    @Autowired
+//    MemberRepository memberRepository;
+//    @PostMapping("/api/signup")
+//    public String add(@RequestBody Member member){
+//        memberRepository.save(member);
+//        return "update OK";
+//    }
+//    @PostMapping("/api/login")
+//    @ResponseBody
+//    public List<Member> login(@RequestBody Member member){
+//        List<Member> user = memberRepository.findByEmail(member.getEmail());
+//
+//
+//        return user;
+//    }
+//    @GetMapping("/api/item")
+//    public List<Member> get(){
+//        return memberRepository.findAll();
+//    }
+//
+//    @GetMapping("/api/item/{id}")
+//    public Optional<Member> getId(@PathVariable("id")Long id){
+//        return memberRepository.findById(id);
+//    }
 
 }

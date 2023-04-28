@@ -18,7 +18,7 @@ public class Description extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quesion_id")
     private Question question;
-    private String response;
+    private String content;
     private String answer;
     private boolean quiz;
 }
