@@ -5,9 +5,11 @@ import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Description extends BaseTime {
     @Id
@@ -21,4 +23,6 @@ public class Description extends BaseTime {
     private String content;
     private String answer;
     private boolean quiz;
+
+
 }
