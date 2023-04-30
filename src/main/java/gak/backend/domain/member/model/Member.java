@@ -41,7 +41,5 @@ public class Member extends BaseTime{
     @Column(name = "member_status")
     private Status status;
 
-    private LocalDateTime createdTime;
-    private LocalDateTime modifiedTime;
 
 }
