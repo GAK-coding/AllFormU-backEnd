@@ -3,6 +3,7 @@ package gak.backend.domain.member.model;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.model.BaseTime;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,6 +41,16 @@ public class Member extends BaseTime{
     @Enumerated
     @Column(name = "member_status")
     private Status status;
+
+    @Builder
+    public Member(Long id, String nickname, String email, int password, Role role, Status status){
+        this.id = id;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.status = status;
+    }
 
 
 }
