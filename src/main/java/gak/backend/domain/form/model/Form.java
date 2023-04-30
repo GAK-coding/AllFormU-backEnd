@@ -6,6 +6,7 @@ import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Form extends BaseTime {
     @Id
@@ -40,6 +42,5 @@ public class Form extends BaseTime {
 //    private List<Form> child = new ArrayList<>();
     //==========================
 
-    private LocalDateTime createdTime;
-    private LocalDateTime modifiedTime;
+
 }
