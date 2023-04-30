@@ -17,6 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByEmail(String email);
     //탈퇴후, 재가입이라면 멤버가 여러명일 수 있음.
     //생성할 때, 먼저 확인해야되나? -> existById를 통해서 먼저 확인하고 들어오면 될듯.
-//    List<Member> findByEmail(Long id, String email);
+    List<Member> findByEmail(String email);
 //    List<Member> findByEmail(String email);
 }
