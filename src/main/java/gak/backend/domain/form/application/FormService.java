@@ -49,6 +49,7 @@ public class FormService {
                 })
                 .collect(Collectors.toList());
 
+
         System.out.println("this: " + questions.get(0) + " ");
         form.setQuestions(questions);
         return formRepository.save(form);

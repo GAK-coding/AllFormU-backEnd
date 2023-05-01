@@ -34,6 +34,7 @@ public class Form extends BaseTime {
     private String content;
     private boolean required;
 
+
     // =========변경 가능-----------
 //    @ManyToOne
 //    @JoinColumn(name = "form_id")
