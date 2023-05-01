@@ -1,7 +1,6 @@
 package gak.backend.domain.description.api;
 
 import gak.backend.domain.description.application.DescriptionService;
-import gak.backend.domain.description.dao.DescriptionRepository;
 import gak.backend.domain.description.dto.DescriptionDTO;
 import gak.backend.domain.description.model.Description;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +21,6 @@ import java.util.Map;
 //-> 주관식 생성, 생성한거 get, 질문 수정, 질문 삭제
 public class DescriptionController {
     @Autowired
-    DescriptionRepository descriptionRepository;
-    @Autowired
     private final DescriptionService descriptionService;
 
     //content- 답변자의 정답
@@ -32,9 +29,9 @@ public class DescriptionController {
 
     //description생성
     @PostMapping("/description/createDescription")
-    public String add(@RequestBody Description description){
-        descriptionRepository.save(description);
-        return "create";
+    public String add(@RequestBody DescriptionDTO descriptionDTO){
+        descriptionService.createDescription(descriptionDTO);
+        return "create description";
     }
 
     //description조회

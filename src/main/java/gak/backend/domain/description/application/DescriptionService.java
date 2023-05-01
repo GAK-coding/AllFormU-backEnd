@@ -20,11 +20,12 @@ public class DescriptionService {
     private final DescriptionRepository descriptionRepository;
 
     //description 생성
-//    @Transactional
-//    public Description createDescription(Description description){
-//        Description description=new Description();
-//        return descriptionRepository.save(description);
-//    }
+    @Transactional
+    public Description createDescription(DescriptionDTO descriptionDTO){
+        Description description=new Description();
+        description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
+        return descriptionRepository.save(description);
+    }
 
     //descriptionid로 해당 description 조회
     public Description getDescription(Long id){
