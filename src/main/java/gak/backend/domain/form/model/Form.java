@@ -27,6 +27,7 @@ public class Form extends BaseTime {
     @JoinColumn(name = "member_id")
     private Member author;
 
+    //주석
     @OneToMany(mappedBy = "form")
     private List<Question> questions = new ArrayList<>();
 

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class QuestionDto {
 
     private Long id;
+    //주석
     //private FormDTO form;
     private String content;
     //private List<OptionDto> options;

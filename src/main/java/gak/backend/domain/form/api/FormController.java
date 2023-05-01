@@ -44,6 +44,7 @@ public class FormController {
         설문지 id로 설문지 조회
         Member 완성 시 Member id로 설문지 조회 기능 추가
     */
+    //form 가져오기
     @GetMapping("/api/item/{id}")
     public Form getId(@PathVariable("id")Long id){
 
