@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class MemberDTO {
     @Getter
     @Builder //이거 여기는 없어도 되지 않나?
@@ -30,5 +32,20 @@ public class MemberDTO {
                     .build();
 
         }
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MemberInfoDTO{
+        private String nickname;
+        private String email;
+        private int password;
+        private Role role;
+        private Status status;
+        private LocalDateTime createdTime;
+        private LocalDateTime modifiedTime;
+
     }
 }
