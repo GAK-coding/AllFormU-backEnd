@@ -1,6 +1,7 @@
 package gak.backend.domain.member.model;
 
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -11,6 +12,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static gak.backend.domain.member.dto.MemberDTO.*;
 
 @Getter
 @Entity
@@ -50,6 +53,18 @@ public class Member extends BaseTime{
         this.password = password;
         this.role = role;
         this.status = status;
+    }
+
+    public MemberInfoDTO toMemberInfoDTO(){
+        return MemberInfoDTO.builder()
+                .nickname(this.nickname)
+                .email(this.email)
+                .password(this.password)
+                .role(this.role)
+                .status(this.status)
+                .modifiedTime(super.getModifiedDate())
+                .createdTime(super.getCreatedDate())
+                .build();
     }
 
 
