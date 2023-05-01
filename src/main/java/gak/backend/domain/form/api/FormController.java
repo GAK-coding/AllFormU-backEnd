@@ -34,7 +34,7 @@ public class FormController {
     /*
         모든 설문지 조회
     */
-    @GetMapping("/api/item")
+    @GetMapping("/api/find")
     public List<Form> get(){
 
         return formService.getAllForms();
@@ -44,12 +44,30 @@ public class FormController {
         설문지 id로 설문지 조회
         Member 완성 시 Member id로 설문지 조회 기능 추가
     */
-    //form 가져오기
-    @GetMapping("/api/item/{id}")
+    @GetMapping("/api/find/{id}")
     public Form getId(@PathVariable("id")Long id){
 
         return formService.getFormById(id);
 
+    }
+    /*
+        설문지 id로 해당 설문지 삭제
+        Member 완성 시 Member id로 설문지 삭제 기능 추가
+    */
+    @DeleteMapping("/api/delete/{id}")
+    public String deleteId(@PathVariable("id")Long id){
+        formService.deleteFormById(id);
+
+        return String.format("Success for delete %s form",id);
+    }
+
+    /*
+        모든 설문지 삭제
+    */
+    @DeleteMapping("/api/delete")
+    public String delete(){
+        formService.deleteForm();
+        return "Success for delete form";
     }
 
 

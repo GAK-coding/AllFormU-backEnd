@@ -37,7 +37,6 @@ public class FormService {
     @Transactional
     public Form createForm(FormDTO formDto) {
         Form form = new Form();
-        System.out.println("TEst: " + formDto.getQuestions().get(0).getContent());
         form.setTitle(formDto.getTitle());
         form.setContent(formDto.getContent());
 
@@ -55,8 +54,11 @@ public class FormService {
         return formRepository.save(form);
     }
 
-    //주석하나
 
+    /*
+        id 해당되는 설문지 조회
+        해당되는 아이디 없으면 예외처리
+    */
     public Form getFormById(Long id) {
         return formRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Form not found with id: " + id));
@@ -68,6 +70,9 @@ public class FormService {
     }
 
 
+    /*
+        업데이트
+    */
     @Transactional
     public Form updateForm(Long id, FormDTO formDto) {
         Form form = getFormById(id);
@@ -86,5 +91,26 @@ public class FormService {
 
         //form.setQuestions(questions);
         return formRepository.save(form);
+    }
+
+    /*
+        id 해당되는 설문지 삭제
+        해당되는 아이디 없으면 예외처리
+    */
+    @Transactional
+    public void deleteFormById(Long id){
+
+        Optional<Form> optionalValue = formRepository.findById(id);
+        if (!optionalValue.isPresent()) {
+            throw new RuntimeException("Form is not present");
+        }
+        formRepository.deleteById(id);
+
+    }
+    @Transactional
+    public void deleteForm(){
+
+        formRepository.deleteAll();
+
     }
 }
