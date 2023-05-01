@@ -1,5 +1,9 @@
 package gak.backend.domain.description.dto;
 
+
+import lombok.Getter;
+
+@Getter
 public class DescriptionDTO {
     private String content;
     private String answer;

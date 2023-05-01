@@ -19,5 +19,4 @@ public abstract class BaseTime {
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
-
 }

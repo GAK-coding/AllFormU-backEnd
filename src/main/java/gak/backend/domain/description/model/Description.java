@@ -9,7 +9,6 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class Description extends BaseTime {
     @Id
@@ -24,5 +23,8 @@ public class Description extends BaseTime {
     private String answer;
     private boolean quiz;
 
+    public void update(String answer){
+        this.answer=answer;
+    }
 
 }
