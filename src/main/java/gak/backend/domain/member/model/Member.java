@@ -1,5 +1,6 @@
 package gak.backend.domain.member.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.model.BaseTime;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 public class Member extends BaseTime{
+    //@JsonBackReference
     @Id
     @GeneratedValue
     @Column(name = "member_id")

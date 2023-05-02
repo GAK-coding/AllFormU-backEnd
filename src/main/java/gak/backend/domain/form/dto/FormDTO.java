@@ -1,5 +1,6 @@
 package gak.backend.domain.form.dto;
 
+import gak.backend.domain.member.model.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
