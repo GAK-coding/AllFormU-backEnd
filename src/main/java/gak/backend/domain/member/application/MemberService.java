@@ -3,6 +3,7 @@ package gak.backend.domain.member.application;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
+import gak.backend.domain.member.exception.NotMatchPasswordException;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
 import gak.backend.global.error.NotFoundByIdException;
@@ -106,10 +107,31 @@ public class MemberService {
 
 
     //=========================================Update==================================
+    //TODO update return값 DTO로 수정해주기
+    //멤버 닉네임 업데이트
+    public String updateMemberNickname(Long id, String newNickname){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundMemberByEmailException::new);
+        member.updateMemberNickname(newNickname);
+        return "UPDATE";
+    }
 
+    //멤버 비밀번호 변경, 사용자가 비밀번호도 입력으로 받고 실제 번호와 일치하는지 확인
+    public String updateMemberPasswordById(Long id, int password, int newPwd){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if(member.getPassword()!= password){
+            throw new NotMatchPasswordException();
+        }
+        return "Password Update";
+    }
 
 
 
     //===========================================Delete======================================
+    public String deleteMember(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        //사용자에게 휴면 계정으로 할것인지 여부를 물어보는 것을 어떻게 지정해줘야하지? 프론트와 상의해봐야할 듯.
+        //delete status 컬럼을 추가해줘야할 것 같기도 하다.
 
+        return "DELETE";
+    }
 }

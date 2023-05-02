@@ -67,5 +67,11 @@ public class Member extends BaseTime{
                 .build();
     }
 
+    public void updateMemberNickname(String newName){ this.nickname = newName; }
+
+    public void updateMemberPassword(int newPwd){ this.password = newPwd; }
+
+
+
 
 }
