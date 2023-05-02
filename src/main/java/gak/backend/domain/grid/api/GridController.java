@@ -10,4 +10,5 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RequiredArgsConstructor
 public class GridController {
+    //컨트롤러
 }
