@@ -54,6 +54,17 @@ public class DescriptionService {
         return descriptionRepository.save(description);
     }
 
+    @Transactional
+    public void deleteSelectionById(Long id){
+
+        Optional<Description> optionalValue = descriptionRepository.findById(id);
+        if (!optionalValue.isPresent()) {
+            throw new RuntimeException("Form is not present");
+        }
+        descriptionRepository.deleteById(id);
+
+    }
+
 
 
 

@@ -55,4 +55,11 @@ public class DescriptionController {
         final Description updatedDescription=descriptionService.updateDescription(id,answer);
         return ResponseEntity.ok(updatedDescription);
     }
+    @DeleteMapping("/description/deleteDescription/{id}")
+    public String deleteId(@PathVariable("id")Long id){
+        descriptionService.deleteSelectionById(id);
+
+        return "description delete";
+    }
+
 }
