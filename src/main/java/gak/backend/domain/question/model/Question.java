@@ -2,6 +2,7 @@ package gak.backend.domain.question.model;
 
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.grid.model.Grid;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.*;
@@ -31,8 +32,8 @@ public class Question extends BaseTime {
     @OneToMany(mappedBy = "question")
     private List<Description> descriptions = new ArrayList<>();
 
-    //@OneToMany//(mappedby="grid")
-    //private List<Grid> grids = new ArrayList<>();
+    @OneToMany(mappedBy="question")
+    private List<Grid> grids = new ArrayList<>();
 
     private String title;
     private String content;
