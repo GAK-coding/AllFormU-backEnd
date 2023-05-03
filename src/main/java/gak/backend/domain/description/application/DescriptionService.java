@@ -34,8 +34,8 @@ public class DescriptionService {
     }
 
     //question_id로 해당 description 조회
-    public Optional <Description> getDescriptionByQ(Long quesion_id){
-        return descriptionRepository.findById(quesion_id);
+    public List <Description> getDescriptionByQ(Long quesion_id){
+        return descriptionRepository.findByQuestionId(quesion_id);
 
     }
 

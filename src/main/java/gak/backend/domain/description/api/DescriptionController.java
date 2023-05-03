@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.Map;
 
@@ -42,7 +44,7 @@ public class DescriptionController {
 
     //quesstion_id로 description조회
     @GetMapping("/description/getDescriptionByQ/{question_id}")
-    public Optional<Description> getIdByQ(@PathVariable("question_id")Long question_id){
+    public List<Description> getIdByQ(@PathVariable("question_id")Long question_id){
         return descriptionService.getDescriptionByQ(question_id);
     }
 
