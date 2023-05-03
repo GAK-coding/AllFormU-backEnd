@@ -22,6 +22,6 @@ package gak.backend.domain.question.model;
 public enum Format {
     //질문 형식 들어감
     Description_SHORT, Description_LONG, Description_DATE, Description_TIME, Description_IMG,
-    Selection, Selection_CHECKBOX, Selection_DROPDOWN, Selection_LINEAR,
+    Selection_OPTION, Selection_CHECKBOX, Selection_DROPDOWN, Selection_LINEAR,
     Grid_RADIO, Grid_CHECKBOX
 }

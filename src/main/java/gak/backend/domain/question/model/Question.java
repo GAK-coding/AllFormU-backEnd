@@ -38,7 +38,7 @@ public class Question extends BaseTime {
     private String title;
     private String content;
     private boolean required;
-    //private int number; 설문 순서 -> 프론트랑 상의 해볼것.
+    private int sectionNum;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type")
