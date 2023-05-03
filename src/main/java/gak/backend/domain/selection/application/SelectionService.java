@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,7 +22,7 @@ public class SelectionService {
     @Transactional
     public Selection createSelection(SelectionDTO selectionDTO){
         Selection selection=new Selection();
-        selection.create(selectionDTO.getContent(),selectionDTO.getAnswer());
+        selection.create(selectionDTO.getContent(),selectionDTO.getTestId(),selectionDTO.getAnswer());
         return selectionRepository.save(selection);
     }
 
@@ -31,9 +33,20 @@ public class SelectionService {
     }
 
     //quistion_id로 해당 option 조회
-    public Optional<Selection> getOptionByQ(Long quesion_id){
-        return selectionRepository.findById(quesion_id);
+//    public List getOptionByQ(Long quesion_id){
+//        List selectionList=selectionRepository.findById(quesion_id);
+//        return selectionList;
+//
+//    }
+    public List<Selection> getOptionByQ(Long questionId) {
+        // Selection 테이블에서 questionId로 조회한 결과를 리스트 형태로 반환
+        //List<Selection> selections = selectionRepository.findById(questionId);
+        return selectionRepository.findByQuestionId(questionId);
+    }
 
+    public List<Selection> getOptionByTestId(Long testId) {
+        //List<Selection> selections = selectionRepository.findById(questionId);
+        return selectionRepository.findByTestId(testId);
     }
 
     //content update

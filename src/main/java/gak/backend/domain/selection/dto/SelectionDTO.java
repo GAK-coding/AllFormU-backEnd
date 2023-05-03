@@ -5,12 +5,15 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SelectionDTO {
+
+    private Long testId;
     private String content;
     private Boolean answer;
 //    private Boolean quiz;
 
     @Builder
-    public SelectionDTO(String content, Boolean answer){
+    public SelectionDTO(Long testId, String content, Boolean answer){
+        this.testId=testId;
         this.content=content;
         this.answer=answer;
 //        this.quiz=quiz;
