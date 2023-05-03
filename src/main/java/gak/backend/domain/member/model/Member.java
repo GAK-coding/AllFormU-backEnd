@@ -1,9 +1,10 @@
 package gak.backend.domain.member.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.model.BaseTime;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +13,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gak.backend.domain.member.dto.MemberDTO.*;
+
 @Getter
 @Entity
 @NoArgsConstructor
 public class Member extends BaseTime{
-    //@JsonBackReference
     @Id
     @GeneratedValue
     @Column(name = "member_id")
@@ -43,7 +45,33 @@ public class Member extends BaseTime{
     @Column(name = "member_status")
     private Status status;
 
-    private LocalDateTime createdTime;
-    private LocalDateTime modifiedTime;
+    @Builder
+    public Member(Long id, String nickname, String email, int password, Role role, Status status){
+        this.id = id;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.status = status;
+    }
+
+    public MemberInfoDTO toMemberInfoDTO(){
+        return MemberInfoDTO.builder()
+                .nickname(this.nickname)
+                .email(this.email)
+                .password(this.password)
+                .role(this.role)
+                .status(this.status)
+                .modifiedTime(super.getModifiedDate())
+                .createdTime(super.getCreatedDate())
+                .build();
+    }
+
+    public void updateMemberNickname(String newName){ this.nickname = newName; }
+
+    public void updateMemberPassword(int newPwd){ this.password = newPwd; }
+
+
+
 
 }
