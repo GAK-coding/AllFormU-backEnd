@@ -40,7 +40,9 @@ D(삭제):
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    //멤버 생성이니까 회원가입.
     public MemberInfoDTO createMember(MemberSaveRequest memberSaveRequest) {
+        int cnt = 0; //이메일로 이미 한번이라도 계정을 만든 사용자 중, 탈퇴 회원 수 새서 확인해보기 위함.
         //이미 존재하는 멤버이면, 스타터스를 보고 휴면 계정을 돌려주고, 처음 생성이라면
         //이메일이 이미 존재하는 회원이라면,
         if (memberRepository.existsByEmail(memberSaveRequest.getEmail())) {
@@ -51,26 +53,28 @@ public class MemberService {
                     MemberInfoDTO memberInfoDTO = member.toMemberInfoDTO();
                     return memberInfoDTO;
                 }
-                //위치 다시 고려해주기
-                else{//멤버 목록도 있으나 다 탈퇴한 경우
-                    Member reMember = memberSaveRequest.toEntity();
-                    memberRepository.save(reMember);
-                    MemberInfoDTO memberInfoDTO = reMember.toMemberInfoDTO();
-                    return memberInfoDTO;
-                }
-
-                //만약에 다 탈퇴했을 경우도 고려해주기
+                else cnt++;
+            }
+            //만약에 다 탈퇴했을 경우도 고려해주기
+            //TODO 위치 다시 고려해주기
+            if (cnt == members.size()) {//멤버 목록도 있으나 다 탈퇴한 경우
+                Member reMember = memberSaveRequest.toEntity();
+                memberRepository.save(reMember);
+                MemberInfoDTO memberInfoDTO = reMember.toMemberInfoDTO();
+                return memberInfoDTO;
             }
 
-        } else {//존재하지 않는 이메일이라면, 신규 회원임.
-            Member member = memberSaveRequest.toEntity();
-            memberRepository.save(member);
-            MemberInfoDTO memberInfoDTO = member.toMemberInfoDTO();
-            //레포지토리에 저장된 것을 확인하기 위해서 레포지토리에서 멤버를 불러와서 바꾸어할지 아니면 그냥 해도 될지 사실 난 이게 맞다고 봄 시간이 좀 느려지긴해도
-            return memberInfoDTO;
         }
-        return null;
+        //존재하지 않는 이메일이라면, 신규 회원임.
+        Member member = memberSaveRequest.toEntity();
+        memberRepository.save(member);
+        MemberInfoDTO memberInfoDTO = member.toMemberInfoDTO();
+        //레포지토리에 저장된 것을 확인하기 위해서 레포지토리에서 멤버를 불러와서 바꾸어할지 아니면 그냥 해도 될지 사실 난 이게 맞다고 봄 시간이 좀 느려지긴해도
+        return memberInfoDTO;
+
+
     }
+
 
 //================================================Read==========================================
 
