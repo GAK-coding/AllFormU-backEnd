@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Long> {
-    //test codes 이야호
+    //test codes 이야 ㅇㅇㅇㅇ
 }
