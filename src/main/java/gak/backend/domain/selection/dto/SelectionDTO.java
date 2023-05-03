@@ -6,14 +6,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SelectionDTO {
 
-    private Long testId;
     private String content;
     private Boolean answer;
 //    private Boolean quiz;
 
     @Builder
-    public SelectionDTO(Long testId, String content, Boolean answer){
-        this.testId=testId;
+    public SelectionDTO(String content, Boolean answer){
         this.content=content;
         this.answer=answer;
 //        this.quiz=quiz;

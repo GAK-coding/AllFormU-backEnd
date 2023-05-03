@@ -10,5 +10,4 @@ import java.util.List;
 public interface SelectionRepository extends JpaRepository<Selection, Long> {
 
     List<Selection> findByQuestionId(Long question_id);
-    List<Selection> findByTestId(Long testId);
 }

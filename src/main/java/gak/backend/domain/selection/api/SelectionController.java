@@ -38,16 +38,7 @@ public class SelectionController {
     @GetMapping("/selection/getSelectionByQ/{question_id}")
     public List<Selection> getIdByQ(@PathVariable("question_id")Long question_id){
         //List <Selection> selectionList=selectionService.getOptionByQ(question_id);
-        return selectionService.getOptionByQ(question_id);
-    }
-
-    //Question_id가 외래키라 quesion_id가 같은 selection들을 동시에 조회하는게 가능한건지 확인 불가
-    //testId하나 임시로 만들어서 조회하는 testAPI
-
-    @GetMapping("/selection/getSelectionByT/{testId}")
-    public List<Selection> getIdByTestID(@PathVariable("testId")Long testId){
-        //List <Selection> selectionList=selectionService.getOptionByQ(question_id);
-        return selectionService.getOptionByTestId(testId);
+        return selectionService.getSelectionByQ(question_id);
     }
 
     //객관식 수정

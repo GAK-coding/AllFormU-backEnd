@@ -22,7 +22,6 @@ public class Selection extends BaseTime {
     //객관식일때 각 보기의 내용들
     private String content;
 
-    private Long testId;
 
     //퀴즈형식일때 퀴즈의 정답을 표시해주는거
     private boolean answer;
@@ -30,9 +29,8 @@ public class Selection extends BaseTime {
     //퀴즈형식인지 아닌지
 //    private boolean quiz;
 
-    public void create(String content, Long testId, Boolean answer){
+    public void create(String content,Boolean answer){
         this.content=content;
-        this.testId=testId;
         this.answer=answer;
 //        this.quiz=quiz;
     }

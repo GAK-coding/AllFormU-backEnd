@@ -22,7 +22,7 @@ public class SelectionService {
     @Transactional
     public Selection createSelection(SelectionDTO selectionDTO){
         Selection selection=new Selection();
-        selection.create(selectionDTO.getContent(),selectionDTO.getTestId(),selectionDTO.getAnswer());
+        selection.create(selectionDTO.getContent(),selectionDTO.getAnswer());
         return selectionRepository.save(selection);
     }
 
@@ -32,22 +32,14 @@ public class SelectionService {
                 .orElseThrow(() -> new EntityNotFoundException("Description not found with id: " + id));
     }
 
-    //quistion_id로 해당 option 조회
-//    public List getOptionByQ(Long quesion_id){
-//        List selectionList=selectionRepository.findById(quesion_id);
-//        return selectionList;
-//
-//    }
-    public List<Selection> getOptionByQ(Long questionId) {
+    //quistion_id로 해당 selection 조회
+    public List<Selection> getSelectionByQ(Long questionId) {
         // Selection 테이블에서 questionId로 조회한 결과를 리스트 형태로 반환
         //List<Selection> selections = selectionRepository.findById(questionId);
         return selectionRepository.findByQuestionId(questionId);
     }
 
-    public List<Selection> getOptionByTestId(Long testId) {
-        //List<Selection> selections = selectionRepository.findById(questionId);
-        return selectionRepository.findByTestId(testId);
-    }
+
 
     //content update
     @Transactional
