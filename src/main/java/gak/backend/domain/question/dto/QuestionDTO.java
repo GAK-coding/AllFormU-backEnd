@@ -27,7 +27,7 @@ public class QuestionDTO implements Serializable{
     private String content;
     private boolean required;
     private int sectionNum;
-    @Enumerated(EnumType.STRING)
+
     private Format type;
 
 

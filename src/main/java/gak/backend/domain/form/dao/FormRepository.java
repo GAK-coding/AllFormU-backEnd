@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface FormRepository extends JpaRepository<Form, Long> {
 
    Optional<Form> findById(Long id);
-   //List<Member> findByAuthorId(Long id);
+   //List<Form> findByAuthorId(Long id);
 }
