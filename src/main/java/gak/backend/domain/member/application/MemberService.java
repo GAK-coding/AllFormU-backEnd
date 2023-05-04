@@ -135,6 +135,9 @@ public class MemberService {
         if(member.getPassword()!= password){
             throw new NotMatchPasswordException();
         }
+        else{
+            member.updateMemberPassword(newPwd);
+        }
         return "Password Update";
     }
 
