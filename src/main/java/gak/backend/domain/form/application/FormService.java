@@ -55,6 +55,7 @@ public class FormService {
 
         Member author = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
         form.setAuthor(author);
+        //form.setQuestions(formDto.getQuestions());
 //        List<Question> questions = formDto.getQuestions().stream()
 //                .map(questionDto -> {
 //                    Question question = new Question();
