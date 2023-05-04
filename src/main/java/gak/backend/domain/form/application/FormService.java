@@ -1,6 +1,7 @@
 package gak.backend.domain.form.application;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
@@ -8,7 +9,9 @@ import gak.backend.domain.form.model.QForm;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.QMember;
+import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.model.Question;
+import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,50 +44,71 @@ U(업데이트)
 public class FormService {
     private final FormRepository formRepository;
     private final MemberRepository memberRepository;
+    private final SelectionRepository selectionRepository;
+    private final QuestionRepository questionRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
+
     /*
         title, content까지 저장
         question 작성 후 리스트 완성 후 저장
     */
     @Transactional
-    public Form createForm(FormDTO formDto,Long id) {
+    public Form createForm(FormDTO formDto, Long id) {
+
+        /*
+            테스트 위해서 작성
+        */
+        //폼 엔티티 데이터 저장
         Form form = new Form();
         form.setTitle(formDto.getTitle());
         form.setContent(formDto.getContent());
-
+        //member엔티티와 form엔티티 연결 ->member_id
         Member author = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
         form.setAuthor(author);
-//        List<Question> questions = formDto.getQuestions().stream()
-//                .map(questionDto -> {
-//                    Question question = new Question();
-//                    question.setContent(questionDto.getContent());
-//                    question.setTitle(questionDto.getTitle());
-//                    List<Selection> selections=questionDto.getSelections().stream()
-//                            .map(selectionDto->{
-//                                Selection selection=new Selection();
-//                                selection.setContent(selectionDto.getContent());
-//                                return selection;
-//                            })
-//                            .collect(Collectors.toList());
-//                    question.setSelection(selections);
-//                    List<Description> descriptions = questionDto.getDescriptions().stream()
-//                            .map(descriptionDto -> {
-//                                Description description = new Description();
-//                                description.setContent(descriptionDto.getContent());
-//                                return description;
-//                            })
-//                            .collect(Collectors.toList());
-//                    question.setDescriptions(descriptions);
-//                    return question;
-//                })
-//                .collect(Collectors.toList());
+        form.setStatus(formDto.getStatus());
+        //question 생성, 데이터 삽입 후 question리스트 생성
+        List<Question> questions = formDto.getQuestions().stream()
+                .map(questionDto -> {
+                    Question question = new Question();
+                    question.setContent(questionDto.getContent());
+                    question.setTitle(questionDto.getTitle());
+                    question.setType(questionDto.getType());
 
+                    //selection객체 생성, 데이터 삽입 후 selection리스트 생성
+                    List<Selection> selections = questionDto.getOptions().stream()
+                            .map(selectionDto -> {
+                                Selection selection = new Selection();
+                                selection.setContent(selectionDto.getContent());
+                                selection.setQuestion(question);
+                                return selection;
+                            })
+                            .collect(Collectors.toList());
 
+                    //만들어진 selections 리스트 question의 selection컬럼에 삽입
+                    question.setOptions(selections);
 
-//        System.out.println("this: " + questions.get(0) + " ");
-//        form.setQuestions(questions);
+                    //description객체 생성, 데이터 삽입 후 description리스트 생성
+                    List<Description> descriptions = questionDto.getDescriptions().stream()
+                            .map(descriptionDto -> {
+                                Description description = new Description();
+                                description.setContent(descriptionDto.getContent());
+                                description.setTitle(descriptionDto.getTitle());
+                                description.setQuestion(question);
+                                return description;
+                            })
+                            .collect(Collectors.toList());
+
+                    //만들어진 descriptions 리스트 question의 descriptions컬럼에 삽입
+                    question.setDescriptions(descriptions);
+                    question.setForm(form);
+                    return question;
+                })
+                .collect(Collectors.toList());
+
+        //만들어진 questions 리스트 form의 questions컬럼에 삽입
+        form.setQuestions(questions);
         return formRepository.save(form);
     }
 
@@ -94,13 +119,13 @@ public class FormService {
     */
     public List<Form> getFormById(Long id) {
 
-        QForm form=QForm.form;
-        JPAQueryFactory query=new JPAQueryFactory(entityManager);
-        List<Form> forms=query
+        QForm form = QForm.form;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+        List<Form> forms = query
                 .selectFrom(form)
                 .where(form.author.id.eq(id))
                 .fetch();
-         /////////////////////
+        /////////////////////
         return forms;
     }
 
@@ -108,11 +133,11 @@ public class FormService {
     /*
         author id의 formid에 해당되는 설문지 조회.
     */
-    public Form getSelectFormById(Long id,Long FormId) {
+    public Form getSelectFormById(Long id, Long FormId) {
 
-        QForm form=QForm.form;
-        JPAQueryFactory query=new JPAQueryFactory(entityManager);
-        Form form_sgl=query
+        QForm form = QForm.form;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+        Form form_sgl = query
                 .selectFrom(form)
                 .where(form.author.id.eq(id)
                         .and(form.id.eq(FormId)))
@@ -134,7 +159,8 @@ public class FormService {
     */
 //    @Transactional
 //    public Form updateForm(Long id, FormDTO formDto) {
-//        List<Form> form = getFormById(id);
+//        Form form = formRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Form not found with id: " + id));
 //
 //        form.setTitle(formDto.getTitle());
 //        form.setContent(formDto.getContent());
@@ -144,13 +170,59 @@ public class FormService {
 //                            .filter(question -> question.getId().equals(questionDto.getId()))
 //                            .findFirst();
 //
+//
+//                    if (questionOptional.isPresent()) {
+//                        Question question = questionOptional.get();
+//                        question.setContent(questionDto.getContent());
+//
+//                        List<Selection> selections = questionDto.getOptions().stream()
+//                                .map(selectionDto -> {
+//                                    Optional<Selection> selectionOptional = question.getOptions().stream()
+//                                            .filter(selection -> selection.getId().equals(selectionDto.getId()))
+//                                            .findFirst();
+//
+//                                    if (selectionOptional.isPresent()) {
+//                                        Selection option = selectionOptional.get();
+//                                        option.setContent(selectionDto.getContent());
+//                                        return option;
+//                                    } else {
+//                                        Selection option = new Selection();
+//                                        option.setContent(selectionDto.getContent());
+//                                        option.setQuestion(question);
+//                                        return selectionRepository.save(option);
+//                                    }
+//                                })
+//                                .collect(Collectors.toList());
+//                        question.setOptions(selections);
+//                        return question;
+//                    } else {
+//                        Question question = new Question();
+//                        question.setTitle(questionDto.getTitle());
+//                        question.setContent(questionDto.getContent());
+//                        question.setForm(form);
+//                        //question.set(questionDto.getSectionNum());
+//                        //question.setType(questionDto.getType());
+//                        //question.setRequired(questionDto.isRequired());
+//
+//                        List<Selection> options = questionDto.getOptions().stream()
+//                                .map(selectionDto -> {
+//                                    Selection option = new Selection();
+//                                    option.setContent(selectionDto.getContent());
+//                                    option.setQuestion(question);
+//                                    return selectionRepository.save(option);
+//                                })
+//                                .collect(Collectors.toList());
+//
+//                        question.setOptions(options);
+//                        return questionRepository.save(question);
+//                    }
 //                })
 //                .collect(Collectors.toList());
-//    }
-//
 //        form.setQuestions(questions);
 //        return formRepository.save(form);
 //    }
+
+
 
     /*
         userid의 모든 설문지 삭제

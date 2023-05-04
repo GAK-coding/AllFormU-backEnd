@@ -16,4 +16,6 @@ public class SelectionDTO {
         this.answer=answer;
 //        this.quiz=quiz;
     }
+
+
 }

@@ -1,5 +1,6 @@
 package gak.backend.domain.description.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
@@ -16,9 +17,14 @@ public class Description extends BaseTime {
     @Column(name = "description_id")
     private Long id;
 
+
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quesion_id")
     private Question question;
+
+    private String title;
     private String content;
     private String answer;
     private boolean quiz;
@@ -33,4 +39,15 @@ public class Description extends BaseTime {
         this.answer=answer;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

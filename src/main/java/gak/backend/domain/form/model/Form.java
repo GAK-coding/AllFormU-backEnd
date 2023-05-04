@@ -31,8 +31,9 @@ public class Form extends BaseTime {
     @JoinColumn(name = "member_id")
     private Member author;
 
-    @OneToMany(mappedBy = "form")
+    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+
 
     @Enumerated
     @Column(name = "user_status")
@@ -42,6 +43,7 @@ public class Form extends BaseTime {
     private boolean required;
 
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
+
 
 //    public static QForm form=QForm.form;
     // =========변경 가능-----------

@@ -12,10 +12,13 @@ public class DescriptionDTO {
     private String answer;
     private Boolean quiz;
 
+    private String title;
+
     @Builder
-    public DescriptionDTO(String content, String answer, Boolean quiz){
+    public DescriptionDTO(String content, String answer, Boolean quiz,String title){
         this.content=content;
         this.answer=answer;
         this.quiz=quiz;
+        this.title=title;
     }
 }

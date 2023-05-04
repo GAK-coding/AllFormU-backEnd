@@ -1,5 +1,6 @@
 package gak.backend.domain.question.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.model.Form;
 //import gak.backend.domain.grid.model.Grid;
@@ -22,14 +23,21 @@ public class Question extends BaseTime {
     @Column(name = "question_id")
     private Long id;
 
+
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id")
     private Form form;
 
-    @OneToMany(mappedBy = "question")
+
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Selection> options = new ArrayList<>();
 
-    @OneToMany(mappedBy = "question")
+
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Description> descriptions = new ArrayList<>();
 
 //    @OneToMany(mappedBy="question")
@@ -40,7 +48,28 @@ public class Question extends BaseTime {
     private boolean required;
     private int sectionNum;
 
+
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type")
     private Format type;
+
+    public void setContent(String content){
+        this.content=content;
+    }
+    public void setTitle(String title){
+        this.title=title;
+    }
+    public void setOptions(List<Selection> options) {
+        this.options = options;
+    }
+    public void setDescriptions(List<Description> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public void setForm(Form form) {
+        this.form = form;
+    }
+    public void setType(Format type) {
+        this.type = type;
+    }
 }
