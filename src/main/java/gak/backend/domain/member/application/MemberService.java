@@ -47,6 +47,7 @@ public class MemberService {
         int cnt = 0; //이메일로 이미 한번이라도 계정을 만든 사용자 중, 탈퇴 회원 수 새서 확인해보기 위함.
         //이미 존재하는 멤버이면, 스타터스를 보고 휴면 계정을 돌려주고, 처음 생성이라면
         //이메일이 이미 존재하는 회원이라면,
+        //TODO 회원가입 하려고 하는데 이미 멤버로 존재할 경우 로직 짜기
         if (memberRepository.existsByEmail(memberSaveRequest.getEmail())) {
             //이미 존재하는 이메일이라면, 멤버 목록을 보고 휴면 계정인것을 찾음. 리스트인 이유는 탈퇴, 탈퇴, 휴면했을 경우도 있을 수 있기 때문.
             List<Member> members = memberRepository.findMembersByEmail(memberSaveRequest.getEmail());

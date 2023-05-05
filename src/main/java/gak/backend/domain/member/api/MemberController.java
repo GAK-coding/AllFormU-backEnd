@@ -23,7 +23,7 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @Validated
 public class MemberController {
     private final MemberService memberService;
-    @PostMapping(value="/register")
+    @PostMapping(value="/member/register")
     public ResponseEntity<MemberInfoDTO> createMember(@RequestBody @Validated MemberSaveRequest memberSaveRequest){
         MemberInfoDTO memberInfoDTO = memberService.createMember(memberSaveRequest);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
