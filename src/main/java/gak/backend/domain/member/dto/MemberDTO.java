@@ -18,7 +18,7 @@ public class MemberDTO {
     public static class MemberSaveRequest{
         private String nickname;
         private String email;
-        private int password;
+        private String password;
         //private Role role; //생성자인지 응답자인지 받음.
 
 
@@ -39,9 +39,10 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberInfoDTO{
+        private Long id;
         private String nickname;
         private String email;
-        private int password;
+        private String password;
         private Role role;
         private Status status;
         private LocalDateTime createdTime;

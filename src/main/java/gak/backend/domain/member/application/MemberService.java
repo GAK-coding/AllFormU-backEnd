@@ -110,7 +110,7 @@ public class MemberService {
 
     //이메일로 비밀번호 조회
     @Transactional
-    public int findPasswordByEmail(String email){
+    public String findPasswordByEmail(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
         return member.getPassword();
     }
@@ -131,7 +131,7 @@ public class MemberService {
     //멤버 비밀번호 변경, 사용자가 비밀번호도 입력으로 받고 실제 번호와 일치하는지 확인
     //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
     @Transactional
-    public String updateMemberPasswordById(Long id, int password, int newPwd){
+    public String updateMemberPasswordById(Long id, String password, String newPwd){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         if(member.getPassword()!= password){
             throw new NotMatchPasswordException();
