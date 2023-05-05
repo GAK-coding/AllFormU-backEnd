@@ -24,8 +24,8 @@ public class FormController {
         프론트에서 질문 생성 시 form 생성 service 호출
 
     */
-    @PostMapping("/api/createform/{AuthorId}")
-    public String create(@RequestBody FormDTO formDTO,@PathVariable("AuthorId")Long id){
+    @PostMapping("/form/createform/{UserId}")
+    public String create(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long id){
         System.out.println("controller:"+formDTO.getContent());
         formService.createForm(formDTO,id);
         return "Success for create form";
@@ -34,7 +34,7 @@ public class FormController {
     /*
         모든 설문지 조회
     */
-    @GetMapping("/api/find")
+    @GetMapping("/form/findform")
     public List<Form> get(){
 
         return formService.getAllForms();
@@ -44,27 +44,27 @@ public class FormController {
         설문지 id로 설문지 조회
         Member 완성 시 Member id로 설문지 조회 기능 추가
     */
-    @GetMapping("/api/find/{AuthorId}")
-    public List<Form> getId(@PathVariable("AuthorId")Long authorid){
+    @GetMapping("/form/findform/{UserId}")
+    public List<Form> getId(@PathVariable("UserId")Long authorid){
 
         return formService.getFormById(authorid);
 
     }
-    @GetMapping("/api/find/{AuthorId}/{FormId}")
-    public Form getSelectForm(@PathVariable("AuthorId")Long authorid,@PathVariable("FormId")Long Formid){
+    @GetMapping("/form/findform/{UserId}/{FormId}")
+    public Form getSelectForm(@PathVariable("UserId")Long authorid,@PathVariable("FormId")Long Formid){
 
         return formService.getSelectFormById(authorid,Formid);
 
     }
-//    @PostMapping("/api/update")
+//    @PostMapping("/form/updateform")
 //    public Form getId(@RequestBody FormDTO formDTO,@PathVariable("id")Long id){
 //        return formService.updateForm(id,formDTO);
 //    }
     /*
         user id로 모든설문지 삭제
     */
-    @DeleteMapping("/api/delete/{id}")
-    public String deleteId(@PathVariable("id")Long id){
+    @DeleteMapping("/form/deleteform/{UserId}")
+    public String deleteId(@PathVariable("UserId")Long id){
         formService.deleteFormById(id);
 
         return String.format("Success for delete %s form",id);
@@ -73,8 +73,8 @@ public class FormController {
     /*
         user id의 formid에 해당되는 설문지 삭제
     */
-    @DeleteMapping("/api/delete/{id}/{FormId}")
-    public String deleteSelectId(@PathVariable("id")Long id,@PathVariable("FormId")Long Formid){
+    @DeleteMapping("/form/deleteform/{UserId}/{FormId}")
+    public String deleteSelectId(@PathVariable("UserId")Long id,@PathVariable("FormId")Long Formid){
         formService.deleteSelectFormById(id,Formid);
 
         return String.format("Success for delete %s form of userId %s",Formid,id);
@@ -84,7 +84,7 @@ public class FormController {
     /*
         모든 설문지 삭제
     */
-    @DeleteMapping("/api/delete")
+    @DeleteMapping("/form/deleteform")
     public String delete(){
         formService.deleteForm();
         return "Success for delete form";

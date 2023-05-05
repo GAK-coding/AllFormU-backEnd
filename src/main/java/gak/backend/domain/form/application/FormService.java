@@ -1,7 +1,9 @@
 package gak.backend.domain.form.application;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.model.Description;
+import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
@@ -10,8 +12,10 @@ import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.QMember;
 import gak.backend.domain.question.dao.QuestionRepository;
+import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
+import gak.backend.domain.selection.model.QSelection;
 import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -62,11 +66,10 @@ public class FormService {
         */
         //폼 엔티티 데이터 저장
         Form form = new Form();
-        form.setTitle(formDto.getTitle());
-        form.setContent(formDto.getContent());
+
         //member엔티티와 form엔티티 연결 ->member_id
         Member author = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
-        form.setAuthor(author);
+        form.setAuthor(author); //setter를 아예 안 쓸수는 없음. 최대한 이뮤터블 객체로 만들어야함
         form.setStatus(formDto.getStatus());
         //question 생성, 데이터 삽입 후 question리스트 생성
         List<Question> questions = formDto.getQuestions().stream()
@@ -231,12 +234,39 @@ public class FormService {
     public void deleteFormById(Long id){
 
         QForm form=QForm.form;
+
+        QQuestion question = QQuestion.question;
+        QDescription description = QDescription.description;
+        QSelection selection = QSelection.selection;
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
 
-        query.delete(form)
+        query.selectFrom(form)
                 .where(form.author.id.eq(id))
-                .execute();
-
+                .fetch()
+                .forEach(f -> {
+                    // Form에 속한 Question, Description, Selection을 모두 삭제
+                    query.delete(selection)
+                            .where(selection.question.in(
+                                    JPAExpressions.selectFrom(question)
+                                            .where(question.form.eq(f))
+                                            .select(question)
+                            ))
+                            .execute();
+                    query.delete(description)
+                            .where(description.question.in(
+                                    JPAExpressions.selectFrom(question)
+                                            .where(question.form.eq(f))
+                                            .select(question)
+                            ))
+                            .execute();
+                    query.delete(question)
+                            .where(question.form.eq(f))
+                            .execute();
+                    // Form을 삭제
+                    query.delete(form)
+                            .where(form.eq(f))
+                            .execute();
+                });
     }
 
 
@@ -246,13 +276,30 @@ public class FormService {
     @Transactional
     public void deleteSelectFormById(Long id,Long FormId){
 
-        QForm form=QForm.form;
-        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+        QForm form = QForm.form;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
-        query.delete(form)
-                .where(form.author.id.eq(id)
-                        .and(form.id.eq(FormId)))
-                .execute();
+//        query.delete(QSelection.selection)
+//                .where(QSelection.selection.question.in(
+//                        JPAExpressions.select(QQuestion.question.id)
+//                                .from(QQuestion.question)
+//                                .where(QQuestion.question.form.id.eq(FormId))))
+//                .execute();
+//
+//        query.delete(QDescription.description)
+//                .where(QDescription.description.question.in(
+//                        JPAExpressions.select(QQuestion.question.id)
+//                                .from(QQuestion.question)
+//                                .where(QQuestion.question.form.id.eq(FormId))))
+//                .execute();
+//
+//        query.delete(QQuestion.question)
+//                .where(QQuestion.question.form.id.eq(FormId))
+//                .execute();
+//
+//        query.delete(form)
+//                .where(form.id.eq(FormId).and(form.author.id.eq(id)))
+//                .execute();
 
     }
 

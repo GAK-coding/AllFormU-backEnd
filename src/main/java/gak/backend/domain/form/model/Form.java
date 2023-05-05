@@ -7,9 +7,7 @@ import gak.backend.domain.member.model.Status;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
@@ -19,19 +17,27 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Form extends BaseTime {
     @Id
     @GeneratedValue
     @Column(name = "form_id")
     private Long id;
 
+    public void setAuthor(Member author) {
+        this.author = author;
+    }
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member author;
 
-    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
+
+
+    @OneToMany(mappedBy = "form",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
 
