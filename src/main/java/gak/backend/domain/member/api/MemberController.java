@@ -19,6 +19,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Validated
+@RequestMapping("/member")
 public class MemberController {
 
     @Autowired
@@ -38,7 +39,7 @@ public class MemberController {
 //
 //        return user;
 //    }
-    @GetMapping("/api/item")
+    @GetMapping("/item")
     public List<Member> get(){
         return memberRepository.findAll();
     }

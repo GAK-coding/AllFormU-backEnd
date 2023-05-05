@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-
+@RequestMapping("/description")
 //응답말고 생성하는 관점에서만 생각
 //-> 주관식 생성, 생성한거 get, 질문 수정, 질문 삭제
 public class DescriptionController {
@@ -30,26 +33,26 @@ public class DescriptionController {
     //quiz가 false일때 answer은 null
 
     //description생성
-    @PostMapping("/description/createDescription")
+    @PostMapping("/createDescription")
     public String add(@RequestBody DescriptionDTO descriptionDTO){
         descriptionService.createDescription(descriptionDTO);
         return "create description";
     }
 
     //description조회
-    @GetMapping("/description/getDescription/{id}")
+    @GetMapping("/getDescription/{id}")
     public Description getId(@PathVariable("id")Long id){
         return descriptionService.getDescription(id);
     }
 
     //quesstion_id로 description조회
-    @GetMapping("/description/getDescriptionByQ/{question_id}")
+    @GetMapping("/getDescriptionByQ/{question_id}")
     public List<Description> getIdByQ(@PathVariable("question_id")Long question_id){
         return descriptionService.getDescriptionByQ(question_id);
     }
 
 
-    @PutMapping("/description/updateAnswer/{id}")
+    @PutMapping("/updateAnswer/{id}")
     public ResponseEntity<Description> updateDescriptionAnswer(@PathVariable(value = "id") Long id,
                                                                @RequestBody Map<String, String> requestBody){
 
@@ -57,7 +60,7 @@ public class DescriptionController {
         final Description updatedDescription=descriptionService.updateDescription(id,answer);
         return ResponseEntity.ok(updatedDescription);
     }
-    @DeleteMapping("/description/deleteDescription/{id}")
+    @DeleteMapping("/deleteDescription/{id}")
     public String deleteId(@PathVariable("id")Long id){
         descriptionService.deleteSelectionById(id);
 
