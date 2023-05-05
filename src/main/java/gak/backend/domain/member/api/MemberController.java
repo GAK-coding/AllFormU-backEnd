@@ -33,12 +33,6 @@ public class MemberController {
     @Autowired
     MemberRepository memberRepository;
 
-    private final MemberService memberService;
-    @PostMapping(value="/register")
-    public ResponseEntity<MemberDTO.MemberInfoDTO> createMember(@RequestBody @Validated MemberDTO.MemberSaveRequest memberSaveRequest){
-        MemberDTO.MemberInfoDTO memberInfoDTO = memberService.createMember(memberSaveRequest);
-        return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
-    }
 //    @PostMapping("/api/login")
 //    @ResponseBody
 //    public List<Member> login(@RequestBody Member member){
