@@ -2,6 +2,7 @@ package gak.backend.domain.member.application;
 
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
+import gak.backend.domain.member.exception.ExistMemberException;
 import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
 import gak.backend.domain.member.exception.NotMatchPasswordException;
 import gak.backend.domain.member.model.Member;
@@ -56,10 +57,15 @@ public class MemberService {
                     MemberInfoDTO memberInfoDTO = member.toMemberInfoDTO();
                     return memberInfoDTO;
                 }
+                //이미 존재하는데 새로 생성할 경우, 예외 처리 해주기
+                //TODO 프론트와 논의 해볼것. -> 이메일 찾기가 없으니까 회원가입에서 이미 존재하는 회원일 경우, 알려주는게 낫지 않나?
+                //TODO 오류 핸들링 해주기
+                else if(member.getStatus() == Status.STATUS_MEMBER){
+                    throw new ExistMemberException(member.getEmail()+"로 이미 존재하는 회원입니다.");
+                }
                 else cnt++;
             }
             //만약에 다 탈퇴했을 경우도 고려해주기
-            //TODO 위치 다시 고려해주기
             if (cnt == members.size()) {//멤버 목록도 있으나 다 탈퇴한 경우
                 Member reMember = memberSaveRequest.toEntity();
                 memberRepository.save(reMember);
