@@ -26,6 +26,8 @@ public class FormDTO implements Serializable {
     private List<QuestionDTO> questions;
     private String title;
     private String content;
+
+
     private boolean required;
     @Enumerated
     private Status status;

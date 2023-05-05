@@ -46,6 +46,8 @@ public class Form extends BaseTime {
     private Status status;
     private String title;
     private String content;
+
+
     private boolean required;
 
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1

@@ -72,4 +72,12 @@ public class Question extends BaseTime {
     public void setType(Format type) {
         this.type = type;
     }
+
+    public void setSectionNum(int sectionNum) {
+        this.sectionNum = sectionNum;
+    }
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
 }

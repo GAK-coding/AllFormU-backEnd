@@ -66,18 +66,22 @@ public class FormService {
         */
         //폼 엔티티 데이터 저장
         Form form = new Form();
-
+        System.out.println("TESTDTO:"+formDto.getQuestions().get(0).getTitle());
         //member엔티티와 form엔티티 연결 ->member_id
         Member author = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
         form.setAuthor(author); //setter를 아예 안 쓸수는 없음. 최대한 이뮤터블 객체로 만들어야함
         form.setStatus(formDto.getStatus());
+        form.setTitle(formDto.getTitle());
+        form.setContent(formDto.getContent());
         //question 생성, 데이터 삽입 후 question리스트 생성
         List<Question> questions = formDto.getQuestions().stream()
                 .map(questionDto -> {
                     Question question = new Question();
-                    question.setContent(questionDto.getContent());
+                    //question.setContent(questionDto.getContent());
                     question.setTitle(questionDto.getTitle());
                     question.setType(questionDto.getType());
+                    question.setSectionNum(questionDto.getSectionNum());
+                    question.setRequired(questionDto.isRequired());
 
                     //selection객체 생성, 데이터 삽입 후 selection리스트 생성
                     List<Selection> selections = questionDto.getOptions().stream()
@@ -97,7 +101,7 @@ public class FormService {
                             .map(descriptionDto -> {
                                 Description description = new Description();
                                 description.setContent(descriptionDto.getContent());
-                                description.setTitle(descriptionDto.getTitle());
+                                //description.setTitle(descriptionDto.getTitle());
                                 description.setQuestion(question);
                                 return description;
                             })
@@ -277,29 +281,40 @@ public class FormService {
     public void deleteSelectFormById(Long id,Long FormId){
 
         QForm form = QForm.form;
+        QQuestion question = QQuestion.question;
+        QDescription description = QDescription.description;
+        QSelection selection = QSelection.selection;
+
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
-//        query.delete(QSelection.selection)
-//                .where(QSelection.selection.question.in(
-//                        JPAExpressions.select(QQuestion.question.id)
-//                                .from(QQuestion.question)
-//                                .where(QQuestion.question.form.id.eq(FormId))))
-//                .execute();
-//
-//        query.delete(QDescription.description)
-//                .where(QDescription.description.question.in(
-//                        JPAExpressions.select(QQuestion.question.id)
-//                                .from(QQuestion.question)
-//                                .where(QQuestion.question.form.id.eq(FormId))))
-//                .execute();
-//
-//        query.delete(QQuestion.question)
-//                .where(QQuestion.question.form.id.eq(FormId))
-//                .execute();
-//
-//        query.delete(form)
-//                .where(form.id.eq(FormId).and(form.author.id.eq(id)))
-//                .execute();
+        query.selectFrom(form)
+                .where(form.author.id.eq(id))
+                .where(form.id.eq(FormId)) // 해당 userId의 해당 FormId를 조회
+                .fetch()
+                .forEach(f -> {
+                    // Form에 속한 Question, Description, Selection을 모두 삭제
+                    query.delete(selection)
+                            .where(selection.question.in(
+                                    JPAExpressions.selectFrom(question)
+                                            .where(question.form.eq(f))
+                                            .select(question)
+                            ))
+                            .execute();
+                    query.delete(description)
+                            .where(description.question.in(
+                                    JPAExpressions.selectFrom(question)
+                                            .where(question.form.eq(f))
+                                            .select(question)
+                            ))
+                            .execute();
+                    query.delete(question)
+                            .where(question.form.eq(f))
+                            .execute();
+                    // Form을 삭제
+                    query.delete(form)
+                            .where(form.eq(f))
+                            .execute();
+                });
 
     }
 

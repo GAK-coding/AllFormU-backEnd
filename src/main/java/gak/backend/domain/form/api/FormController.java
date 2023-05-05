@@ -20,13 +20,14 @@ public class FormController {
     private final FormService formService;
 
 
+
     /*
         프론트에서 질문 생성 시 form 생성 service 호출
 
     */
     @PostMapping("/form/createform/{UserId}")
     public String create(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long id){
-        System.out.println("controller:"+formDTO.getContent());
+        System.out.println("controller:"+formDTO.getQuestions().get(0).getDescriptions().get(0).getContent());
         formService.createForm(formDTO,id);
         return "Success for create form";
     }
