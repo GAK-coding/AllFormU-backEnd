@@ -15,11 +15,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static gak.backend.domain.member.dto.MemberDTO.*;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 @Validated
 public class MemberController {
+    private final MemberService memberService;
+    @PostMapping(value="/member/register")
+    public ResponseEntity<MemberInfoDTO> createMember(@RequestBody @Validated MemberSaveRequest memberSaveRequest){
+        MemberInfoDTO memberInfoDTO = memberService.createMember(memberSaveRequest);
+        return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
+    }
+
 
     @Autowired
     MemberRepository memberRepository;

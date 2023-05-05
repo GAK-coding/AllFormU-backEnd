@@ -28,7 +28,7 @@ public class Member extends BaseTime{
 
     private String email;
 
-    private int password;
+    private String password;
 
     @OneToMany(mappedBy = "author") //변경 가능성 있음.
     private List<Form> responseForm = new ArrayList<>();
@@ -46,7 +46,7 @@ public class Member extends BaseTime{
     private Status status;
 
     @Builder
-    public Member(Long id, String nickname, String email, int password, Role role, Status status){
+    public Member(Long id, String nickname, String email, String password, Role role, Status status){
         this.id = id;
         this.nickname = nickname;
         this.email = email;
@@ -57,6 +57,7 @@ public class Member extends BaseTime{
 
     public MemberInfoDTO toMemberInfoDTO(){
         return MemberInfoDTO.builder()
+                .id(this.id)
                 .nickname(this.nickname)
                 .email(this.email)
                 .password(this.password)
@@ -69,7 +70,7 @@ public class Member extends BaseTime{
 
     public void updateMemberNickname(String newName){ this.nickname = newName; }
 
-    public void updateMemberPassword(int newPwd){ this.password = newPwd; }
+    public void updateMemberPassword(String newPwd){ this.password = newPwd; }
 
 
 

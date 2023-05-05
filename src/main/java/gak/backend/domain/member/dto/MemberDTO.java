@@ -18,8 +18,8 @@ public class MemberDTO {
     public static class MemberSaveRequest{
         private String nickname;
         private String email;
-        private int password;
-        private Role role; //생성자인지 응답자인지 받음.
+        private String password;
+        //private Role role; //생성자인지 응답자인지 받음.
 
 
         public Member toEntity(){
@@ -27,7 +27,7 @@ public class MemberDTO {
                     .nickname(nickname)
                     .email(email)
                     .password(password)
-                    .role(role)
+                    .role(Role.Role_Responsor)
                     .status(Status.STATUS_MEMBER) //멤버가 생성된다는 것은 회원가입 -> 이것은 멤버 상태로 한다는 뜻
                     .build();
 
@@ -39,9 +39,10 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberInfoDTO{
+        private Long id;
         private String nickname;
         private String email;
-        private int password;
+        private String password;
         private Role role;
         private Status status;
         private LocalDateTime createdTime;

@@ -10,6 +10,7 @@ import gak.backend.global.error.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -41,10 +42,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     //멤버 생성이니까 회원가입.
+    @Transactional
     public MemberInfoDTO createMember(MemberSaveRequest memberSaveRequest) {
         int cnt = 0; //이메일로 이미 한번이라도 계정을 만든 사용자 중, 탈퇴 회원 수 새서 확인해보기 위함.
         //이미 존재하는 멤버이면, 스타터스를 보고 휴면 계정을 돌려주고, 처음 생성이라면
         //이메일이 이미 존재하는 회원이라면,
+        //TODO 회원가입 하려고 하는데 이미 멤버로 존재할 경우 로직 짜기
         if (memberRepository.existsByEmail(memberSaveRequest.getEmail())) {
             //이미 존재하는 이메일이라면, 멤버 목록을 보고 휴면 계정인것을 찾음. 리스트인 이유는 탈퇴, 탈퇴, 휴면했을 경우도 있을 수 있기 때문.
             List<Member> members = memberRepository.findMembersByEmail(memberSaveRequest.getEmail());
@@ -79,11 +82,13 @@ public class MemberService {
 //================================================Read==========================================
 
     //아이디로 멤버 객체 조회
+    @Transactional
     public Member readMemberById(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return member;
     }
     //아이디로 멤버 infoDTO 조회
+    @Transactional
     public MemberInfoDTO readMemberDTOById(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return member.toMemberInfoDTO();
@@ -91,18 +96,21 @@ public class MemberService {
 
 
     //이메일로 멤버 조회
+    @Transactional
     public Member readMemberByEmail(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundByIdException::new);
         return member;
     }
     //이메일로 멤버 infoDTO 조회
+    @Transactional
     public MemberInfoDTO readMemberDTOByEmail(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
         return member.toMemberInfoDTO();
     }
 
     //이메일로 비밀번호 조회
-    public int findPasswordByEmail(String email){
+    @Transactional
+    public String findPasswordByEmail(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
         return member.getPassword();
     }
@@ -113,6 +121,7 @@ public class MemberService {
     //=========================================Update==================================
     //TODO update return값 DTO로 수정해주기
     //멤버 닉네임 업데이트
+    @Transactional
     public String updateMemberNickname(Long id, String newNickname){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundMemberByEmailException::new);
         member.updateMemberNickname(newNickname);
@@ -120,10 +129,15 @@ public class MemberService {
     }
 
     //멤버 비밀번호 변경, 사용자가 비밀번호도 입력으로 받고 실제 번호와 일치하는지 확인
-    public String updateMemberPasswordById(Long id, int password, int newPwd){
+    //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
+    @Transactional
+    public String updateMemberPasswordById(Long id, String password, String newPwd){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         if(member.getPassword()!= password){
             throw new NotMatchPasswordException();
+        }
+        else{
+            member.updateMemberPassword(newPwd);
         }
         return "Password Update";
     }
@@ -131,6 +145,7 @@ public class MemberService {
 
 
     //===========================================Delete======================================
+    @Transactional
     public String deleteMember(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         //사용자에게 휴면 계정으로 할것인지 여부를 물어보는 것을 어떻게 지정해줘야하지? 프론트와 상의해봐야할 듯.
