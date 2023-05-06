@@ -1,18 +1,16 @@
 package gak.backend.domain.member.application;
 
 import gak.backend.domain.member.dao.MemberRepository;
-import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.exception.ExistMemberException;
 import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
 import gak.backend.domain.member.exception.NotMatchPasswordException;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
-import gak.backend.global.error.NotFoundByIdException;
+import gak.backend.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
@@ -59,6 +57,7 @@ public class MemberService {
                 }
                 //이미 존재하는데 새로 생성할 경우, 예외 처리 해주기
                 //TODO 프론트와 논의 해볼것. -> 이메일 찾기가 없으니까 회원가입에서 이미 존재하는 회원일 경우, 알려주는게 낫지 않나?
+                //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
                 //TODO 오류 핸들링 해주기
                 else if(member.getStatus() == Status.STATUS_MEMBER){
                     throw new ExistMemberException(member.getEmail()+"로 이미 존재하는 회원입니다.");
@@ -115,6 +114,8 @@ public class MemberService {
     }
 
     //이메일로 비밀번호 조회
+    //TODO 랜덤값으로 수정
+    //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
     @Transactional
     public String findPasswordByEmail(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
@@ -135,7 +136,6 @@ public class MemberService {
     }
 
     //멤버 비밀번호 변경, 사용자가 비밀번호도 입력으로 받고 실제 번호와 일치하는지 확인
-    //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
     @Transactional
     public String updateMemberPasswordById(Long id, String password, String newPwd){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
