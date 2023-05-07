@@ -83,6 +83,12 @@ public class MemberService {
 
     }
 
+    @Transactional
+    public MemberInfoDTO loginMember(LoginReqeust loginReqeust){
+        Member member = memberRepository.findByEmail(loginReqeust.getEmail()).orElseThrow(NotFoundMemberByEmailException::new);
+        return member.toMemberInfoDTO();
+    }
+
 
 //================================================Read==========================================
 
@@ -129,23 +135,27 @@ public class MemberService {
     //TODO update return값 DTO로 수정해주기
     //멤버 닉네임 업데이트
     @Transactional
-    public String updateMemberNickname(Long id, String newNickname){
-        Member member = memberRepository.findById(id).orElseThrow(NotFoundMemberByEmailException::new);
-        member.updateMemberNickname(newNickname);
-        return "UPDATE";
+    public UpdateNicknameDTO updateMemberNickname(UpdateNicknameRequest updateNicknameRequest){
+        Member member = memberRepository.findById(updateNicknameRequest.getId()).orElseThrow(NotFoundMemberByEmailException::new);
+        member.UpdateMemberNickname(updateNicknameRequest.getNewNickname());
+        UpdateNicknameDTO updateNicknameDTO = member.toUpdateNicknameDTO();
+        return updateNicknameDTO;
     }
 
     //멤버 비밀번호 변경, 사용자가 비밀번호도 입력으로 받고 실제 번호와 일치하는지 확인
     @Transactional
-    public String updateMemberPasswordById(Long id, String password, String newPwd){
-        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        if(member.getPassword()!= password){
+    //TODO 비밀번호 암호화하기
+    public UpdatePasswordDTO updateMemberPasswordById(UpdatePasswordRequest updatePasswordRequest){
+        Member member = memberRepository.findById(updatePasswordRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        System.out.println(member.getPassword());
+        System.out.println((updatePasswordRequest.getPassword()));
+        if(!member.getPassword().equals(updatePasswordRequest.getPassword())){
             throw new NotMatchPasswordException();
         }
         else{
-            member.updateMemberPassword(newPwd);
+            member.UpdateMemberPassword(updatePasswordRequest.getNewPwd());
         }
-        return "Password Update";
+        return member.toUpdatePasswordDTO();
     }
 
 
