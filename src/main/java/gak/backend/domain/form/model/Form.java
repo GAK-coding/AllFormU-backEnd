@@ -38,16 +38,17 @@ public class Form extends BaseTime {
     private List<Question> questions = new ArrayList<>();
 
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "user_status")
-    private Status status;
+    private Separator separator;
+
     private String title;
     private String content;
 
 
-    private boolean required;
+    //private boolean required;
 
-    private boolean fix; // 수정가능 : 0 수정 불가능 : 1
+    //private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
     public void AuthorSetting(Member author){
         this.author=author;
@@ -56,8 +57,10 @@ public class Form extends BaseTime {
     public void QuestionSetting(List<Question> questions) {
         this.questions = questions;
     }
+    public void SeparatorSetting(Separator separator){
+        this.separator=separator;
+    }
 
-//    public static QForm form=QForm.form;
     // =========변경 가능-----------
 //    @ManyToOne
 //    @JoinColumn(name = "form_id")
@@ -66,8 +69,4 @@ public class Form extends BaseTime {
 //    private List<Form> child = new ArrayList<>();
     //==========================
 
-
-//    public Long getAuthorId(){
-//        return author.getId();
-//    }
 }

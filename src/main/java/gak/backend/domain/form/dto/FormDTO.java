@@ -1,11 +1,13 @@
 package gak.backend.domain.form.dto;
 
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.form.model.Separator;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,24 +32,20 @@ public class FormDTO implements Serializable {
     private String title;
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    private Separator separator;
 
-    private boolean required;
-    @Enumerated
-    private Status status;
-
-    //public FormDTO(){}
+    //private boolean required;
+    //private boolean fix;
 
     @Builder
-    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content, boolean required){
+    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content ){
 
         this.id=id;
         this.authorId=authorId;
         this.questions=questions;
         this.title=title;
         this.content=content;
-        this.required=required;
-
-
 
     }
 
@@ -73,6 +71,8 @@ public class FormDTO implements Serializable {
         }
         return questionList;
     }
+
+
 
 }
 

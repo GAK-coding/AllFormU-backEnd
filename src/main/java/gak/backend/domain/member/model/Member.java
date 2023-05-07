@@ -37,11 +37,11 @@ public class Member extends BaseTime{
     @OneToMany(mappedBy = "author")
     private List<Form> requestForm = new ArrayList<>();
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "role_type")
     private Role role;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "member_status")
     private Status status;
 

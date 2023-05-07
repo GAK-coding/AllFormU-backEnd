@@ -8,6 +8,7 @@ import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.form.model.QForm;
+import gak.backend.domain.form.model.Separator;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.QMember;
@@ -64,9 +65,11 @@ public class FormService {
         //폼 엔티티 데이터 저장 (of메소드 호출)
         Form form=formDto.of();
 
+
         //member 연관관계 갖기위해 해당 id의 member 객체 가져옴
         Member author=memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
         form.AuthorSetting(author);
+        form.SeparatorSetting(Separator.SEPARATOR_WRITER);
 
         //question리스트 저장 , question엔티티 객체 자동 생성.
         List<Question> questions= formDto.toQuestions(form);

@@ -14,6 +14,7 @@ import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.exception.NotFoundException;
 import gak.backend.domain.question.model.Format;
+import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import jakarta.persistence.EntityManager;
@@ -65,5 +66,40 @@ public class QuestionService {
 
 
         return questionRepository.saveAll(Questions);
+    }
+
+//    @Transactional
+//    public Question UpdateAllQuestion(QuestionDTO questionDTO,Long QuestionId){
+//
+//    }
+
+
+    @Transactional
+    public List<Question> getAllQuestion(Long FormId, Long QuestionId){
+
+        QQuestion qQuestion = QQuestion.question;
+        QForm qForm=QForm.form;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+
+        List<Question> question_sgl = query
+                .selectFrom(qQuestion)
+                .where(qQuestion.question.id.eq(QuestionId)
+                        .and(qForm.id.eq(FormId)))
+                .fetch();
+
+        return question_sgl;
+    }
+    @Transactional
+    public Question getSelectQuestion( Long QuestionId){
+
+        QQuestion qQuestion = QQuestion.question;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+
+        Question question_sgl = query
+                .selectFrom(qQuestion)
+                .where(qQuestion.question.id.eq(QuestionId))
+                .fetchOne();
+
+        return question_sgl;
     }
 }
