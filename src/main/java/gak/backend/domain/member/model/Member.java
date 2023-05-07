@@ -55,6 +55,20 @@ public class Member extends BaseTime{
         this.status = status;
     }
 
+    public UpdateNicknameDTO toUpdateNicknameDTO(){
+        return UpdateNicknameDTO.builder()
+                .id(this.id)
+                .nickname(this.getNickname())
+                .build();
+    }
+
+    public UpdatePasswordDTO toUpdatePasswordDTO(){
+        return UpdatePasswordDTO.builder()
+                .id(this.id)
+                .password(this.password)
+                .build();
+    }
+
     public MemberInfoDTO toMemberInfoDTO(){
         return MemberInfoDTO.builder()
                 .id(this.id)
@@ -68,9 +82,9 @@ public class Member extends BaseTime{
                 .build();
     }
 
-    public void updateMemberNickname(String newName){ this.nickname = newName; }
+    public void UpdateMemberNickname(String newNickname){ this.nickname = newNickname; }
 
-    public void updateMemberPassword(String newPwd){ this.password = newPwd; }
+    public void UpdateMemberPassword(String newPwd){ this.password = newPwd; }
 
 
 
