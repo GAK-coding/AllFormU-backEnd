@@ -1,5 +1,8 @@
 package gak.backend.domain.selection.application;
 
+import gak.backend.domain.description.dto.DescriptionDTO;
+import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.dto.SelectionDTO;
 import gak.backend.domain.selection.model.Selection;
@@ -19,6 +22,26 @@ import java.util.Optional;
 public class SelectionService {
     private final SelectionRepository selectionRepository;
     //selection 생성
+
+
+//    @Transactional
+//    public Selection createInit(FormDTO formDTO){
+//        Selection selection=new Selection();
+//        for (QuestionDTO question : formDTO.getQuestions()) {
+//            // 질문의 첫번째 설명을 저장
+//            if(!question.getOptions().isEmpty()) {
+//                for(SelectionDTO selectionDTO : question.getOptions()) {
+//                    System.out.println("Selection : " + selectionDTO.getContent());
+//
+//                    selection.setContent(selectionDTO.getContent());
+//                    // 저장할 작업 수행
+//                }
+//
+//            }
+//        }
+////        selection.create(selectionDTO.getContent(),selectionDTO.getAnswer());
+//        return selectionRepository.save(selection);
+//    }
     @Transactional
     public Selection createSelection(SelectionDTO selectionDTO){
         Selection selection=new Selection();

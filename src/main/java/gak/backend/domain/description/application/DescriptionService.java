@@ -3,6 +3,8 @@ package gak.backend.domain.description.application;
 import gak.backend.domain.description.dao.DescriptionRepository;
 import gak.backend.domain.description.dto.DescriptionDTO;
 import gak.backend.domain.description.model.Description;
+import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.question.dto.QuestionDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,25 @@ import java.util.Optional;
 public class DescriptionService {
     private final DescriptionRepository descriptionRepository;
 
+
+    @Transactional
+    public Description createInit(FormDTO formDTO){
+        Description description=new Description();
+
+        for (QuestionDTO question : formDTO.getQuestions()) {
+            // 질문의 첫번째 설명을 저장
+            if(!question.getDescriptions().isEmpty()) {
+                DescriptionDTO descriptionDTO = question.getDescriptions().get(0);
+
+                description.setContent(descriptionDTO.getContent());
+
+
+            }
+        }
+        System.out.println("Description:"+description.getContent());
+        //description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
+        return descriptionRepository.save(description);
+    }
     //description 생성
     @Transactional
     public Description createDescription(DescriptionDTO descriptionDTO){

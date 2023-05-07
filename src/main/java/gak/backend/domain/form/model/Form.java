@@ -16,7 +16,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,8 +34,6 @@ public class Form extends BaseTime {
     @JoinColumn(name = "member_id")
     private Member author;
 
-
-
     @OneToMany(mappedBy = "form",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
@@ -52,6 +49,13 @@ public class Form extends BaseTime {
 
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
+    public void AuthorSetting(Member author){
+        this.author=author;
+    }
+
+    public void QuestionSetting(List<Question> questions) {
+        this.questions = questions;
+    }
 
 //    public static QForm form=QForm.form;
     // =========변경 가능-----------

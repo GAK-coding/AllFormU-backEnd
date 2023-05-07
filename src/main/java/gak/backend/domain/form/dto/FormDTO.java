@@ -1,8 +1,10 @@
 package gak.backend.domain.form.dto;
 
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
+import gak.backend.domain.question.model.Question;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 import gak.backend.domain.question.dto.QuestionDTO;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -44,14 +47,32 @@ public class FormDTO implements Serializable {
         this.content=content;
         this.required=required;
 
+
+
     }
 
-//    public Form of (){
-//        return Form.builder()
-//                .title(title)
-//                .content(content)
-//                .build();
-//
-//
-//    }
+    public Form of (){
+
+        return Form.builder()
+                .title(title)
+                .content(content)
+                .build();
+    }
+    public List<Question> toQuestions(Form form) {
+
+        List<Question> questionList = new ArrayList<>();
+        for (QuestionDTO questionDTO : questions) {
+            Question question = Question.builder()
+                    .form(form)
+                    .title(questionDTO.getTitle())
+                    .required(questionDTO.isRequired())
+                    .sectionNum(questionDTO.getSectionNum())
+                    .type(questionDTO.getType())
+                    .build();
+            questionList.add(question);
+        }
+        return questionList;
+    }
+
 }
+

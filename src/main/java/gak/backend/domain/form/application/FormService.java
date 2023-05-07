@@ -59,64 +59,21 @@ public class FormService {
         question 작성 후 리스트 완성 후 저장
     */
     @Transactional
-    public Form createForm(FormDTO formDto, Long id) {
+    public Long createForm(FormDTO formDto, Long id) {
 
-        /*
-            테스트 위해서 작성
-        */
-        //폼 엔티티 데이터 저장
-        Form form = new Form();
-        System.out.println("TESTDTO:"+formDto.getQuestions().get(0).getTitle());
-        //member엔티티와 form엔티티 연결 ->member_id
-        Member author = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
-        form.setAuthor(author); //setter를 아예 안 쓸수는 없음. 최대한 이뮤터블 객체로 만들어야함
-        form.setStatus(formDto.getStatus());
-        form.setTitle(formDto.getTitle());
-        form.setContent(formDto.getContent());
-        //question 생성, 데이터 삽입 후 question리스트 생성
-        List<Question> questions = formDto.getQuestions().stream()
-                .map(questionDto -> {
-                    Question question = new Question();
-                    //question.setContent(questionDto.getContent());
-                    question.setTitle(questionDto.getTitle());
-                    question.setType(questionDto.getType());
-                    question.setSectionNum(questionDto.getSectionNum());
-                    question.setRequired(questionDto.isRequired());
+        //폼 엔티티 데이터 저장 (of메소드 호출)
+        Form form=formDto.of();
 
-                    //selection객체 생성, 데이터 삽입 후 selection리스트 생성
-                    List<Selection> selections = questionDto.getOptions().stream()
-                            .map(selectionDto -> {
-                                Selection selection = new Selection();
-                                selection.setContent(selectionDto.getContent());
-                                selection.setQuestion(question);
-                                return selection;
-                            })
-                            .collect(Collectors.toList());
+        //member 연관관계 갖기위해 해당 id의 member 객체 가져옴
+        Member author=memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
+        form.AuthorSetting(author);
 
-                    //만들어진 selections 리스트 question의 selection컬럼에 삽입
-                    question.setOptions(selections);
+        //question리스트 저장 , question엔티티 객체 자동 생성.
+        List<Question> questions= formDto.toQuestions(form);
+        form.QuestionSetting(questions);
+        formRepository.save(form);
 
-                    //description객체 생성, 데이터 삽입 후 description리스트 생성
-                    List<Description> descriptions = questionDto.getDescriptions().stream()
-                            .map(descriptionDto -> {
-                                Description description = new Description();
-                                description.setContent(descriptionDto.getContent());
-                                //description.setTitle(descriptionDto.getTitle());
-                                description.setQuestion(question);
-                                return description;
-                            })
-                            .collect(Collectors.toList());
-
-                    //만들어진 descriptions 리스트 question의 descriptions컬럼에 삽입
-                    question.setDescriptions(descriptions);
-                    question.setForm(form);
-                    return question;
-                })
-                .collect(Collectors.toList());
-
-        //만들어진 questions 리스트 form의 questions컬럼에 삽입
-        form.setQuestions(questions);
-        return formRepository.save(form);
+        return form.getId(); //question에서 여기서 생성 된 객체 사용하기 위해 id값 반환
     }
 
 
@@ -132,7 +89,7 @@ public class FormService {
                 .selectFrom(form)
                 .where(form.author.id.eq(id))
                 .fetch();
-        /////////////////////
+
         return forms;
     }
 
@@ -164,70 +121,11 @@ public class FormService {
     /*
         업데이트
     */
-//    @Transactional
-//    public Form updateForm(Long id, FormDTO formDto) {
-//        Form form = formRepository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException("Form not found with id: " + id));
-//
-//        form.setTitle(formDto.getTitle());
-//        form.setContent(formDto.getContent());
-//        List<Question> questions = formDto.getQuestions().stream()
-//                .map(questionDto -> {
-//                    Optional<Question> questionOptional = form.getQuestions().stream()
-//                            .filter(question -> question.getId().equals(questionDto.getId()))
-//                            .findFirst();
+//   @Transactional
+//  public Form updateForm(Long id, FormDTO formDto) {
 //
 //
-//                    if (questionOptional.isPresent()) {
-//                        Question question = questionOptional.get();
-//                        question.setContent(questionDto.getContent());
-//
-//                        List<Selection> selections = questionDto.getOptions().stream()
-//                                .map(selectionDto -> {
-//                                    Optional<Selection> selectionOptional = question.getOptions().stream()
-//                                            .filter(selection -> selection.getId().equals(selectionDto.getId()))
-//                                            .findFirst();
-//
-//                                    if (selectionOptional.isPresent()) {
-//                                        Selection option = selectionOptional.get();
-//                                        option.setContent(selectionDto.getContent());
-//                                        return option;
-//                                    } else {
-//                                        Selection option = new Selection();
-//                                        option.setContent(selectionDto.getContent());
-//                                        option.setQuestion(question);
-//                                        return selectionRepository.save(option);
-//                                    }
-//                                })
-//                                .collect(Collectors.toList());
-//                        question.setOptions(selections);
-//                        return question;
-//                    } else {
-//                        Question question = new Question();
-//                        question.setTitle(questionDto.getTitle());
-//                        question.setContent(questionDto.getContent());
-//                        question.setForm(form);
-//                        //question.set(questionDto.getSectionNum());
-//                        //question.setType(questionDto.getType());
-//                        //question.setRequired(questionDto.isRequired());
-//
-//                        List<Selection> options = questionDto.getOptions().stream()
-//                                .map(selectionDto -> {
-//                                    Selection option = new Selection();
-//                                    option.setContent(selectionDto.getContent());
-//                                    option.setQuestion(question);
-//                                    return selectionRepository.save(option);
-//                                })
-//                                .collect(Collectors.toList());
-//
-//                        question.setOptions(options);
-//                        return questionRepository.save(question);
-//                    }
-//                })
-//                .collect(Collectors.toList());
-//        form.setQuestions(questions);
-//        return formRepository.save(form);
-//    }
+//  }
 
 
 

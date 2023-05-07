@@ -1,8 +1,12 @@
 package gak.backend.domain.form.api;
 
+import gak.backend.domain.description.application.DescriptionService;
+import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.application.FormService;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.question.application.QuestionService;
+import gak.backend.domain.selection.application.SelectionService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +22,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FormController {
     private final FormService formService;
-
-
+    private final QuestionService questionService;
+    private final SelectionService selectionService;
+    private final DescriptionService descriptionService;
 
     /*
         프론트에서 질문 생성 시 form 생성 service 호출
@@ -27,8 +32,14 @@ public class FormController {
     */
     @PostMapping("/form/createform/{UserId}")
     public String create(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long id){
-        System.out.println("controller:"+formDTO.getQuestions().get(0).getDescriptions().get(0).getContent());
-        formService.createForm(formDTO,id);
+
+        Long FormId=formService.createForm(formDTO,id);
+        questionService.createInit(formDTO,id,FormId);
+
+
+//        descriptionService.createInit(formDTO);
+//        selectionService.createInit(formDTO);
+
         return "Success for create form";
     }
 

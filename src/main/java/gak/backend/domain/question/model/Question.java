@@ -7,6 +7,8 @@ import gak.backend.domain.form.model.Form;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +18,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Question extends BaseTime {
     @Id
     @GeneratedValue
@@ -32,12 +36,12 @@ public class Question extends BaseTime {
 
 
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
     private List<Selection> options = new ArrayList<>();
 
 
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
     private List<Description> descriptions = new ArrayList<>();
 
 //    @OneToMany(mappedBy="question")
@@ -59,10 +63,11 @@ public class Question extends BaseTime {
     public void setTitle(String title){
         this.title=title;
     }
-    public void setOptions(List<Selection> options) {
+
+    public void OptionsSetting(List<Selection> options) {
         this.options = options;
     }
-    public void setDescriptions(List<Description> descriptions) {
+    public void DescriptionsSetting(List<Description> descriptions) {
         this.descriptions = descriptions;
     }
 
