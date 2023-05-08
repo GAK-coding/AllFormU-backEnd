@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 public class MemberDTO {
     @Getter
-    @Builder //이거 여기는 없어도 되지 않나?
+    //@Builder //이거 여기는 없어도 되지 않나?
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSaveRequest{
@@ -27,11 +27,56 @@ public class MemberDTO {
                     .nickname(nickname)
                     .email(email)
                     .password(password)
+                    .nickname(nickname)
                     .role(Role.Role_Responsor)
                     .status(Status.STATUS_MEMBER) //멤버가 생성된다는 것은 회원가입 -> 이것은 멤버 상태로 한다는 뜻
                     .build();
 
         }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginReqeust{
+        private String email;
+        private String password;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateNicknameRequest{
+        private Long id;
+        private String newNickname;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdatePasswordRequest{
+        private Long id;
+        private String password;
+        private String newPwd;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateNicknameDTO{
+        private Long id;
+        private String nickname;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdatePasswordDTO{
+        private Long id;
+        private String password;
+
     }
 
     @Getter

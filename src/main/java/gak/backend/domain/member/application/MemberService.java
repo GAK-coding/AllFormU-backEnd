@@ -1,17 +1,16 @@
 package gak.backend.domain.member.application;
 
 import gak.backend.domain.member.dao.MemberRepository;
-import gak.backend.domain.member.dto.MemberDTO;
+import gak.backend.domain.member.exception.ExistMemberException;
 import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
 import gak.backend.domain.member.exception.NotMatchPasswordException;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
-import gak.backend.global.error.NotFoundByIdException;
+import gak.backend.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
@@ -56,10 +55,16 @@ public class MemberService {
                     MemberInfoDTO memberInfoDTO = member.toMemberInfoDTO();
                     return memberInfoDTO;
                 }
+                //이미 존재하는데 새로 생성할 경우, 예외 처리 해주기
+                //TODO 프론트와 논의 해볼것. -> 이메일 찾기가 없으니까 회원가입에서 이미 존재하는 회원일 경우, 알려주는게 낫지 않나?
+                //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
+                //TODO 오류 핸들링 해주기
+                else if(member.getStatus() == Status.STATUS_MEMBER){
+                    throw new ExistMemberException(member.getEmail()+"로 이미 존재하는 회원입니다.");
+                }
                 else cnt++;
             }
             //만약에 다 탈퇴했을 경우도 고려해주기
-            //TODO 위치 다시 고려해주기
             if (cnt == members.size()) {//멤버 목록도 있으나 다 탈퇴한 경우
                 Member reMember = memberSaveRequest.toEntity();
                 memberRepository.save(reMember);
@@ -76,6 +81,12 @@ public class MemberService {
         return memberInfoDTO;
 
 
+    }
+
+    @Transactional
+    public MemberInfoDTO loginMember(LoginReqeust loginReqeust){
+        Member member = memberRepository.findByEmail(loginReqeust.getEmail()).orElseThrow(NotFoundMemberByEmailException::new);
+        return member.toMemberInfoDTO();
     }
 
 
@@ -109,6 +120,8 @@ public class MemberService {
     }
 
     //이메일로 비밀번호 조회
+    //TODO 랜덤값으로 수정
+    //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
     @Transactional
     public String findPasswordByEmail(String email){
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
@@ -122,24 +135,27 @@ public class MemberService {
     //TODO update return값 DTO로 수정해주기
     //멤버 닉네임 업데이트
     @Transactional
-    public String updateMemberNickname(Long id, String newNickname){
-        Member member = memberRepository.findById(id).orElseThrow(NotFoundMemberByEmailException::new);
-        member.updateMemberNickname(newNickname);
-        return "UPDATE";
+    public UpdateNicknameDTO updateMemberNickname(UpdateNicknameRequest updateNicknameRequest){
+        Member member = memberRepository.findById(updateNicknameRequest.getId()).orElseThrow(NotFoundMemberByEmailException::new);
+        member.UpdateMemberNickname(updateNicknameRequest.getNewNickname());
+        UpdateNicknameDTO updateNicknameDTO = member.toUpdateNicknameDTO();
+        return updateNicknameDTO;
     }
 
     //멤버 비밀번호 변경, 사용자가 비밀번호도 입력으로 받고 실제 번호와 일치하는지 확인
-    //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
     @Transactional
-    public String updateMemberPasswordById(Long id, String password, String newPwd){
-        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        if(member.getPassword()!= password){
+    //TODO 비밀번호 암호화하기
+    public UpdatePasswordDTO updateMemberPasswordById(UpdatePasswordRequest updatePasswordRequest){
+        Member member = memberRepository.findById(updatePasswordRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        System.out.println(member.getPassword());
+        System.out.println((updatePasswordRequest.getPassword()));
+        if(!member.getPassword().equals(updatePasswordRequest.getPassword())){
             throw new NotMatchPasswordException();
         }
         else{
-            member.updateMemberPassword(newPwd);
+            member.UpdateMemberPassword(updatePasswordRequest.getNewPwd());
         }
-        return "Password Update";
+        return member.toUpdatePasswordDTO();
     }
 
 

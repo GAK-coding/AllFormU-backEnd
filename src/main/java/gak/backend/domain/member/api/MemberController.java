@@ -28,6 +28,32 @@ public class MemberController {
         MemberInfoDTO memberInfoDTO = memberService.createMember(memberSaveRequest);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
     }
+    //TODO 로그인 수정 POST임
+    @GetMapping(value="/member")
+    public ResponseEntity<MemberInfoDTO> loginMember(@RequestBody @Validated LoginReqeust loginReqeust){
+        MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
+        return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/member/read/{member_id}")
+    public ResponseEntity<MemberInfoDTO> readMember(@PathVariable(name="member_id") Long id){
+        MemberInfoDTO memberInfoDTO = memberService.readMemberDTOById(id);
+        return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
+    }
+
+    //TODO 닉네임 수정 로직 검토
+    @PatchMapping(value="/member/update/nickname")
+    public ResponseEntity<UpdateNicknameDTO> updateNickname(@RequestBody @Validated UpdateNicknameRequest updateNicknameRequest){
+        UpdateNicknameDTO updateNicknameDTO = memberService.updateMemberNickname(updateNicknameRequest);
+        return new ResponseEntity<>(updateNicknameDTO, HttpStatus.OK);
+    }
+
+    @PatchMapping(value="/member/update/password")
+    public ResponseEntity<UpdatePasswordDTO> updatePassword(@RequestBody @Validated UpdatePasswordRequest updatePasswordRequest){
+        UpdatePasswordDTO updatePasswordDTO = memberService.updateMemberPasswordById(updatePasswordRequest);
+        return new ResponseEntity<>(updatePasswordDTO, HttpStatus.OK);
+    }
+
 
 
     @Autowired
