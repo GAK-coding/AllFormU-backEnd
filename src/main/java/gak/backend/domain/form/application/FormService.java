@@ -122,13 +122,17 @@ public class FormService {
 
 
     /*
-        업데이트
+        특정 user의 특정 form을 업데이트
+        (하위 객체(List) 제외)
     */
-//   @Transactional
-//  public Form updateForm(Long id, FormDTO formDto) {
-//
-//
-//  }
+   @Transactional
+  public FormDTO updateSelectForm(FormDTO formDto,Long Userid, Long FormId ) {
+
+       Form form=getSelectFormById(Userid,FormId);
+       form.UpdateSelectForm(formDto);
+
+       return formDto;
+  }
 
 
 
@@ -136,7 +140,7 @@ public class FormService {
         userid의 모든 설문지 삭제
     */
     @Transactional
-    public void deleteFormById(Long id){
+    public void deleteFormById(Long Userid){
 
         QForm form=QForm.form;
 
@@ -146,7 +150,7 @@ public class FormService {
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
 
         query.selectFrom(form)
-                .where(form.author.id.eq(id))
+                .where(form.author.id.eq(Userid))
                 .fetch()
                 .forEach(f -> {
                     // Form에 속한 Question, Description, Selection을 모두 삭제
@@ -179,7 +183,7 @@ public class FormService {
        user id의 formid에 해당되는 설문지 삭제
    */
     @Transactional
-    public void deleteSelectFormById(Long id,Long FormId){
+    public void deleteSelectFormById(Long Userid,Long FormId){
 
         QForm form = QForm.form;
         QQuestion question = QQuestion.question;
@@ -189,7 +193,7 @@ public class FormService {
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
         query.selectFrom(form)
-                .where(form.author.id.eq(id))
+                .where(form.author.id.eq(Userid))
                 .where(form.id.eq(FormId)) // 해당 userId의 해당 FormId를 조회
                 .fetch()
                 .forEach(f -> {

@@ -5,6 +5,7 @@ import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.model.Form;
 //import gak.backend.domain.grid.model.Grid;
 import gak.backend.domain.model.BaseTime;
+import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -71,6 +72,13 @@ public class Question extends BaseTime {
         this.descriptions = descriptions;
     }
 
+    public void UpdateSelectQuestion(QuestionDTO questionDTO){
+        this.title=questionDTO.getTitle();
+        this.required=questionDTO.isRequired();
+        this.sectionNum=questionDTO.getSectionNum();
+        this.type=questionDTO.getType();
+
+    }
     public void setForm(Form form) {
         this.form = form;
     }

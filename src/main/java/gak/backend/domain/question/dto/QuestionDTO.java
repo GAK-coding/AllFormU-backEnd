@@ -50,15 +50,15 @@ public class QuestionDTO implements Serializable{
         this.type = type;
     }
 
-//    public Question of (){
-//      return Question.builder()
-//              .title(title)
-//              .content(content)
-//              .required(required)
-//              .sectionNum(sectionNum)
-//              .type(type)
-//              .build();
-//   }
+    public Question of (){
+      return Question.builder()
+              .title(title)
+              .content(content)
+              .required(required)
+              .sectionNum(sectionNum)
+              .type(type)
+              .build();
+   }
     public List<Selection> toSelection(SelectionRepository selectionRepository,Question question) {
         List<Selection> selectionList = new ArrayList<>();
         for (SelectionDTO selectionDTO : options) {

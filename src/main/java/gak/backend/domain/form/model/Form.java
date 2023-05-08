@@ -2,6 +2,8 @@ package gak.backend.domain.form.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
 import gak.backend.domain.model.BaseTime;
@@ -53,6 +55,12 @@ public class Form extends BaseTime {
     public void AuthorSetting(Member author){
         this.author=author;
     }
+
+    public void UpdateSelectForm(FormDTO formDTO){
+        this.content=formDTO.getContent();
+        this.title=formDTO.getTitle();
+    }
+
 
     public void QuestionSetting(List<Question> questions) {
         this.questions = questions;

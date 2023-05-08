@@ -23,24 +23,18 @@ import java.util.Optional;
 public class FormController {
     private final FormService formService;
     private final QuestionService questionService;
-    private final SelectionService selectionService;
-    private final DescriptionService descriptionService;
 
     /*
-        프론트에서 질문 생성 시 form 생성 service 호출
+        프론트에서 질문 생성 시 form 생성 service 호출 -> form과 question만듦
+        questionservice 호출 -> selection과 description 따위의 하위 질문 객체들 만듦
 
     */
     @PostMapping("/form/createform/{UserId}")
-    public String create(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long id){
+    public Long create(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long id){
 
         Long FormId=formService.createForm(formDTO,id);
-        questionService.createInit(formDTO,id,FormId);
 
-
-//        descriptionService.createInit(formDTO);
-//        selectionService.createInit(formDTO);
-
-        return "Success for create form";
+        return questionService.createInit(formDTO,id,FormId);
     }
 
     /*
@@ -68,28 +62,28 @@ public class FormController {
         return formService.getSelectFormById(authorid,Formid);
 
     }
-//    @PostMapping("/form/updateform")
-//    public Form getId(@RequestBody FormDTO formDTO,@PathVariable("id")Long id){
-//        return formService.updateForm(id,formDTO);
-//    }
+    @PutMapping("/form/updateSelectform/{UserId}/{FormId}")
+    public FormDTO getId(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long userid,@PathVariable("FormId")Long formid){
+        return formService.updateSelectForm(formDTO,userid,formid);
+    }
     /*
         user id로 모든설문지 삭제
     */
     @DeleteMapping("/form/deleteform/{UserId}")
-    public String deleteId(@PathVariable("UserId")Long id){
-        formService.deleteFormById(id);
+    public String deleteId(@PathVariable("UserId")Long Userid){
+        formService.deleteFormById(Userid);
 
-        return String.format("Success for delete %s form",id);
+        return String.format("Success for delete %s form",Userid);
     }
 
     /*
         user id의 formid에 해당되는 설문지 삭제
     */
     @DeleteMapping("/form/deleteform/{UserId}/{FormId}")
-    public String deleteSelectId(@PathVariable("UserId")Long id,@PathVariable("FormId")Long Formid){
-        formService.deleteSelectFormById(id,Formid);
+    public String deleteSelectId(@PathVariable("UserId")Long Userid,@PathVariable("FormId")Long Formid){
+        formService.deleteSelectFormById(Userid,Formid);
 
-        return String.format("Success for delete %s form of userId %s",Formid,id);
+        return String.format("Success for delete %s form of userId %s",Formid,Userid);
     }
 
 

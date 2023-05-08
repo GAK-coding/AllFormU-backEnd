@@ -28,13 +28,13 @@ public class SelectionService {
 //    public Selection createInit(FormDTO formDTO){
 //        Selection selection=new Selection();
 //        for (QuestionDTO question : formDTO.getQuestions()) {
-//            // 질문의 첫번째 설명을 저장
+//
 //            if(!question.getOptions().isEmpty()) {
 //                for(SelectionDTO selectionDTO : question.getOptions()) {
 //                    System.out.println("Selection : " + selectionDTO.getContent());
 //
 //                    selection.setContent(selectionDTO.getContent());
-//                    // 저장할 작업 수행
+//
 //                }
 //
 //            }

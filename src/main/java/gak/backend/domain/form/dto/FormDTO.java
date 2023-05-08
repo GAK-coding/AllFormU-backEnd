@@ -39,13 +39,14 @@ public class FormDTO implements Serializable {
     //private boolean fix;
 
     @Builder
-    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content ){
+    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content){
 
         this.id=id;
         this.authorId=authorId;
         this.questions=questions;
         this.title=title;
         this.content=content;
+
 
     }
 

@@ -22,24 +22,24 @@ public class DescriptionService {
     private final DescriptionRepository descriptionRepository;
 
 
-    @Transactional
-    public Description createInit(FormDTO formDTO){
-        Description description=new Description();
-
-        for (QuestionDTO question : formDTO.getQuestions()) {
-            // 질문의 첫번째 설명을 저장
-            if(!question.getDescriptions().isEmpty()) {
-                DescriptionDTO descriptionDTO = question.getDescriptions().get(0);
-
-                description.setContent(descriptionDTO.getContent());
-
-
-            }
-        }
-        System.out.println("Description:"+description.getContent());
-        //description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
-        return descriptionRepository.save(description);
-    }
+//    @Transactional
+//    public Description createInit(FormDTO formDTO){
+//        Description description=new Description();
+//
+//        for (QuestionDTO question : formDTO.getQuestions()) {
+//
+//            if(!question.getDescriptions().isEmpty()) {
+//                DescriptionDTO descriptionDTO = question.getDescriptions().get(0);
+//
+//                description.setContent(descriptionDTO.getContent());
+//
+//
+//            }
+//        }
+//        System.out.println("Description:"+description.getContent());
+//        //description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
+//        return descriptionRepository.save(description);
+//    }
     //description 생성
     @Transactional
     public Description createDescription(DescriptionDTO descriptionDTO){
