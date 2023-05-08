@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 public class MemberDTO {
     @Getter
-    //@Builder //이거 여기는 없어도 되지 않나?
+    //@Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSaveRequest{

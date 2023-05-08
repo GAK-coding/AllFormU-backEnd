@@ -29,7 +29,7 @@ public class MemberController {
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
     }
     //TODO 로그인 수정 POST임
-    @GetMapping(value="/member")
+    @PostMapping(value="/member")
     public ResponseEntity<MemberInfoDTO> loginMember(@RequestBody @Validated LoginReqeust loginReqeust){
         MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
