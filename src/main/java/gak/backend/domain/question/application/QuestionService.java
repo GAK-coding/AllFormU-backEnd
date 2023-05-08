@@ -66,7 +66,7 @@ public class QuestionService {
         for (Question question : questions) {
             if (!formDTO.getQuestions().isEmpty()) {
                 for (QuestionDTO questionDTO : questionDto) {
-                    if(question.getType()==Format.Description_SHORT)//수정 필요
+                    if(question.getType().name().startsWith("Description"))//수정 필요
                         question.DescriptionsSetting(questionDTO.toDescription(descriptionRepository, question));
                     else
                         question.OptionsSetting(questionDTO.toSelection(selectionRepository, question));
@@ -80,42 +80,45 @@ public class QuestionService {
     }
 
         /*
-            form은 만들어져 있고 form 안에 모든 question이 제거 되었을 때
-            question만 추가하는 작업 필요.
+            리스트로 question데이터를 받아와서 기존 form에 추가해주는 프로세스
+
         */
 
     //원래 다른 도메인의 service를 사용하기도 하나?
-//    @Transactional
-//    public Question createQuestion(QuestionDTO questionDTO,Long FormId){
-//        QForm qform = QForm.form;
-//        JPAQueryFactory query = new JPAQueryFactory(entityManager);
-//        Form form = query
-//                .selectFrom(qform)
-//                .where(qform.id.eq(FormId))
-//                .fetchOne();
-//
-//        for(QuestionDTO questiondto:questionDTO){
-//
-//        }
-//        Question question=questionDTO.of();
-//        question.DescriptionsSetting(questionDTO.toDescription(descriptionRepository,question));
-//        question.OptionsSetting(questionDTO.toSelection(selectionRepository,question));
-//
-//        List<Question> Questions=new ArrayList<>();
-//        for (Question question : questions) {
-//            if (!formDTO.getQuestions().isEmpty()) {
-//                for (QuestionDTO questionDTO : questionDto) {
-//                    if(question.getType()==Format.Description_SHORT)//수정 필요
-//                        question.DescriptionsSetting(questionDTO.toDescription(descriptionRepository, question));
-//                    else
-//                        question.OptionsSetting(questionDTO.toSelection(selectionRepository, question));
-//                }
-//                Questions.add(question);
-//            }
-//        }
-//        List<Question> questions=getAllQuestion(FormId,1L);
-//        return question;
-//    }
+    @Transactional
+    public List<Long> createQuestion(List<QuestionDTO> questionDTO,Long FormId){
+        QForm qform = QForm.form;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+        Form form = query
+                .selectFrom(qform)
+                .where(qform.id.eq(FormId))
+                .fetchOne();
+
+        List<Question> question_list=form.getQuestions();
+        //List<Question> question_list=new ArrayList<>();
+        List<Long> QuestionID=new ArrayList<>();
+
+        //받은 question 데이터를 엔티티에 저장.
+        for(QuestionDTO temp_question : questionDTO){
+            Question question=temp_question.of(form);
+
+            if(temp_question.getType().name().startsWith("Description"))
+                question.DescriptionsSetting(temp_question.toDescription(descriptionRepository,question));
+            else
+                question.OptionsSetting(temp_question.toSelection(selectionRepository, question));
+
+            question_list.add(question);
+        }
+        List<Question> saveQuestion=questionRepository.saveAll(question_list);
+        //save이후에 pk값을 받아올 수 있음.
+        for(Question savedQuestion : saveQuestion) {
+            Long id = savedQuestion.getId();
+            QuestionID.add(id);
+            System.out.println("QuestionId:" + id);
+        }
+
+        return QuestionID;
+    }
 
 
         /*

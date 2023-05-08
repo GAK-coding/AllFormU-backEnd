@@ -25,12 +25,12 @@ public class QuestionController {
             form은 만들어져 있고 form 안에 모든 question이 제거 되었을 때
             question만 추가하는 작업 필요.
         */
-//    @PostMapping("/question/createQuestion/{FormId}")
-//    public Question createQuestion(@RequestBody QuestionDTO questionDTO,@PathVariable("FormId")Long FormId){
-//
-//
-//        return questionService.createQuestion(questionDTO,FormId);
-//    }
+    @PostMapping("/question/createQuestion/{FormId}")
+    public List<Long> createQuestion(@RequestBody List<QuestionDTO> questionDTO,@PathVariable("FormId")Long FormId){
+
+
+        return questionService.createQuestion(questionDTO,FormId);
+    }
 
         /*
             formId에 해당하는 모든 질문을 조회

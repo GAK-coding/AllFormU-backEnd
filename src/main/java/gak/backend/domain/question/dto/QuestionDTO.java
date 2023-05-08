@@ -34,6 +34,7 @@ public class QuestionDTO implements Serializable{
     private boolean required;
     private int sectionNum;
 
+    @Enumerated(EnumType.STRING)
     private Format type;
 
 
@@ -50,8 +51,9 @@ public class QuestionDTO implements Serializable{
         this.type = type;
     }
 
-    public Question of (){
+    public Question of (Form form){
       return Question.builder()
+              .form(form)
               .title(title)
               .content(content)
               .required(required)
