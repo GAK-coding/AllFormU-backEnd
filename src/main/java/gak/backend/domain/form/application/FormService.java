@@ -149,33 +149,40 @@ public class FormService {
         QSelection selection = QSelection.selection;
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
 
-        query.selectFrom(form)
-                .where(form.author.id.eq(Userid))
-                .fetch()
-                .forEach(f -> {
-                    // Form에 속한 Question, Description, Selection을 모두 삭제
-                    query.delete(selection)
-                            .where(selection.question.in(
-                                    JPAExpressions.selectFrom(question)
-                                            .where(question.form.eq(f))
-                                            .select(question)
-                            ))
-                            .execute();
-                    query.delete(description)
-                            .where(description.question.in(
-                                    JPAExpressions.selectFrom(question)
-                                            .where(question.form.eq(f))
-                                            .select(question)
-                            ))
-                            .execute();
-                    query.delete(question)
-                            .where(question.form.eq(f))
-                            .execute();
-                    // Form을 삭제
-                    query.delete(form)
-                            .where(form.eq(f))
-                            .execute();
-                });
+
+        List<Form> forms=query.selectFrom(form)
+                        .where(form.author.id.eq(Userid))
+                        .fetch();
+
+        if(forms.isEmpty()){
+            throw new EntityNotFoundException((" Users ID "+ Userid + "does not have any form."));
+        }
+
+        // 모든 Form에 속한 Question, Description, Selection을 모두 삭제
+        forms.forEach(f->{
+            query.delete(selection)
+                    .where(selection.question.in(
+                            JPAExpressions.selectFrom(question)
+                                    .where(question.form.eq(f))
+                                    .select(question)
+                    ))
+                    .execute();
+            query.delete(description)
+                    .where(description.question.in(
+                            JPAExpressions.selectFrom(question)
+                                    .where(question.form.eq(f))
+                                    .select(question)
+                    ))
+                    .execute();
+            query.delete(question)
+                    .where(question.form.eq(f))
+                    .execute();
+            // Form을 삭제
+            query.delete(form)
+                    .where(form.eq(f))
+                    .execute();
+        });
+
     }
 
 
@@ -192,34 +199,41 @@ public class FormService {
 
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
-        query.selectFrom(form)
+        List<Form> forms=query.selectFrom(form)
                 .where(form.author.id.eq(Userid))
                 .where(form.id.eq(FormId)) // 해당 userId의 해당 FormId를 조회
-                .fetch()
-                .forEach(f -> {
-                    // Form에 속한 Question, Description, Selection을 모두 삭제
-                    query.delete(selection)
-                            .where(selection.question.in(
-                                    JPAExpressions.selectFrom(question)
-                                            .where(question.form.eq(f))
-                                            .select(question)
-                            ))
-                            .execute();
-                    query.delete(description)
-                            .where(description.question.in(
-                                    JPAExpressions.selectFrom(question)
-                                            .where(question.form.eq(f))
-                                            .select(question)
-                            ))
-                            .execute();
-                    query.delete(question)
-                            .where(question.form.eq(f))
-                            .execute();
-                    // Form을 삭제
-                    query.delete(form)
-                            .where(form.eq(f))
-                            .execute();
-                });
+                .fetch();
+
+        if(forms.isEmpty()){
+            throw new EntityNotFoundException((" Form ID "+ FormId + "does not exist."));
+        }
+
+        // 해당 Form에 속한 Question, Description, Selection을 모두 삭제
+        forms.forEach(f->{
+
+            query.delete(selection)
+                    .where(selection.question.in(
+                            JPAExpressions.selectFrom(question)
+                                    .where(question.form.eq(f))
+                                    .select(question)
+                    ))
+                    .execute();
+            query.delete(description)
+                    .where(description.question.in(
+                            JPAExpressions.selectFrom(question)
+                                    .where(question.form.eq(f))
+                                    .select(question)
+                    ))
+                    .execute();
+            query.delete(question)
+                    .where(question.form.eq(f))
+                    .execute();
+            // Form을 삭제
+            query.delete(form)
+                    .where(form.eq(f))
+                    .execute();
+
+        });
 
     }
 

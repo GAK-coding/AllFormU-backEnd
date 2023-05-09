@@ -22,6 +22,7 @@ import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.model.QSelection;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -186,21 +187,27 @@ public class QuestionService {
         QSelection selection = QSelection.selection;
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
 
-        query.selectFrom(question)
+        List<Question> questions=query.selectFrom(question)
                 .where(question.form.id.eq(FormId))
-                .fetch()
-                .forEach(f -> {
-                    // Question에 속한 Description, Selection을 모두 삭제
-                    query.delete(selection)
-                            .where(selection.question.eq(f))
-                            .execute();
-                    query.delete(description)
-                            .where(description.question.eq(f))
-                            .execute();
-                    query.delete(question)
-                            .where(question.eq(f))
-                            .execute();
-                });
+                .fetch();
+
+        if(questions.isEmpty()){
+            throw new EntityNotFoundException(("Form with id " + FormId + " does not have any questions"));
+        }
+
+        // Question에 속한 Description, Selection을 모두 삭제
+        questions.forEach(f->{
+            query.delete(selection)
+                    .where(selection.question.eq(f))
+                    .execute();
+            query.delete(description)
+                    .where(description.question.eq(f))
+                    .execute();
+            query.delete(question)
+                    .where(question.eq(f))
+                    .execute();
+        });
+
     }
 
         /*
@@ -216,21 +223,28 @@ public class QuestionService {
         QSelection selection = QSelection.selection;
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
-        query.selectFrom(question)
+
+        List<Question> questions=query.selectFrom(question)
                 .where(question.form.id.eq(FormId))
-                .where(question.id.eq(QuestionId)) // 해당 userId의 해당 FormId를 조회
-                .fetch()
-                .forEach(f -> {
-                    // 해당 Question에 속한Description, Selection을 모두 삭제
-                    query.delete(selection)
-                            .where(selection.question.eq(f))
-                            .execute();
-                    query.delete(description)
-                            .where(description.question.eq(f))
-                            .execute();
-                    query.delete(question)
-                            .where(question.eq(f))
-                            .execute();
-                });
+                .where(question.id.eq(QuestionId))
+                .fetch();
+
+        if(questions.isEmpty()){
+            throw new EntityNotFoundException(("Question with id " + QuestionId + " does not have any questions. or must be check exist FormId "+FormId));
+        }
+
+        // 해당 Question에 속한Description, Selection을 모두 삭제
+        questions.forEach(f->{
+            query.delete(selection)
+                    .where(selection.question.eq(f))
+                    .execute();
+            query.delete(description)
+                    .where(description.question.eq(f))
+                    .execute();
+            query.delete(question)
+                    .where(question.eq(f))
+                    .execute();
+        });
+
     }
 }

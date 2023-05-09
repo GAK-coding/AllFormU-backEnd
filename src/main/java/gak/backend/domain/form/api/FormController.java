@@ -73,7 +73,7 @@ public class FormController {
     public String deleteId(@PathVariable("UserId")Long Userid){
         formService.deleteFormById(Userid);
 
-        return String.format("Success for delete %s form",Userid);
+        return String.format("Success for delete all forms of User %s ",Userid);
     }
 
     /*
