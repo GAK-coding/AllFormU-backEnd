@@ -23,18 +23,21 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @Validated
 public class MemberController {
     private final MemberService memberService;
+    //회원가입
     @PostMapping(value="/member/register")
     public ResponseEntity<MemberInfoDTO> createMember(@RequestBody @Validated MemberSaveRequest memberSaveRequest){
         MemberInfoDTO memberInfoDTO = memberService.createMember(memberSaveRequest);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
     }
-    //TODO 로그인 수정 POST임
+
+    //로그인
     @PostMapping(value="/member")
     public ResponseEntity<MemberInfoDTO> loginMember(@RequestBody @Validated LoginReqeust loginReqeust){
         MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
     }
 
+    //멤버 아이디로 멤버 조회_infoDTO임
     @GetMapping(value="/member/read/{member_id}")
     public ResponseEntity<MemberInfoDTO> readMember(@PathVariable(name="member_id") Long id){
         MemberInfoDTO memberInfoDTO = memberService.readMemberDTOById(id);
@@ -48,10 +51,23 @@ public class MemberController {
         return new ResponseEntity<>(updateNicknameDTO, HttpStatus.OK);
     }
 
+    //비밀번호 변경
     @PatchMapping(value="/member/update/password")
     public ResponseEntity<UpdatePasswordDTO> updatePassword(@RequestBody @Validated UpdatePasswordRequest updatePasswordRequest){
         UpdatePasswordDTO updatePasswordDTO = memberService.updateMemberPasswordById(updatePasswordRequest);
         return new ResponseEntity<>(updatePasswordDTO, HttpStatus.OK);
+    }
+
+    @PatchMapping(value="/member/dormant/{member_id}")
+    public ResponseEntity<MemberStatusInfoDTO> dormantMember(@PathVariable(name="member_id")Long id){
+        MemberStatusInfoDTO memberStatusInfoDTO = memberService.changeMemberStatusDormant(id);
+        return new ResponseEntity<>(memberStatusInfoDTO, HttpStatus.OK);
+    }
+
+    @PatchMapping(value="/member/withdrawal/{member_id}")
+    public ResponseEntity<MemberStatusInfoDTO> withdrawalMember(@PathVariable(name="member_id")Long id){
+        MemberStatusInfoDTO memberStatusInfoDTO = memberService.changeMemberStatusWithdrawal(id);
+        return new ResponseEntity<>(memberStatusInfoDTO, HttpStatus.OK);
     }
 
 
