@@ -83,6 +83,16 @@ public class MemberDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class MemberStatusInfoDTO{
+        private long id;
+        private String email;
+        private Status status;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MemberInfoDTO{
         private Long id;
         private String nickname;

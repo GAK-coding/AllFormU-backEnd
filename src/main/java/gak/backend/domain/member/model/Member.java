@@ -1,6 +1,7 @@
 package gak.backend.domain.member.model;
 
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.member.application.MemberService;
 import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.model.BaseTime;
 import jakarta.persistence.*;
@@ -66,6 +67,14 @@ public class Member extends BaseTime{
         return UpdatePasswordDTO.builder()
                 .id(this.id)
                 .password(this.password)
+                .build();
+    }
+
+    public MemberStatusInfoDTO toMemberStatusInfoDTO(){
+        return MemberStatusInfoDTO.builder()
+                .id(this.id)
+                .email(this.email)
+                .status(this.status)
                 .build();
     }
 
