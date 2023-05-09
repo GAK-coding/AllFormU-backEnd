@@ -59,7 +59,7 @@ public class Member extends BaseTime{
     public UpdateNicknameDTO toUpdateNicknameDTO(){
         return UpdateNicknameDTO.builder()
                 .id(this.id)
-                .nickname(this.getNickname())
+                .nickname(this.nickname)
                 .build();
     }
 
