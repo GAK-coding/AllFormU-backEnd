@@ -99,7 +99,6 @@ public class MemberService {
 
     //로그인 할 때는 조회를 하는것이지만 상태를 확인해야함. 휴면, 탈퇴한 회원이 로그인을 시도한다면, 막아줘야함.
     //그래야 로그인 상태에서 조회를 할 때, 탈퇴한 회원, 휴면인 회원을 제외 시킬 수 있음.
-    //TODO 위의 로직대로 보완할것.
     @Transactional
     public MemberInfoDTO loginMember(LoginReqeust loginReqeust) {
         int cnt = 0;
@@ -117,9 +116,10 @@ public class MemberService {
                 //휴면인 계정이 있다면, 휴면 계정이니 회원가입해주세요.
                 else if (member.getStatus() == Status.STATUS_DORMANT) {
                     throw new DormantMemberException("휴면 계정입니다. 회원가입 해주세요.");
-                } else cnt++;
+                }
+                else cnt++;
             }
-            //이메일로 회원가입했던 흔적은 존재하나, 전부 탈퇴했한 회원은 아예 처음 온 회원이랑 같음.
+            //이메일로 회원가입했던 흔적은 존재하나, 전부 탈퇴했던 회원은 아예 처음 온 회원이랑 같음.
             if (cnt == members.size()) {
                 throw new NotFoundMemberByEmailException();
             }
@@ -170,12 +170,12 @@ public class MemberService {
 
 
     //=========================================Update==================================
-    //TODO update return값 DTO로 수정해주기
     //멤버 닉네임 업데이트
     @Transactional
     public UpdateNicknameDTO updateMemberNickname(UpdateNicknameRequest updateNicknameRequest) {
         Member member = memberRepository.findById(updateNicknameRequest.getId()).orElseThrow(NotFoundMemberByEmailException::new);
         member.UpdateMemberNickname(updateNicknameRequest.getNewNickname());
+        log.info(memberRepository.findById(updateNicknameRequest.getId()).orElseThrow(NotFoundByIdException::new)+"gn");
         UpdateNicknameDTO updateNicknameDTO = member.toUpdateNicknameDTO();
         return updateNicknameDTO;
     }
