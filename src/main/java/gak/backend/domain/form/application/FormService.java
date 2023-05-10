@@ -6,6 +6,8 @@ import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.form.exception.NotFoundFormException;
+import gak.backend.domain.form.exception.NotFoundMemberException;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.form.model.QForm;
 import gak.backend.domain.form.model.Separator;
@@ -13,6 +15,7 @@ import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.QMember;
 import gak.backend.domain.question.dao.QuestionRepository;
+import gak.backend.domain.question.exception.NotFoundQuestionException;
 import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
@@ -67,11 +70,11 @@ public class FormService {
 
 
         //member 연관관계 갖기위해 해당 id의 member 객체 가져옴
-        Member author=memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
+        Member author=memberRepository.findById(id).orElseThrow(() -> new NotFoundMemberException(id));
         form.AuthorSetting(author);
         form.SeparatorSetting(Separator.SEPARATOR_WRITER);
 
-        //question리스트 저장 , question엔티티 객체 자동 생성.
+        //question리스트 저장 , que   stion엔티티 객체 자동 생성.
         List<Question> questions= formDto.toQuestions(form);
         form.QuestionSetting(questions);
         formRepository.save(form);
@@ -93,6 +96,11 @@ public class FormService {
                 .where(form.author.id.eq(id))
                 .fetch();
 
+        if (forms.isEmpty())
+            throw new NotFoundFormException(id);
+        else if(forms==null)
+            throw new NotFoundFormException(id);
+
         return forms;
     }
 
@@ -109,6 +117,10 @@ public class FormService {
                 .where(form.author.id.eq(id)
                         .and(form.id.eq(FormId)))
                 .fetchOne();
+
+        if(form_sgl==null)
+            throw new NotFoundFormException(id,FormId);
+
 
         return form_sgl;
 
@@ -154,9 +166,10 @@ public class FormService {
                         .where(form.author.id.eq(Userid))
                         .fetch();
 
-        if(forms.isEmpty()){
-            throw new EntityNotFoundException((" Users ID "+ Userid + "does not have any form."));
-        }
+        if (forms==null)
+            throw new NotFoundFormException(Userid);
+        else if(forms.isEmpty())
+            throw new NotFoundFormException(Userid);
 
         // 모든 Form에 속한 Question, Description, Selection을 모두 삭제
         forms.forEach(f->{
@@ -204,9 +217,10 @@ public class FormService {
                 .where(form.id.eq(FormId)) // 해당 userId의 해당 FormId를 조회
                 .fetch();
 
-        if(forms.isEmpty()){
-            throw new EntityNotFoundException((" Form ID "+ FormId + "does not exist."));
-        }
+        if (forms==null)
+            throw new NotFoundFormException(Userid,FormId);
+        else if(forms.isEmpty())
+            throw new NotFoundFormException(Userid,FormId);
 
         // 해당 Form에 속한 Question, Description, Selection을 모두 삭제
         forms.forEach(f->{

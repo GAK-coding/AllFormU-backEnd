@@ -1,10 +1,7 @@
 package gak.backend.domain.question.application;
 
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.dao.DescriptionRepository;
-import gak.backend.domain.description.dto.DescriptionDTO;
-import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.application.FormService;
 import gak.backend.domain.form.dao.FormRepository;
@@ -12,27 +9,22 @@ import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.form.model.QForm;
 import gak.backend.domain.member.dao.MemberRepository;
-import gak.backend.domain.member.model.Member;
 import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.dto.QuestionDTO;
-import gak.backend.domain.question.exception.NotFoundException;
-import gak.backend.domain.question.model.Format;
+import gak.backend.domain.question.exception.NotFoundQuestionException;
 import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.model.QSelection;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -59,9 +51,11 @@ public class QuestionService {
 
         List<Question> questions = questionRepository.findByFormId(FormId);
         List<QuestionDTO> questionDto=formDTO.getQuestions();
-        if (questions.isEmpty())
-            throw new NotFoundException("Question not found");
 
+        if (questions==null)
+            throw new NotFoundQuestionException("Question not found");
+        else if(questions.isEmpty())
+            throw new NotFoundQuestionException("Question not found");
 
         List<Question> Questions=new ArrayList<>();
         for (Question question : questions) {
@@ -94,6 +88,12 @@ public class QuestionService {
                 .selectFrom(qform)
                 .where(qform.id.eq(FormId))
                 .fetchOne();
+
+
+
+        if(form == null){
+            throw new NotFoundQuestionException("Form not found");
+        }
 
         List<Question> question_list=form.getQuestions();
         //List<Question> question_list=new ArrayList<>();
@@ -153,6 +153,12 @@ public class QuestionService {
                 .where(qForm.id.eq(FormId))
                 .fetch();
 
+        if(question_sgl==null){
+            throw new NotFoundQuestionException(FormId);
+        }
+        else if(question_sgl.isEmpty()){
+            throw new NotFoundQuestionException(FormId);
+        }
         return question_sgl;
     }
 
@@ -171,6 +177,10 @@ public class QuestionService {
                 .where(qQuestion.question.id.eq(QuestionId)
                         .and(qForm.author.id.eq(FormId)))
                 .fetchOne();
+
+        if(question_sgl==null){
+            throw new NotFoundQuestionException(FormId,QuestionId);
+        }
 
         return question_sgl;
     }
@@ -191,8 +201,11 @@ public class QuestionService {
                 .where(question.form.id.eq(FormId))
                 .fetch();
 
-        if(questions.isEmpty()){
-            throw new EntityNotFoundException(("Form with id " + FormId + " does not have any questions"));
+        if(questions==null){
+            throw new NotFoundQuestionException(FormId);
+        }
+        else if(questions.isEmpty()){
+            throw new NotFoundQuestionException(FormId);
         }
 
         // Question에 속한 Description, Selection을 모두 삭제
@@ -229,9 +242,13 @@ public class QuestionService {
                 .where(question.id.eq(QuestionId))
                 .fetch();
 
-        if(questions.isEmpty()){
-            throw new EntityNotFoundException(("Question with id " + QuestionId + " does not have any questions. or must be check exist FormId "+FormId));
+        if(questions==null){
+            throw new NotFoundQuestionException(FormId,QuestionId);
         }
+        else if(questions.isEmpty()){
+            throw new NotFoundQuestionException(FormId);
+        }
+
 
         // 해당 Question에 속한Description, Selection을 모두 삭제
         questions.forEach(f->{
