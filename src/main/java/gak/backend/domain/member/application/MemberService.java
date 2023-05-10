@@ -44,15 +44,15 @@ public class MemberService {
 
     //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
     //상태가 멤버인 계정이 있는지 확인하는 서비스 로직
-    //TODO if문 밖에서는 무조건 신규니까 이메일로 인증번호 전송하게 하기
     @Transactional
-    public String CheckDuplicatedMember(String email) {
+    public String checkDuplicatedMember(String email) {
         if (memberRepository.existsByEmail(email)) {
             List<Member> members = memberRepository.findMembersByEmail(email);
             for (Member member : members) {
                 if (member.getStatus() == Status.STATUS_MEMBER) {
                     return "해당 이메일은 이미 회원가입이 된 이메일입니다.";
                 } else if (member.getStatus() == Status.STATUS_DORMANT) {
+
                     return "해당 이메일은 휴면 계정이니 재회원가입을 통해 휴면 상태를 해제 해주세요.";
                 }
             }
