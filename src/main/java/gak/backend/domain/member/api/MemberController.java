@@ -1,6 +1,7 @@
 package gak.backend.domain.member.api;
 
 import gak.backend.domain.member.application.MemberService;
+import gak.backend.domain.member.application.RegisterMailService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
@@ -23,11 +24,24 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @Validated
 public class MemberController {
     private final MemberService memberService;
+    private final RegisterMailService registerMailService;
     //회원가입
     @PostMapping(value="/member/register")
     public ResponseEntity<MemberInfoDTO> createMember(@RequestBody @Validated MemberSaveRequest memberSaveRequest){
         MemberInfoDTO memberInfoDTO = memberService.createMember(memberSaveRequest);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
+    }
+    //사용가능한 이메일인지 확인
+    @PostMapping(value="/member/check/duplicatedMember/{email}")
+    public ResponseEntity<String> checkDuplicatedMember(@PathVariable(name="email") String email){
+        String s = memberService.checkDuplicatedMember(email);
+        return new ResponseEntity<>(s, HttpStatus.OK);
+    }
+    //이메일 인증 코드 보내기
+    @PostMapping("/member/register/confirm/{email}")
+    public ResponseEntity<String> mailConfirm(@PathVariable(name="email") String email) throws Exception {
+        String code = registerMailService.sendSimpleMessage(email);
+        return new ResponseEntity<>(code, HttpStatus.OK);
     }
 
     //로그인
