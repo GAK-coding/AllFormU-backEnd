@@ -38,9 +38,9 @@ public class RegisterMailService{
         msg += "<h1>당신을 위한 설문 플랫폼 All Form U입니다.";
         msg += "<br>";
         msg += "<p>만족스러운 서비스를 제공하도록 노력하겠습니다. 감사합니다!";
-        msg += "<div aling='center' style='border:1px solid black; font-family:verdana';>";
-        msg += "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
-        msg += "<div style='font-size:130%'>";
+        msg += "<div align='center' style='border:1px solid black; font-family:verdana; font-size:80%';>";
+        msg += "<h3 style='color:blue'>회원가입 인증 코드입니다.</h3>";
+        msg += "<div>";
         msg += "CODE : <strong>";
         msg += authNum + "</strong><div><br/>"; //메일에 인증번호 넣기
         msg += "</div>";
