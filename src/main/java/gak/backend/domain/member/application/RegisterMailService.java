@@ -1,5 +1,6 @@
 package gak.backend.domain.member.application;
 
+import gak.backend.global.GlobalMethod;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,10 @@ import java.util.Random;
 @Service
 public class RegisterMailService{
     private final JavaMailSender javaMailSender;
+    private final GlobalMethod globalMethod = new GlobalMethod();
 
     //인증번호 생성
-    private final String authNum = createKey();
+    private final String authNum = globalMethod.makeRandom(6);
     private String id;
 
     public MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException, jakarta.mail.MessagingException {
@@ -51,30 +53,30 @@ public class RegisterMailService{
     }
 
     //인증코드 전송
-    public String createKey(){
-        StringBuffer key = new StringBuffer();
-        Random rand = new Random();
-
-        for(int i = 0; i < 8; i++) {//인증코드 6자리
-            int index = rand.nextInt(3); // 0~2까지 랜덤, rand 값에 따라서 아래 switch문이 실행.
-
-            switch (index) {
-                case 0:
-                    key.append((char) ((int) (rand.nextInt(26)) + 97));
-                    //a-z (ex. 1+97 => 'b')
-                    break;
-                case 1:
-                    key.append((char) ((int) (rand.nextInt(26)) + 65));
-                    //A-Z
-                    break;
-                case 2:
-                    key.append((rand.nextInt(10)));
-                    //0-9
-                    break;
-            }
-        }
-        return key.toString();
-    }
+//    public String createKey(){
+//        StringBuffer key = new StringBuffer();
+//        Random rand = new Random();
+//
+//        for(int i = 0; i < 8; i++) {
+//            int index = rand.nextInt(3); // 0~2까지 랜덤, rand 값에 따라서 아래 switch문이 실행.
+//
+//            switch (index) {
+//                case 0:
+//                    key.append((char) ((int) (rand.nextInt(26)) + 97));
+//                    //a-z (ex. 1+97 => 'b')
+//                    break;
+//                case 1:
+//                    key.append((char) ((int) (rand.nextInt(26)) + 65));
+//                    //A-Z
+//                    break;
+//                case 2:
+//                    key.append((rand.nextInt(10)));
+//                    //0-9
+//                    break;
+//            }
+//        }
+//        return key.toString();
+//    }
 
 
     //메일 발송
