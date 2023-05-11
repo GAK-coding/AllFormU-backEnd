@@ -44,6 +44,7 @@ public class RegisterMailService{
         msg += "CODE : <strong>";
         msg += authNum + "</strong><div><br/>"; //메일에 인증번호 넣기
         msg += "</div>";
+        message.setText(msg, "utf-8","html");
         message.setFrom(new InternetAddress("allformu@naver.com", "All_Form_U")); //보내는 사람
 
         return message;

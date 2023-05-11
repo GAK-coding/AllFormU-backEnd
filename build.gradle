@@ -15,9 +15,9 @@ configurations {
 		extendsFrom annotationProcessor
 	}
 }
-configurations.all {
-	exclude module: 'commons-logging' // 중복된 의존성 충돌 방지
-}
+//configurations.all {
+//	exclude module: 'commons-logging' // 중복된 의존성 충돌 방지
+//}
 
 repositories {
 	mavenCentral()
@@ -42,6 +42,7 @@ dependencies {
 	//이메일 인증
 	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
 	compile "org.springframework.integration:spring-integration-mail:6.0.5"
+	//이 버전으로 하면 무조건 "Not provider of jakarta.mail.util.StreamProvider was found" 이 에러가 남.
 	//implementation 'jakarta.mail:jakarta.mail-api:2.1.0'
 	implementation('jakarta.activation:jakarta.activation-api:2.0.1')
 	implementation('jakarta.mail:jakarta.mail-api:2.0.1')
