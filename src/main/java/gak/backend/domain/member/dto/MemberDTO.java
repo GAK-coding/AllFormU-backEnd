@@ -46,6 +46,14 @@ public class MemberDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class EmailReqest{
+        private String email;
+        private int num; //0,1 추후 더 길어질 수 있음 우선은 회원가입, 비밀번호 재설정 밖에 없음.
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UpdateNicknameRequest{
         private Long id;
         private String newNickname;

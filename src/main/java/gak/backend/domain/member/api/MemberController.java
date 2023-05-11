@@ -1,10 +1,11 @@
 package gak.backend.domain.member.api;
 
 import gak.backend.domain.member.application.MemberService;
-import gak.backend.domain.member.application.RegisterMailService;
+//import gak.backend.domain.member.application.RegisterMailService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
+import gak.backend.global.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @Validated
 public class MemberController {
     private final MemberService memberService;
-    private final RegisterMailService registerMailService;
+    //private final RegisterMailService registerMailService;
+    private final MailService mailService;
     //회원가입
     @PostMapping(value="/member/register")
     public ResponseEntity<MemberInfoDTO> createMember(@RequestBody @Validated MemberSaveRequest memberSaveRequest){
@@ -37,10 +39,10 @@ public class MemberController {
         String s = memberService.checkDuplicatedMember(email);
         return new ResponseEntity<>(s, HttpStatus.OK);
     }
-    //이메일 인증 코드 보내기
+    //회원가입 비밀번호 재설정 메일 보내기
     @PostMapping("/member/register/confirm/{email}")
-    public ResponseEntity<String> mailConfirm(@PathVariable(name="email") String email) throws Exception {
-        String code = registerMailService.sendSimpleMessage(email);
+    public ResponseEntity<String> mailConfirm(@PathVariable(name="email") String email, @RequestBody @Validated EmailReqest emailReqest) throws Exception {
+        String code = mailService.sendSimpleMessage(emailReqest);
         return new ResponseEntity<>(code, HttpStatus.OK);
     }
 
