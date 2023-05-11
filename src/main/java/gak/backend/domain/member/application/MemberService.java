@@ -1,6 +1,7 @@
 package gak.backend.domain.member.application;
 
 import gak.backend.domain.member.dao.MemberRepository;
+import gak.backend.domain.member.exception.DormantMemberException;
 import gak.backend.domain.member.exception.ExistMemberException;
 import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
 import gak.backend.domain.member.exception.NotMatchPasswordException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 import static gak.backend.domain.member.dto.MemberDTO.*;
 /*
@@ -30,7 +32,7 @@ U(수정):
     3. 응답자가 없다면 수정할 수 있음.
 D(삭제):
     1. 본인인지 확인.
-    2. 휴면 계정을 할건지 완전 탈퇴할건지. 완전 탈퇴라면 우리가 안보이게 처리해야함.
+    2. 휴면 계정을 할건지 완전 탈퇴할건지. 완전 탈퇴라면 우리가 안보이게 처리해야함. -> id로 구분할거임.
 
  */
 
@@ -40,37 +42,49 @@ D(삭제):
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
+    //상태가 멤버인 계정이 있는지 확인하는 서비스 로직
+    @Transactional
+    public String checkDuplicatedMember(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            List<Member> members = memberRepository.findMembersByEmail(email);
+            for (Member member : members) {
+                if (member.getStatus() == Status.STATUS_MEMBER) {
+                    return "해당 이메일은 이미 회원가입이 된 이메일입니다.";
+                } else if (member.getStatus() == Status.STATUS_DORMANT) {
+
+                    return "해당 이메일은 휴면 계정이니 재회원가입을 통해 휴면 상태를 해제 해주세요.";
+                }
+            }
+
+        }
+        return "사용가능한 이메일입니다.";
+    }
+
     //멤버 생성이니까 회원가입.
     @Transactional
     public MemberInfoDTO createMember(MemberSaveRequest memberSaveRequest) {
-        int cnt = 0; //이메일로 이미 한번이라도 계정을 만든 사용자 중, 탈퇴 회원 수 새서 확인해보기 위함.
-        //이미 존재하는 멤버이면, 스타터스를 보고 휴면 계정을 돌려주고, 처음 생성이라면
-        //이메일이 이미 존재하는 회원이라면,
-        //TODO 회원가입 하려고 하는데 이미 멤버로 존재할 경우 로직 짜기
+        //int cnt = 0; //이메일로 이미 한번이라도 계정을 만든 사용자 중, 탈퇴 회원 수 새서 확인해보기 위함.
+        //이미 존재하는 멤버이면, 스타터스를 보고 휴면 계정을 돌려주고 휴면 계정에서 회원가입할 경우, 그냥 바로 스타터스를 멤버로?, 처음 생성이라면
         if (memberRepository.existsByEmail(memberSaveRequest.getEmail())) {
             //이미 존재하는 이메일이라면, 멤버 목록을 보고 휴면 계정인것을 찾음. 리스트인 이유는 탈퇴, 탈퇴, 휴면했을 경우도 있을 수 있기 때문.
             List<Member> members = memberRepository.findMembersByEmail(memberSaveRequest.getEmail());
             for (Member member : members) {
                 if (member.getStatus() == Status.STATUS_DORMANT) {
+                    //휴면상태인 멤버가 회원가입을 요청하면, 멤버 상태로 바꿔줌.
+                    member.UpdateMemberStatus(Status.STATUS_MEMBER);
                     MemberInfoDTO memberInfoDTO = member.toMemberInfoDTO();
                     return memberInfoDTO;
                 }
-                //이미 존재하는데 새로 생성할 경우, 예외 처리 해주기
-                //TODO 프론트와 논의 해볼것. -> 이메일 찾기가 없으니까 회원가입에서 이미 존재하는 회원일 경우, 알려주는게 낫지 않나?
-                //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
-                //TODO 오류 핸들링 해주기
-                else if(member.getStatus() == Status.STATUS_MEMBER){
-                    throw new ExistMemberException(member.getEmail()+"로 이미 존재하는 회원입니다.");
-                }
-                else cnt++;
+//                else cnt++;
             }
-            //만약에 다 탈퇴했을 경우도 고려해주기
-            if (cnt == members.size()) {//멤버 목록도 있으나 다 탈퇴한 경우
-                Member reMember = memberSaveRequest.toEntity();
-                memberRepository.save(reMember);
-                MemberInfoDTO memberInfoDTO = reMember.toMemberInfoDTO();
-                return memberInfoDTO;
-            }
+//            //만약에 다 탈퇴했을 경우도 고려해주기
+//            if (cnt == members.size()) {//멤버 목록도 있으나 다 탈퇴한 경우
+//                Member reMember = memberSaveRequest.toEntity();
+//                memberRepository.save(reMember);
+//                MemberInfoDTO memberInfoDTO = reMember.toMemberInfoDTO();
+//                return memberInfoDTO;
+//            }
 
         }
         //존재하지 않는 이메일이라면, 신규 회원임.
@@ -83,10 +97,34 @@ public class MemberService {
 
     }
 
+    //로그인 할 때는 조회를 하는것이지만 상태를 확인해야함. 휴면, 탈퇴한 회원이 로그인을 시도한다면, 막아줘야함.
+    //그래야 로그인 상태에서 조회를 할 때, 탈퇴한 회원, 휴면인 회원을 제외 시킬 수 있음.
     @Transactional
-    public MemberInfoDTO loginMember(LoginReqeust loginReqeust){
-        Member member = memberRepository.findByEmail(loginReqeust.getEmail()).orElseThrow(NotFoundMemberByEmailException::new);
-        return member.toMemberInfoDTO();
+    public MemberInfoDTO loginMember(LoginReqeust loginReqeust) {
+        int cnt = 0;
+        //우선 해당 이메일로 존재하는 계정들이 있는지 찾음 있다면 다음과 같이 진행, 없다면, 예외
+        if (memberRepository.existsByEmail(loginReqeust.getEmail())) {
+            List<Member> members = memberRepository.findMembersByEmail(loginReqeust.getEmail());
+            for (Member member : members) {
+                if (member.getStatus() == Status.STATUS_MEMBER) {
+                    //비밀번호가 다를 경우 예외 처리
+                    if (!member.getPassword().equals(loginReqeust.getPassword())) {
+                        throw new NotMatchPasswordException("비밀번호가 일치하지 않습니다.");
+                    }
+                    return member.toMemberInfoDTO();
+                }
+                //휴면인 계정이 있다면, 휴면 계정이니 회원가입해주세요.
+                else if (member.getStatus() == Status.STATUS_DORMANT) {
+                    throw new DormantMemberException("휴면 계정입니다. 회원가입 해주세요.");
+                }
+                else cnt++;
+            }
+            //이메일로 회원가입했던 흔적은 존재하나, 전부 탈퇴했던 회원은 아예 처음 온 회원이랑 같음.
+            if (cnt == members.size()) {
+                throw new NotFoundMemberByEmailException();
+            }
+        }
+        throw new NotFoundMemberByEmailException();
     }
 
 
@@ -94,13 +132,14 @@ public class MemberService {
 
     //아이디로 멤버 객체 조회
     @Transactional
-    public Member readMemberById(Long id){
+    public Member readMemberById(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return member;
     }
+
     //아이디로 멤버 infoDTO 조회
     @Transactional
-    public MemberInfoDTO readMemberDTOById(Long id){
+    public MemberInfoDTO readMemberDTOById(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return member.toMemberInfoDTO();
     }
@@ -108,13 +147,14 @@ public class MemberService {
 
     //이메일로 멤버 조회
     @Transactional
-    public Member readMemberByEmail(String email){
+    public Member readMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundByIdException::new);
         return member;
     }
+
     //이메일로 멤버 infoDTO 조회
     @Transactional
-    public MemberInfoDTO readMemberDTOByEmail(String email){
+    public MemberInfoDTO readMemberDTOByEmail(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
         return member.toMemberInfoDTO();
     }
@@ -123,21 +163,19 @@ public class MemberService {
     //TODO 랜덤값으로 수정
     //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
     @Transactional
-    public String findPasswordByEmail(String email){
+    public String findPasswordByEmail(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
         return member.getPassword();
     }
 
 
-
-
     //=========================================Update==================================
-    //TODO update return값 DTO로 수정해주기
     //멤버 닉네임 업데이트
     @Transactional
-    public UpdateNicknameDTO updateMemberNickname(UpdateNicknameRequest updateNicknameRequest){
+    public UpdateNicknameDTO updateMemberNickname(UpdateNicknameRequest updateNicknameRequest) {
         Member member = memberRepository.findById(updateNicknameRequest.getId()).orElseThrow(NotFoundMemberByEmailException::new);
         member.UpdateMemberNickname(updateNicknameRequest.getNewNickname());
+        log.info(memberRepository.findById(updateNicknameRequest.getId()).orElseThrow(NotFoundByIdException::new)+"gn");
         UpdateNicknameDTO updateNicknameDTO = member.toUpdateNicknameDTO();
         return updateNicknameDTO;
     }
@@ -145,28 +183,34 @@ public class MemberService {
     //멤버 비밀번호 변경, 사용자가 비밀번호도 입력으로 받고 실제 번호와 일치하는지 확인
     @Transactional
     //TODO 비밀번호 암호화하기
-    public UpdatePasswordDTO updateMemberPasswordById(UpdatePasswordRequest updatePasswordRequest){
+    public UpdatePasswordDTO updateMemberPasswordById(UpdatePasswordRequest updatePasswordRequest) {
         Member member = memberRepository.findById(updatePasswordRequest.getId()).orElseThrow(NotFoundByIdException::new);
         System.out.println(member.getPassword());
         System.out.println((updatePasswordRequest.getPassword()));
-        if(!member.getPassword().equals(updatePasswordRequest.getPassword())){
+        if (!member.getPassword().equals(updatePasswordRequest.getPassword())) {
             throw new NotMatchPasswordException();
-        }
-        else{
+        } else {
             member.UpdateMemberPassword(updatePasswordRequest.getNewPwd());
         }
         return member.toUpdatePasswordDTO();
     }
+    //===========================================Delete(사실 멤버는 삭제가 없음.) 업데이트임======================================
 
-
-
-    //===========================================Delete======================================
+    //휴면 계정으로 전환
     @Transactional
-    public String deleteMember(Long id){
+    public MemberStatusInfoDTO changeMemberStatusDormant(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        //사용자에게 휴면 계정으로 할것인지 여부를 물어보는 것을 어떻게 지정해줘야하지? 프론트와 상의해봐야할 듯.
-        //delete status 컬럼을 추가해줘야할 것 같기도 하다.
+        member.UpdateMemberStatus(Status.STATUS_DORMANT);
+        MemberStatusInfoDTO memberStatusInfoDTO = member.toMemberStatusInfoDTO();
+        return memberStatusInfoDTO;
+    }
 
-        return "DELETE";
+    //회원 탈퇴
+    @Transactional
+    public MemberStatusInfoDTO changeMemberStatusWithdrawal(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        member.UpdateMemberStatus(Status.STATUS_WITHDRAWAL);
+        MemberStatusInfoDTO memberStatusInfoDTO = member.toMemberStatusInfoDTO();
+        return memberStatusInfoDTO;
     }
 }
