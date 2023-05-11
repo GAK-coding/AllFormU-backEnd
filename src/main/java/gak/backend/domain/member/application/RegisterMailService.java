@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.MessagingException;
@@ -87,7 +86,7 @@ public class RegisterMailService{
             javaMailSender.send(message); //메일 발송
         }catch (MailException e){
             e.printStackTrace();
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Failed to send email", e);
         }
         return authNum; //메일로 보냈던 인증 코드 서버로 리턴
     }
