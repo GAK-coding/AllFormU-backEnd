@@ -50,7 +50,7 @@ public class Form extends BaseTime {
 
     //private boolean required;
 
-    //private boolean fix; // 수정가능 : 0 수정 불가능 : 1
+    private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
     public void AuthorSetting(Member author){
         this.author=author;
@@ -64,6 +64,9 @@ public class Form extends BaseTime {
 
     public void QuestionSetting(List<Question> questions) {
         this.questions = questions;
+    }
+    public void FixSetting(boolean fix){
+        this.fix=fix;
     }
     public void SeparatorSetting(Separator separator){
         this.separator=separator;

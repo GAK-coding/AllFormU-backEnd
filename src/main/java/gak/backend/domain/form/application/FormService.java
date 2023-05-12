@@ -30,10 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
+import java.util.Timer;
 import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.mysema.commons.lang.Assert.assertThat;
@@ -67,6 +70,15 @@ public class FormService {
 
         //폼 엔티티 데이터 저장 (of메소드 호출)
         Form form=formDto.of();
+//        Timer timer;
+//        timer=new Timer(true);
+//        TimesCheck tc=new TimesCheck();
+//        timer.schedule(tc,1000000);
+//        System.out.println("FixBefore: "+form.isFix());
+//        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+//        executor.schedule(() -> {
+//            form.FixSetting(false);
+//        }, 3, TimeUnit.HOURS);
 
 
         //member 연관관계 갖기위해 해당 id의 member 객체 가져옴

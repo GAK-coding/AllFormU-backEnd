@@ -36,12 +36,13 @@ public class FormDTO implements Serializable {
     private Separator separator;
 
     //private boolean required;
-    //private boolean fix;
+    private boolean fix;
 
     @Builder
-    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content){
+    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content,boolean fix){
 
         this.id=id;
+        this.fix=fix;
         this.authorId=authorId;
         this.questions=questions;
         this.title=title;
@@ -54,6 +55,7 @@ public class FormDTO implements Serializable {
 
         return Form.builder()
                 .title(title)
+                .fix(fix)
                 .content(content)
                 .build();
     }

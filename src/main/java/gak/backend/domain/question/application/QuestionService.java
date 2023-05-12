@@ -69,6 +69,7 @@ public class QuestionService {
                 Questions.add(question);
             }
         }
+        System.out.println("여기까지 오니?");
 
             questionRepository.saveAll(Questions);
         return FormId;
