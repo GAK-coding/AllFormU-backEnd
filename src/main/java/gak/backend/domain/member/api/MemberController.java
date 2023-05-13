@@ -43,8 +43,8 @@ public class MemberController {
     }
     //회원가입 비밀번호 재설정 메일 보내기
     @PostMapping("/member/register/confirm")
-    public ResponseEntity<String> mailConfirm(@RequestBody @Validated EmailReqest emailReqest) throws Exception {
-        String code = mailService.sendSimpleMessage(emailReqest);
+    public ResponseEntity<ErrorResponse> mailConfirm(@RequestBody @Validated EmailReqest emailReqest) throws Exception {
+        ErrorResponse code = mailService.sendSimpleMessage(emailReqest);
         return new ResponseEntity<>(code, HttpStatus.OK);
     }
 
