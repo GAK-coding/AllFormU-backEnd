@@ -59,17 +59,31 @@ public class QuestionService {
 
         List<Question> Questions=new ArrayList<>();
         for (Question question : questions) {
+            int count=0; //question 객체 하나 추가 될 때마다 해당 questionDTO 삭제 하기 위함.
             if (!formDTO.getQuestions().isEmpty()) {
                 for (QuestionDTO questionDTO : questionDto) {
-                    if(question.getType().name().startsWith("Description"))//수정 필요
-                        question.DescriptionsSetting(questionDTO.toDescription(descriptionRepository, question));
-                    else
-                        question.OptionsSetting(questionDTO.toSelection(selectionRepository, question));
+                    if(question.getType()==questionDTO.getType())//같은 질문항목
+                    {
+                        if(question.getType().name().startsWith("Description"))//주관식일때
+                        {
+                            question.DescriptionsSetting(questionDTO.toDescription(descriptionRepository, question));
+                            questionDto.remove(count);//예를들어 description_short가 여러 개면 해당 DTO를 사용하고 지워줘야 중복 값 안생김
+                            break;
+                        }
+                        else//객관식일때
+                        {
+                            question.OptionsSetting(questionDTO.toSelection(selectionRepository, question));
+                            questionDto.remove(count);
+                            break;
+                        }
+
+                    }
+                    count++;
+
                 }
                 Questions.add(question);
             }
         }
-        System.out.println("여기까지 오니?");
 
             questionRepository.saveAll(Questions);
         return FormId;
