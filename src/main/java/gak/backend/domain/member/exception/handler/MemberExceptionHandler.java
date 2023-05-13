@@ -31,7 +31,7 @@ public class MemberExceptionHandler {
         log.debug("이미 존재하는 회원입니다.");
         final ErrorResponse errorResponse = ErrorResponse.builder()
                 .httpStatus(HttpStatus.CONFLICT)
-                .message("이미 존재하는 회원입니다.")
+                .message("해당 이메일은 이미 존재하는 이메일로, 등록된 회원입니다.")
                 .build();
         return ResponseEntity.ok(errorResponse);
     }
@@ -50,7 +50,7 @@ public class MemberExceptionHandler {
     protected final ResponseEntity<ErrorResponse> handleDormantMember(DormantMemberException e, WebRequest webRequest){
         log.debug("휴면 계정입니다.");
         final ErrorResponse errorResponse = ErrorResponse.builder()
-                .httpStatus(HttpStatus.BAD_REQUEST)
+                .httpStatus(HttpStatus.CONFLICT)
                 .message("휴면 계정입니다. 재회원가입을 통해 휴면 상태를 해제해주세요.")
                 .build();
         return ResponseEntity.ok(errorResponse);

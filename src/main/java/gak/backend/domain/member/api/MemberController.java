@@ -5,6 +5,7 @@ import gak.backend.domain.member.application.MemberService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
+import gak.backend.global.error.ErrorResponse;
 import gak.backend.global.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import gak.backend.global.error.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,14 +36,14 @@ public class MemberController {
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.CREATED);
     }
     //사용가능한 이메일인지 확인
-    @PostMapping(value="/member/check/duplicatedMember/{email}")
-    public ResponseEntity<String> checkDuplicatedMember(@PathVariable(name="email") String email){
-        String s = memberService.checkDuplicatedMember(email);
-        return new ResponseEntity<>(s, HttpStatus.OK);
+    @PostMapping(value="/member/check/duplicatedMember")
+    public ResponseEntity<ErrorResponse> checkDuplicatedMember(@RequestBody @Validated EmailDTO emailDTO){
+        ErrorResponse e = memberService.checkDuplicatedMember(emailDTO);
+        return new ResponseEntity<>(e,HttpStatus.OK);
     }
     //회원가입 비밀번호 재설정 메일 보내기
-    @PostMapping("/member/register/confirm/{email}")
-    public ResponseEntity<String> mailConfirm(@PathVariable(name="email") String email, @RequestBody @Validated EmailReqest emailReqest) throws Exception {
+    @PostMapping("/member/register/confirm")
+    public ResponseEntity<String> mailConfirm(@RequestBody @Validated EmailReqest emailReqest) throws Exception {
         String code = mailService.sendSimpleMessage(emailReqest);
         return new ResponseEntity<>(code, HttpStatus.OK);
     }
