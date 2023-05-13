@@ -56,13 +56,19 @@ public class Member extends BaseTime{
         this.status = status;
     }
 
+    public UpdatePasswordRequest toUpdatePasswordRequest(String newPwd){
+        return UpdatePasswordRequest.builder()
+                .id(this.id)
+                .password(this.password)
+                .newPwd(newPwd)
+                .build();
+    }
     public UpdateNicknameDTO toUpdateNicknameDTO(){
         return UpdateNicknameDTO.builder()
                 .id(this.id)
                 .nickname(this.nickname)
                 .build();
     }
-
     public UpdatePasswordDTO toUpdatePasswordDTO(){
         return UpdatePasswordDTO.builder()
                 .id(this.id)

@@ -60,6 +60,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePasswordRequest{
