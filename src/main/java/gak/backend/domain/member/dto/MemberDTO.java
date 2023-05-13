@@ -89,6 +89,13 @@ public class MemberDTO {
     }
 
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EmailDTO{
+        private String email;
+    }
+
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -113,4 +120,5 @@ public class MemberDTO {
         private LocalDateTime modifiedTime;
 
     }
+
 }
