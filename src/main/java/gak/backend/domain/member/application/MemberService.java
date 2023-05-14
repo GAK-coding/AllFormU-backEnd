@@ -47,30 +47,52 @@ public class MemberService {
 
     //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
     //상태가 멤버인 계정이 있는지 확인하는 서비스 로직
+//    @Transactional
+//    public ErrorResponse checkDuplicatedMember(EmailDTO emailDTO) {
+//        if (memberRepository.existsByEmail(emailDTO.getEmail())) {
+//            List<Member> members = memberRepository.findMembersByEmail(emailDTO.getEmail());
+//            for (Member member : members) {
+//                if (member.getStatus() == Status.STATUS_MEMBER) {
+//                    return ErrorResponse.builder()
+//                            .httpStatus(HttpStatus.CONFLICT)
+//                            .message("이미 회원가입됨")
+//                            .build();
+//                } else if (member.getStatus() == Status.STATUS_DORMANT) {
+//                    return  ErrorResponse.builder()
+//                            .httpStatus(HttpStatus.CONFLICT)
+//                            .message("휴면 계정")
+//                            .build();
+//                }
+//            }
+//        }
+//        return ErrorResponse.builder()
+//                .httpStatus(HttpStatus.OK)
+//                .message("사용가능한 이메일입니다.")
+//                .build();
+//    }
     @Transactional
-    public ErrorResponse checkDuplicatedMember(EmailDTO emailDTO) {
+    public MemberResponseDTO checkDuplicatedMember(EmailDTO emailDTO) {
         if (memberRepository.existsByEmail(emailDTO.getEmail())) {
             List<Member> members = memberRepository.findMembersByEmail(emailDTO.getEmail());
             for (Member member : members) {
                 if (member.getStatus() == Status.STATUS_MEMBER) {
-                    return ErrorResponse.builder()
+                    return MemberResponseDTO.builder()
                             .httpStatus(HttpStatus.CONFLICT)
                             .message("이미 회원가입됨")
                             .build();
                 } else if (member.getStatus() == Status.STATUS_DORMANT) {
-                    return  ErrorResponse.builder()
+                    return  MemberResponseDTO.builder()
                             .httpStatus(HttpStatus.CONFLICT)
                             .message("휴면 계정")
                             .build();
                 }
             }
         }
-        return ErrorResponse.builder()
+        return MemberResponseDTO.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("사용가능한 이메일입니다.")
                 .build();
     }
-
     //인증 번호 전송 이메일 보내기
 
     //멤버 생성이니까 회원가입.
