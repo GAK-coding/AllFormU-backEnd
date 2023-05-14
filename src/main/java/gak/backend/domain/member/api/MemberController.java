@@ -37,8 +37,8 @@ public class MemberController {
     }
     //사용가능한 이메일인지 확인
     @PostMapping(value="/member/check/duplicatedMember")
-    public ResponseEntity<MemberResponseDTO> checkDuplicatedMember(@RequestBody @Validated EmailDTO emailDTO){
-        MemberResponseDTO e = memberService.checkDuplicatedMember(emailDTO);
+    public ResponseEntity<ErrorResponse> checkDuplicatedMember(@RequestBody @Validated EmailDTO emailDTO){
+        ErrorResponse e = memberService.checkDuplicatedMember(emailDTO);
         return new ResponseEntity<>(e,HttpStatus.OK);
     }
     //회원가입 비밀번호 재설정 메일 보내기

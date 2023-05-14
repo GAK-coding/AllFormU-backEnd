@@ -122,13 +122,13 @@ public class MemberDTO {
 
     }
 
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MemberResponseDTO{
-        private HttpStatus httpStatus;
-        private String message;
-    }
+//    @Getter
+//    @Builder
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class MemberResponseDTO{
+//        private HttpStatus httpStatus;
+//        private String message;
+//    }
 
 }
