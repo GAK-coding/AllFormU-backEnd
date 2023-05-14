@@ -53,9 +53,15 @@ public class MemberService {
             List<Member> members = memberRepository.findMembersByEmail(emailDTO.getEmail());
             for (Member member : members) {
                 if (member.getStatus() == Status.STATUS_MEMBER) {
-                    throw new ExistMemberException();
+                    return ErrorResponse.builder()
+                            .httpStatus(HttpStatus.CONFLICT)
+                            .message("이미 회원가입됨")
+                            .build();
                 } else if (member.getStatus() == Status.STATUS_DORMANT) {
-                    throw new DormantMemberException();
+                    return  ErrorResponse.builder()
+                            .httpStatus(HttpStatus.CONFLICT)
+                            .message("휴면 계정")
+                            .build();
                 }
             }
         }
