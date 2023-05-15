@@ -65,8 +65,6 @@ public class MemberService {
                 .build();
     }
 
-    //인증 번호 전송 이메일 보내기
-
     //멤버 생성이니까 회원가입.
     @Transactional
     public MemberInfoDTO createMember(MemberSaveRequest memberSaveRequest) {
