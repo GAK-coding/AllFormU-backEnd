@@ -50,7 +50,7 @@ public class MemberExceptionHandler {
     protected final ResponseEntity<ErrorResponse> handleDormantMember(DormantMemberException e, WebRequest webRequest){
         log.debug("휴면 계정입니다.");
         final ErrorResponse errorResponse = ErrorResponse.builder()
-                .httpStatus(HttpStatus.CONFLICT)
+                .httpStatus(HttpStatus.BAD_REQUEST)
                 .message("휴면 계정입니다. 재회원가입을 통해 휴면 상태를 해제해주세요.")
                 .build();
         return ResponseEntity.ok(errorResponse);
