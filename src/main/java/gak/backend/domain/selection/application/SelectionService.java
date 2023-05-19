@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,10 +55,27 @@ public class SelectionService {
 //        return selectionRepository.save(selection);
 //    }
     @Transactional
-    public Selection createSelection(SelectionDTO selectionDTO){
-        Selection selection=new Selection();
-        selection.create(selectionDTO.getContent(),selectionDTO.getAnswer());
-        return selectionRepository.save(selection);
+    public List<Long> createSelection(SelectionDTO selectionDTO,Long QuestionId){
+        QQuestion qQuestion=QQuestion.question;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+        List<Long> SelectionId=new ArrayList<>();
+
+        Question question_sgl = query
+                .selectFrom(qQuestion)
+                .where(qQuestion.question.id.eq(QuestionId))
+                .fetchOne();
+
+        List<Selection> sel_List=question_sgl.getOptions();
+        sel_List.add(selectionDTO.of(question_sgl));
+        List<Selection> saveSelection=selectionRepository.saveAll(sel_List);
+
+        //save이후에 pk값을 받아올 수 있음.
+        for(Selection savedSelection : saveSelection) {
+            Long id = savedSelection.getId();
+            SelectionId.add(id);
+            System.out.println("SelectionId:" + id);
+        }
+        return SelectionId;
     }
 
     //SelectionId 해당 Selection 조회

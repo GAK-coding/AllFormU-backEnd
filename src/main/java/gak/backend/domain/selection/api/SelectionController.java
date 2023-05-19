@@ -22,10 +22,10 @@ public class SelectionController {
     private final SelectionService selectionService;
 
     //Selection 생성
-    @PostMapping("/selection/createSelection")
-    public String add(@RequestBody SelectionDTO selectionDTO){
-        selectionService.createSelection(selectionDTO);
-        return "create selection";
+    @PostMapping("/selection/createSelection/{questionid}")
+    public List<Long> add(@RequestBody SelectionDTO selectionDTO,@PathVariable("questionid")Long QuestionId){
+
+        return selectionService.createSelection(selectionDTO,QuestionId);
     }
 
     //Selection 조회
