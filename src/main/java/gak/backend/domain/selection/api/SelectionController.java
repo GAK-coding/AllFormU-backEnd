@@ -42,11 +42,11 @@ public class SelectionController {
     }
 
     //객관식 수정
-    @PutMapping("/selection/updateContent/{id}")
-    public ResponseEntity<Selection> updateSelectionContent(@PathVariable(value="id")Long id,
+    @PutMapping("/selection/updateContent/{questionid}/{selectionid}")
+    public ResponseEntity<Selection> updateSelectionContent(@PathVariable(value="questionid")Long QuestionId,@PathVariable(value="selectionid")Long SelectionId,
                                                             @RequestBody Map<String, String> requestBody){
         String updateContent=requestBody.get("content");
-        final Selection updatedSelection=selectionService.updateContent(id,updateContent);
+        final Selection updatedSelection=selectionService.updateContent(QuestionId,SelectionId,updateContent);
         return ResponseEntity.ok(updatedSelection);
     }
 

@@ -1,12 +1,20 @@
 package gak.backend.domain.selection.application;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.dto.DescriptionDTO;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.question.dto.QuestionDTO;
+import gak.backend.domain.question.exception.NotFoundQuestionException;
+import gak.backend.domain.question.model.QQuestion;
+import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.dto.SelectionDTO;
+import gak.backend.domain.selection.exception.NotFoundSelectionException;
+import gak.backend.domain.selection.model.QSelection;
 import gak.backend.domain.selection.model.Selection;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +28,9 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class SelectionService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
     private final SelectionRepository selectionRepository;
     //selection 생성
 
@@ -66,10 +77,24 @@ public class SelectionService {
 
     //content update
     @Transactional
-    public Selection updateContent(Long id, String newContent){
-        Selection description=getSelection(id);
-        description.updateContent(newContent);
-        return selectionRepository.save(description);
+    public Selection updateContent(Long QuestionId, Long SelectionId, String newContent){
+
+        QSelection qSelection=QSelection.selection;
+        QQuestion qQuestion=QQuestion.question;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+
+        Selection selection_sgl = query
+                .selectFrom(qSelection)
+                .where(qSelection.id.eq(SelectionId)
+                        .and(qQuestion.id.eq(QuestionId)))
+                .fetchOne();
+
+        if(selection_sgl==null){
+            throw new NotFoundSelectionException(QuestionId,SelectionId);
+        }
+
+        selection_sgl.updateContent(newContent);
+        return selectionRepository.save(selection_sgl);
     }
 
     //answer update
