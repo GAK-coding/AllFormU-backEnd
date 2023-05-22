@@ -75,6 +75,7 @@ public class SelectionService {
         sel_List.add(selectionDTO.of(question_sgl));
         List<Selection> saveSelection=selectionRepository.saveAll(sel_List);
 
+
         //save이후에 pk값을 받아올 수 있음.
         for(Selection savedSelection : saveSelection) {
             Long id = savedSelection.getId();

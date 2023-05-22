@@ -30,10 +30,10 @@ public class DescriptionController {
     //quiz가 false일때 answer은 null
 
     //description생성
-    @PostMapping("/description/createDescription")
-    public String add(@RequestBody DescriptionDTO descriptionDTO){
-        descriptionService.createDescription(descriptionDTO);
-        return "create description";
+    @PostMapping("/description/createDescription/{questionid}")
+    public Long add(@RequestBody DescriptionDTO descriptionDTO,@PathVariable("questionid")Long QuestionId){
+
+        return descriptionService.createDescription(descriptionDTO,QuestionId);
     }
 
     //description조회

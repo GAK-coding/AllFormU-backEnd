@@ -1,11 +1,19 @@
 package gak.backend.domain.description.application;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.dao.DescriptionRepository;
 import gak.backend.domain.description.dto.DescriptionDTO;
+import gak.backend.domain.description.exception.NotFoundDescriptionException;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.question.dto.QuestionDTO;
+import gak.backend.domain.question.exception.NotFoundQuestionException;
+import gak.backend.domain.question.model.QQuestion;
+import gak.backend.domain.question.model.Question;
+import gak.backend.domain.selection.model.Selection;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +27,9 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class DescriptionService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
     private final DescriptionRepository descriptionRepository;
 
 
@@ -42,10 +53,25 @@ public class DescriptionService {
 //    }
     //description 생성
     @Transactional
-    public Description createDescription(DescriptionDTO descriptionDTO){
-        Description description=new Description();
-        //description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
-        return descriptionRepository.save(description);
+    public Long createDescription(DescriptionDTO descriptionDTO,Long QuestionId){
+
+        QQuestion qQuestion=QQuestion.question;
+        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+
+        Question question_sgl = query
+                .selectFrom(qQuestion)
+                .where(qQuestion.question.id.eq(QuestionId))
+                .fetchOne();
+
+        if(question_sgl==null){
+            throw new NotFoundDescriptionException(QuestionId);
+        }
+
+        Description description=descriptionDTO.of(question_sgl);
+        Description saveDescription=descriptionRepository.save(description);
+        Long DescriptionId=saveDescription.getId();
+
+        return DescriptionId;
     }
 
     //descriptionid로 해당 description 조회

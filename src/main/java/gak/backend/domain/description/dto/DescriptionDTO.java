@@ -29,10 +29,6 @@ public class DescriptionDTO {
     public Description of(Question question){
         return Description.builder()
                 .question(question)
-                .title(title)
-                .content(content)
-                .answer(answer)
-                .quiz(quiz)
                 .build();
     }
 }
