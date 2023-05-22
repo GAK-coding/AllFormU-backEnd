@@ -142,12 +142,12 @@ public class QuestionService {
             (selection과 같은 하위 list 제외한)
         */
     @Transactional
-    public QuestionDTO UpdateSelectQuestion(QuestionDTO questionDTO,Long FormId,Long QuestionId){
+    public Question UpdateSelectQuestion(QuestionDTO questionDTO,Long FormId,Long QuestionId){
 
         Question question_List=getSelectQuestion(FormId,QuestionId);
         question_List.UpdateSelectQuestion(questionDTO);
 
-        return questionDTO;
+        return question_List;
 
 
     }

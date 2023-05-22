@@ -12,9 +12,16 @@ public class SelectionDTO {
     private Question question;
     private String content;
 
-    private Boolean answer;
+    private boolean answer;
 //    private Boolean quiz;
 
+    @Builder
+    public SelectionDTO(Question question, String content, boolean answer){
+        this.question=question;
+        this.content=content;
+        this.answer=answer;
+//        this.quiz=quiz;
+    }
 
     public Selection of (Question question){
         return Selection.builder()
@@ -23,13 +30,7 @@ public class SelectionDTO {
                 .answer(answer)
                 .build();
     }
-    @Builder
-    public SelectionDTO(Question question, String content, Boolean answer){
-        this.question=question;
-        this.content=content;
-        this.answer=answer;
-//        this.quiz=quiz;
-    }
+
 
 
 

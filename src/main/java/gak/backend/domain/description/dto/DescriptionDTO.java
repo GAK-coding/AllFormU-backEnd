@@ -1,6 +1,7 @@
 package gak.backend.domain.description.dto;
 
 
+import gak.backend.domain.description.model.Description;
 import gak.backend.domain.question.model.Question;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ public class DescriptionDTO {
     private Question question;
     private String content;
     private String answer;
-    private Boolean quiz;
+    private boolean quiz;
 
     private String title;
 
@@ -23,5 +24,15 @@ public class DescriptionDTO {
         this.answer=answer;
         this.quiz=quiz;
         this.title=title;
+    }
+
+    public Description of(Question question){
+        return Description.builder()
+                .question(question)
+                .title(title)
+                .content(content)
+                .answer(answer)
+                .quiz(quiz)
+                .build();
     }
 }

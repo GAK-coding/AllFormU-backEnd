@@ -44,7 +44,7 @@ public class DescriptionService {
     @Transactional
     public Description createDescription(DescriptionDTO descriptionDTO){
         Description description=new Description();
-        description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
+        //description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
         return descriptionRepository.save(description);
     }
 

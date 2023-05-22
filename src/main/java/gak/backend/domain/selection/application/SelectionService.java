@@ -65,6 +65,12 @@ public class SelectionService {
                 .where(qQuestion.question.id.eq(QuestionId))
                 .fetchOne();
 
+
+        if(question_sgl==null){
+            throw new NotFoundSelectionException(QuestionId);
+        }
+
+
         List<Selection> sel_List=question_sgl.getOptions();
         sel_List.add(selectionDTO.of(question_sgl));
         List<Selection> saveSelection=selectionRepository.saveAll(sel_List);
@@ -112,7 +118,7 @@ public class SelectionService {
         }
 
         selection_sgl.updateContent(newContent);
-        return selectionRepository.save(selection_sgl);
+        return selection_sgl;
     }
 
     //answer update
