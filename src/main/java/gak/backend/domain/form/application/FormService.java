@@ -150,12 +150,12 @@ public class FormService {
         (하위 객체(List) 제외)
     */
    @Transactional
-  public FormDTO updateSelectForm(FormDTO formDto,Long Userid, Long FormId ) {
+  public Form updateSelectForm(FormDTO formDto,Long Userid, Long FormId ) {
 
        Form form=getSelectFormById(Userid,FormId);
        form.UpdateSelectForm(formDto);
 
-       return formDto;
+       return form;
   }
 
 
