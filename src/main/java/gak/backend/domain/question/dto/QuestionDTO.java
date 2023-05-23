@@ -69,9 +69,17 @@ public class QuestionDTO implements Serializable{
    }
     public List<Selection> toSelection(SelectionRepository selectionRepository,Question question) {
         List<Selection> selectionList = new ArrayList<>();
+        if(options.size()<1){
+            Selection selection = Selection.builder()
+                    .question(question)
+                    .build();
+            selectionList.add(selection);
+            selectionRepository.saveAll(selectionList);
+        }
+
         for (SelectionDTO selectionDTO : options) {
             Selection selection = Selection.builder()
-                    .content(selectionDTO.getContent())
+                    .content((selectionDTO.getContent() !="")? selectionDTO.getContent():"입력 값 없음")
                     .question(question)
                     .build();
             selectionList.add(selection);
@@ -79,11 +87,19 @@ public class QuestionDTO implements Serializable{
         }
         return selectionList;
     }
+
     public List<Description> toDescription(DescriptionRepository descriptionRepository,Question question) {
         List<Description> descriptionList = new ArrayList<>();
+        if(descriptions.size()<1){
+            Description description= Description.builder()
+                    .question(question)
+                    .build();
+            descriptionList.add(description);
+            descriptionRepository.saveAll(descriptionList);
+        }
         for (DescriptionDTO descriptionDTO : descriptions) {
             Description description = Description.builder()
-                    .content(descriptionDTO.getContent())
+                    .content((descriptionDTO.getContent()!="")? descriptionDTO.getContent():"입력 값 없음")
                     .question(question)
                     .build();
             descriptionList.add(description);

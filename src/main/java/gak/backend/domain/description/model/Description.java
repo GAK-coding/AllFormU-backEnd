@@ -35,8 +35,8 @@ public class Description extends BaseTime {
         this.quiz=quiz;
         this.content=content;
     }
-    public void update(String answer){
-        this.answer=answer;
+    public void updateContent(String content){
+        this.content=content;
     }
 
     public void QuestionSetting(Question question){ this.question=question; }

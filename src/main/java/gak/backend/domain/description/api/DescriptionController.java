@@ -49,12 +49,13 @@ public class DescriptionController {
     }
 
 
-    @PutMapping("/description/updateAnswer/{id}")
-    public ResponseEntity<Description> updateDescriptionAnswer(@PathVariable(value = "id") Long id,
+    @PutMapping("/description/updateContent/{questionid}/{descriptionid}")
+    public ResponseEntity<Description> updateDescriptionAnswer(@PathVariable(value = "questionid") Long QuestionId,
+                                                               @PathVariable(value = "descriptionid") Long DescriptionId,
                                                                @RequestBody Map<String, String> requestBody){
 
-        String answer = requestBody.get("answer");
-        final Description updatedDescription=descriptionService.updateDescription(id,answer);
+        String content = requestBody.get("content");
+        final Description updatedDescription=descriptionService.updateDescription(QuestionId,DescriptionId,content);
         return ResponseEntity.ok(updatedDescription);
     }
     @DeleteMapping("/description/deleteDescription/{id}")
