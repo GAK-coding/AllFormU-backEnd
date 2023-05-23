@@ -66,7 +66,7 @@ public class FormDTO implements Serializable {
             Question question = Question.builder()
                     .form(form)
                     .title(questionDTO.getTitle())
-                    .required(questionDTO.isRequired())
+                    .required(questionDTO.getRequired())
                     .sectionNum(questionDTO.getSectionNum())
                     .type(questionDTO.getType())
                     .build();

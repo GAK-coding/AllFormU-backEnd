@@ -19,7 +19,9 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static gak.backend.domain.question.model.Format.Description_SHORT;
 import static org.hibernate.boot.model.process.spi.MetadataBuildingProcess.build;
 @Getter
 @NoArgsConstructor
@@ -27,19 +29,19 @@ public class QuestionDTO implements Serializable{
 
     private Long id;
     private Form form;
-    private List<SelectionDTO> options = new ArrayList<>();
-    private List<DescriptionDTO> descriptions = new ArrayList<>();
+    private List<SelectionDTO> options =new ArrayList<>();
+    private List<DescriptionDTO> descriptions =new ArrayList<>();
     private String title;
     private String content;
-    private boolean required;
-    private int sectionNum;
+    private Boolean required;
+    private Integer sectionNum;
 
     @Enumerated(EnumType.STRING)
     private Format type;
 
 
     @Builder
-    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, boolean required, int sectionNum, Format type) {
+    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, Integer sectionNum, Format type) {
         this.id = id;
         this.form = form;
         this.options = options;
@@ -51,14 +53,18 @@ public class QuestionDTO implements Serializable{
         this.type = type;
     }
 
+
+    //첫 생성 시에는 (create) 타입형식만 받아오기 때문에 다른 값들은 뭐가 들어가도 상관 x
+    //보여지는 것은 title이고 title은 실제 값 저장 되야하고
+    //추가로 sectionNum은 따로 받아야 함.
     public Question of (Form form){
       return Question.builder()
               .form(form)
               .title(title)
               .content(content)
-              .required(required)
-              .sectionNum(sectionNum)
-              .type(type)
+              .required((required!=null)?required:false)
+              .sectionNum((sectionNum!=null)?sectionNum:0)
+              .type((type!=null)?type:Description_SHORT)
               .build();
    }
     public List<Selection> toSelection(SelectionRepository selectionRepository,Question question) {

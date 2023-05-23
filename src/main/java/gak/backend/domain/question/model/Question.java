@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 //TODO img 추가해야함.
 
 @Entity
@@ -72,11 +73,19 @@ public class Question extends BaseTime {
         this.descriptions = descriptions;
     }
 
+
+
+    //null체크를 해서 값이 넘어오지 않은 필드에 대해서는 원래의 값을 유지하기 위함.
+    //null값을 받지 않을 시에는 체크를 하기가 힘듦
+    //DTO에서 boolean으로 설정 시 아무 값도 입력받지 않았을 때 기본 값 false로 넘어옴
+    //즉 실제로 true를 false로 바꾸고 싶어서 false를 넘겨줬는데
+    //그 값이 아무 값도 전달되지 않은 false인지 의도적인 false인지 구별하기 힘듦
+    //필드가 많을 시에 해당 코드는 매우 비효율적이라 좀 생각을 해보는게 좋을듯
     public void UpdateSelectQuestion(QuestionDTO questionDTO){
-        this.title=questionDTO.getTitle();
-        this.required=questionDTO.isRequired();
-        this.sectionNum=questionDTO.getSectionNum();
-        this.type=questionDTO.getType();
+        this.title=(questionDTO.getTitle() !=null)? questionDTO.getTitle():this.title;
+        this.required=(questionDTO.getRequired() !=null)? questionDTO.getRequired():this.required;
+        this.sectionNum=(questionDTO.getSectionNum() !=null)? questionDTO.getSectionNum():this.sectionNum;
+        this.type=(questionDTO.getType() !=null)? questionDTO.getType():this.type;
 
     }
     public void setForm(Form form) {
@@ -86,11 +95,11 @@ public class Question extends BaseTime {
         this.type = type;
     }
 
-    public void setSectionNum(int sectionNum) {
-        this.sectionNum = sectionNum;
-    }
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
+//    public void setSectionNum(int sectionNum) {
+//        this.sectionNum = sectionNum;
+//    }
+//    public void setRequired(boolean required) {
+//        this.required = required;
+//    }
 
 }

@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,7 +144,9 @@ public class QuestionService {
         */
     @Transactional
     public Question UpdateSelectQuestion(QuestionDTO questionDTO,Long FormId,Long QuestionId){
+        //다시 가져올 때 type값을 안 보내주면 원래 type값도 초기화 되는게 아니라 만약 title만 보냈을 때 title만 업데이트되게
 
+        System.out.println("테스트입니다"+questionDTO.getContent()+" "+ questionDTO.getRequired()+" "+questionDTO.getSectionNum());
         Question question_List=getSelectQuestion(FormId,QuestionId);
         question_List.UpdateSelectQuestion(questionDTO);
 
@@ -190,7 +193,7 @@ public class QuestionService {
         Question question_sgl = query
                 .selectFrom(qQuestion)
                 .where(qQuestion.question.id.eq(QuestionId)
-                        .and(qForm.author.id.eq(FormId)))
+                        .and(qForm.id.eq(FormId)))
                 .fetchOne();
 
         if(question_sgl==null){
