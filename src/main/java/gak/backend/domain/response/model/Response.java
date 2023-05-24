@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 import static gak.backend.domain.response.dto.ResponseDTO.*;
 
@@ -55,7 +56,7 @@ public class Response extends BaseTime {
                 .build();
     }
 
-    public ResponseSimpleInfoDTO responseSimpleInfoDTO(Member responsor, Question question){
+    public ResponseSimpleInfoDTO toResponseSimpleInfoDTO(Member responsor, Question question){
         return ResponseSimpleInfoDTO.builder()
                 .responsorId(responsor.getId())
                 .questionId(question.getId())
@@ -63,6 +64,12 @@ public class Response extends BaseTime {
                 .build();
     }
 
+    public QuizRightResponseDTO toQuizRightResponseDTO(List<ResponseSimpleInfoDTO> quizRightResponses, int rightResponseNum){
+        return QuizRightResponseDTO.builder()
+                .quizRightResponses(quizRightResponses)
+                .rightResponseNum(rightResponseNum)
+                .build();
+    }
     public void updateResponse(int changeNum){
         this.num = changeNum;
     }

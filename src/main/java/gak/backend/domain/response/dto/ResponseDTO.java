@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ResponseDTO {
     @Getter
@@ -44,6 +45,16 @@ public class ResponseDTO {
     public static class UpdateResponseRequest{
         private Long id;
         private int changeNum;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class QuizRightResponseDTO{
+        private List<ResponseSimpleInfoDTO> quizRightResponses;
+        private int rightResponseNum;
+
     }
 
     @Getter
