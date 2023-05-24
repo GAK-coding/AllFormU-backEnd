@@ -57,6 +57,16 @@ public class Question extends BaseTime {
         this.descriptions = descriptions;
     }
 
+    @Builder
+    public Question(Long id,Form form, String title, String content,boolean required, int sectionNum, boolean quiz, Format type){
+        this.form = form;
+        this.title = title;
+        this.content = content;
+        this.required = required;
+        this.sectionNum = sectionNum;
+        this.quiz = quiz;
+        this.type = type;
+    }
     public void UpdateSelectQuestion(QuestionDTO questionDTO){
         this.title=questionDTO.getTitle();
         this.required=questionDTO.isRequired();

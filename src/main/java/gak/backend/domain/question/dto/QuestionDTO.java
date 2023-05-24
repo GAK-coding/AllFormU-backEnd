@@ -33,13 +33,14 @@ public class QuestionDTO implements Serializable{
     private String content;
     private boolean required;
     private int sectionNum;
+    private boolean quiz;
 
     @Enumerated(EnumType.STRING)
     private Format type;
 
 
     @Builder
-    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, boolean required, int sectionNum, Format type) {
+    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, boolean required, boolean quiz, int sectionNum, Format type) {
         this.id = id;
         this.form = form;
         this.options = options;
@@ -48,6 +49,7 @@ public class QuestionDTO implements Serializable{
         this.content = content;
         this.required = required;
         this.sectionNum = sectionNum;
+        this.quiz = quiz;
         this.type = type;
     }
 
@@ -59,6 +61,7 @@ public class QuestionDTO implements Serializable{
               .required(required)
               .sectionNum(sectionNum)
               .type(type)
+              .quiz(quiz)
               .build();
    }
     public List<Selection> toSelection(SelectionRepository selectionRepository,Question question) {
