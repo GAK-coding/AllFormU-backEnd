@@ -90,13 +90,9 @@ public class MemberController {
 
 
 
-//    @Autowired
-//    MemberRepository memberRepository;
-//    @PostMapping("/api/signup")
-//    public String add(@RequestBody Member member){
-//        memberRepository.save(member);
-//        return "update OK";
-//    }
+    @Autowired
+    MemberRepository memberRepository;
+
 //    @PostMapping("/api/login")
 //    @ResponseBody
 //    public List<Member> login(@RequestBody Member member){
@@ -105,10 +101,10 @@ public class MemberController {
 //
 //        return user;
 //    }
-//    @GetMapping("/api/item")
-//    public List<Member> get(){
-//        return memberRepository.findAll();
-//    }
+    @GetMapping("/api/item")
+    public List<Member> get(){
+        return memberRepository.findAll();
+    }
 //
 //    @GetMapping("/api/item/{id}")
 //    public Optional<Member> getId(@PathVariable("id")Long id){
