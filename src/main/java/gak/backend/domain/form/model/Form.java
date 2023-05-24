@@ -1,11 +1,15 @@
 package gak.backend.domain.form.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
+import gak.backend.domain.member.model.Status;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
@@ -14,23 +18,59 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Form extends BaseTime {
     @Id
     @GeneratedValue
     @Column(name = "form_id")
     private Long id;
 
+    public void setAuthor(Member author) {
+        this.author = author;
+    }
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member author;
 
-    @OneToMany(mappedBy = "form")
+    @OneToMany(mappedBy = "form",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_status")
+    private Separator separator;
 
     private String title;
     private String content;
-    private boolean required;
+
+
+    //private boolean required;
+
+    private boolean fix; // 수정가능 : 0 수정 불가능 : 1
+
+    public void AuthorSetting(Member author){
+        this.author=author;
+    }
+
+    public void UpdateSelectForm(FormDTO formDTO){
+        this.content=formDTO.getContent();
+        this.title=formDTO.getTitle();
+    }
+
+
+    public void QuestionSetting(List<Question> questions) {
+        this.questions = questions;
+    }
+    public void FixSetting(boolean fix){
+        this.fix=fix;
+    }
+    public void SeparatorSetting(Separator separator){
+        this.separator=separator;
+    }
 
     // =========변경 가능-----------
 //    @ManyToOne
@@ -40,6 +80,4 @@ public class Form extends BaseTime {
 //    private List<Form> child = new ArrayList<>();
     //==========================
 
-    private LocalDateTime createdTime;
-    private LocalDateTime modifiedTime;
 }
