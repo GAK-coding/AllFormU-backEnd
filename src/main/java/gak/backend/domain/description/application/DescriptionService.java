@@ -1,11 +1,22 @@
 package gak.backend.domain.description.application;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.dao.DescriptionRepository;
 import gak.backend.domain.description.dto.DescriptionDTO;
+import gak.backend.domain.description.exception.NotFoundDescriptionException;
 import gak.backend.domain.description.model.Description;
+import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.question.dto.QuestionDTO;
+import gak.backend.domain.question.exception.NotFoundQuestionException;
+import gak.backend.domain.question.model.QQuestion;
+import gak.backend.domain.question.model.Question;
+import gak.backend.domain.selection.exception.NotFoundSelectionException;
+import gak.backend.domain.selection.model.QSelection;
+import gak.backend.domain.selection.model.Selection;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +30,9 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class DescriptionService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
     private final DescriptionRepository descriptionRepository;
 
 
@@ -42,10 +56,25 @@ public class DescriptionService {
 //    }
     //description 생성
     @Transactional
-    public Description createDescription(DescriptionDTO descriptionDTO){
-        Description description=new Description();
-        description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
-        return descriptionRepository.save(description);
+    public Long createDescription(DescriptionDTO descriptionDTO,Long QuestionId){
+
+        QQuestion qQuestion=QQuestion.question;
+        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+
+        Question question_sgl = query
+                .selectFrom(qQuestion)
+                .where(qQuestion.question.id.eq(QuestionId))
+                .fetchOne();
+
+        if(question_sgl==null){
+            throw new NotFoundDescriptionException(QuestionId);
+        }
+
+        Description description=descriptionDTO.of(question_sgl);
+        Description saveDescription=descriptionRepository.save(description);
+        Long DescriptionId=saveDescription.getId();
+
+        return DescriptionId;
     }
 
     //descriptionid로 해당 description 조회
@@ -69,10 +98,23 @@ public class DescriptionService {
     //-> 그 지정해두었던 answer를 수정하는 로직임 밑에가
     //description 수정
     @Transactional
-    public Description updateDescription(Long id, String newAnswer){
-        Description description=getDescription(id);
-        description.update(newAnswer);
-        return descriptionRepository.save(description);
+    public Description updateDescription(Long QuestionId,Long DescriptionId, String newContent){
+        QDescription qDescription=QDescription.description;
+        QQuestion qQuestion=QQuestion.question;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+
+        Description description_sgl = query
+                .selectFrom(qDescription)
+                .where(qDescription.id.eq(DescriptionId)
+                        .and(qQuestion.id.eq(QuestionId)))
+                .fetchOne();
+
+        if(description_sgl==null){
+            throw new NotFoundDescriptionException(QuestionId,DescriptionId);
+        }
+
+        description_sgl.updateContent(newContent);
+        return description_sgl;
     }
 
     @Transactional

@@ -54,7 +54,7 @@ public class QuestionController {
             (selection과 같은 하위 list 제외한)
         */
     @PutMapping("/question/UpdateSelectQuestion/{FormId}/{QuestionId}")
-    public QuestionDTO updateSelectlquestion(@RequestBody QuestionDTO questionDTO,@PathVariable("FormId")Long FormId,@PathVariable("QuestionId")Long QuestionId){
+    public Question updateSelectlquestion(@RequestBody QuestionDTO questionDTO,@PathVariable("FormId")Long FormId,@PathVariable("QuestionId")Long QuestionId){
 
         return questionService.UpdateSelectQuestion(questionDTO,FormId,QuestionId);
 
