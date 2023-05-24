@@ -7,9 +7,12 @@ import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
 import gak.backend.domain.member.exception.NotMatchPasswordException;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
+import gak.backend.global.error.ErrorResponse;
 import gak.backend.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,20 +48,21 @@ public class MemberService {
     //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
     //상태가 멤버인 계정이 있는지 확인하는 서비스 로직
     @Transactional
-    public String checkDuplicatedMember(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            List<Member> members = memberRepository.findMembersByEmail(email);
+    public ErrorResponse checkDuplicatedMember(EmailDTO emailDTO) {
+        if (memberRepository.existsByEmail(emailDTO.getEmail())) {
+            List<Member> members = memberRepository.findMembersByEmail(emailDTO.getEmail());
             for (Member member : members) {
                 if (member.getStatus() == Status.STATUS_MEMBER) {
-                    return "해당 이메일은 이미 회원가입이 된 이메일입니다.";
+                    throw new ExistMemberException();
                 } else if (member.getStatus() == Status.STATUS_DORMANT) {
-
-                    return "해당 이메일은 휴면 계정이니 재회원가입을 통해 휴면 상태를 해제 해주세요.";
+                    throw new DormantMemberException();
                 }
             }
-
         }
-        return "사용가능한 이메일입니다.";
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("사용가능한 이메일입니다.")
+                .build();
     }
 
     //멤버 생성이니까 회원가입.
@@ -168,6 +172,8 @@ public class MemberService {
         return member.getPassword();
     }
 
+
+    //비밀번호 찾기 랜덤 숫자 메일로 발송
 
     //=========================================Update==================================
     //멤버 닉네임 업데이트
