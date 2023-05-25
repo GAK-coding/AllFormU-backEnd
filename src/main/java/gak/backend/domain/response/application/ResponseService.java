@@ -1,5 +1,8 @@
 package gak.backend.domain.response.application;
 
+import gak.backend.domain.form.dao.FormRepository;
+import gak.backend.domain.form.model.Correspond;
+import gak.backend.domain.form.model.Form;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Role;
@@ -27,6 +30,7 @@ public class ResponseService {
     private final ResponseRepository responseRepository;
     private final MemberRepository memberRepository;
     private final QuestionRepository questionRepository;
+    private final FormRepository formRepository;
 
     //=========================Create===============================
     @Transactional
@@ -34,23 +38,28 @@ public class ResponseService {
         //존재하는 멤버, 문제인지 확인
         Member responsor = memberRepository.findById(saveResponseRequest.getResponsorId()).orElseThrow(NotFoundByIdException::new);
         Question question = questionRepository.findById(saveResponseRequest.getQuestionId()).orElseThrow(NotFoundByIdException::new);
-        //TODO Form status update 되면 맞게 수정.
-        responsor.UpdateMemberRole(Role.Role_Responsor);
-        //문제 유형마다 다르게 답변이 저장되어야함.
-        if(question.getType().equals("SELECT")){
-            //TODO 여기에서 Grid, 복수형과 차별점을 둘 것.
-        }
-        Response response = saveResponseRequest.toEntity(responsor, question);
-        ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
+        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+        if(form.getCorrespond()==Correspond.STATUS_PROCESS) {
+            responsor.UpdateMemberRole(Role.Role_Responsor);
+            //문제 유형마다 다르게 답변이 저장되어야함.
+            if (question.getType().equals("SELECT")) {
+                //TODO 여기에서 Grid, 복수형과 차별점을 둘 것.
+            }
+            Response response = saveResponseRequest.toEntity(responsor, question);
+            ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
 
-        return responseInfoDTO;
+            return responseInfoDTO;
+        }
+        else{
+            throw new CanNotAccessResponse("설문 응답 시간이 아닙니다.");
+        }
     }
 
     //==========================Read=================================
     //아마 이부분을 통계에서 쓰지 않을까 생각함.
 
     //Question아이디로 응답 불러오기
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ResponseSimpleInfoDTO> findResponsesByQuestionId(Long questionId){
         List<Response> responses = responseRepository.findByQuestionId(questionId);
 
@@ -63,7 +72,7 @@ public class ResponseService {
     }
 
     //Question아이디로 응답 갯수 불러오기
-    @Transactional
+    @Transactional(readOnly = true)
     public int countResponsesByQuestionId(Long questionId){
         List<Response> responses = responseRepository.findByQuestionId(questionId);
         int responseCnt = responseRepository.countResponseByQuestionId(questionId);
@@ -72,7 +81,7 @@ public class ResponseService {
 
     //객관식 각각의 인원수와 각각의 응다 여부 파악
     //front는 해당 문제의 객관식 인덱스를 넘겨주는것 번호가 아님 번호는 1부터 시작하지만 index는 0붜터임 -> 이거 통일하는게 나으려나 번호로? 0번부터
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ResponseSimpleInfoDTO>[] readStatisticByQuestionId(Long questionID){
         List<Response> responses = responseRepository.findByQuestionId(questionID);
         Question question = questionRepository.findById(questionID).orElseThrow(NotFoundByIdException::new);
@@ -89,7 +98,7 @@ public class ResponseService {
     //객관식 퀴즈 일 경우, 정답자 출력
     //TODO 객관식 중복 정답일 경우 구현
     //굳이 자세하게 볼 필요 없을 것 같아서 simpleDTO로 함. => 인원을 같이 출력하는게 좋을 듯
-    @Transactional
+    @Transactional(readOnly = true)
     public QuizRightResponseDTO findQuizRightResponseByQuestionId(Long questionId){
         List<Response> responses = responseRepository.findByQuestionId(questionId);
         List<ResponseSimpleInfoDTO> quizRightResponses = new ArrayList<>();
@@ -145,16 +154,24 @@ public class ResponseService {
         //response가 존재하는지 확인해야함.
         Response response = responseRepository.findById(updateResponseRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Question question = questionRepository.findById(response.getQuestion().getId()).orElseThrow(NotFoundByIdException::new);
-        //1차적으로 응답을 수정할 수 있는지 확인하고 할 수 없으면 예외 처리
-        //TODO question의 응답 수정 여부는 form의 상태 확인 하는 부분도 추가
-        if(question.getForm().isFix()) {
+        //폼의 수정 여부를 불러오기 위해 찾아놓기
+        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
 
-            response.updateResponse(updateResponseRequest.getChangeNum());
-            ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
-            return responseInfoDTO;
+        //1차적으로 응답을 수정할 수 있는지 확인하고 할 수 없으면 예외 처리( form의 응답 수정 여부와
+        //form이 수정가능한지 여부를 먼저 확인해야함 -> 그 다음에 폼의 상태로 유효함을 판단하는게 로직상 맞음.
+        if(form.isFix()) { //응답이 수정 가능 하고 설문이 유효한 경우
+            if(form.getCorrespond()== Correspond.STATUS_PROCESS) {// 사실 조건 검사를 &&로 묶어도 되나 예외를 세분화 하기 위해서 두개의 if문을 사용함.
+                response.updateResponse(updateResponseRequest.getChangeNum());
+                ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
+                return responseInfoDTO;
+            }
+            else{ //응답 수정은 가능하나 , 상태가 맞지 않아서 불가능 한 경우
+                throw new CanNotAccessResponse("설문 응답 시간이 아닙니다.");
+
+            }
         }
         //에러 넘겨주면 프론트는 그냥 수정창이 안열리게 하면 될듯.
-        else{
+        else{ //수정이 아예 불가능 한 경우
             throw new CanNotAccessResponse("응답이 이미 제출되었으며, 수정할 수 없는 설문입니다.");
         }
 
