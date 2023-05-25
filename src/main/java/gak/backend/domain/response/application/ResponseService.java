@@ -2,6 +2,7 @@ package gak.backend.domain.response.application;
 
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
+import gak.backend.domain.member.model.Role;
 import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.response.dao.ResponseRepository;
@@ -34,6 +35,7 @@ public class ResponseService {
         Member responsor = memberRepository.findById(saveResponseRequest.getResponsorId()).orElseThrow(NotFoundByIdException::new);
         Question question = questionRepository.findById(saveResponseRequest.getQuestionId()).orElseThrow(NotFoundByIdException::new);
         //TODO Form status update 되면 맞게 수정.
+        responsor.UpdateMemberRole(Role.Role_Responsor);
         //문제 유형마다 다르게 답변이 저장되어야함.
         if(question.getType().equals("SELECT")){
             //TODO 여기에서 Grid, 복수형과 차별점을 둘 것.
@@ -51,6 +53,7 @@ public class ResponseService {
     @Transactional
     public List<ResponseSimpleInfoDTO> findResponsesByQuestionId(Long questionId){
         List<Response> responses = responseRepository.findByQuestionId(questionId);
+
         List<ResponseSimpleInfoDTO> responsesSimpleInfoDTOs = new ArrayList<>();
         for(Response response : responses){
             ResponseSimpleInfoDTO responseSimpleInfoDTO = response.toResponseSimpleInfoDTO(response.getResponsor(), response.getQuestion());
