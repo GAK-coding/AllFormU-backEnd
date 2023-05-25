@@ -1,6 +1,7 @@
 package gak.backend.domain.description.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gak.backend.domain.member.model.Member;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
@@ -18,23 +19,23 @@ public class Description extends BaseTime {
     private Long id;
 
 
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quesion_id")
     private Question question;
 
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     private String content;
-    private String answer;
-    private boolean quiz;
 
-
-    public void create(String answer,Boolean quiz, String content){
-        this.answer=answer;
-        this.quiz=quiz;
-        this.content=content;
-    }
+//
+//    public void create(String answer,Boolean quiz, String content){
+//        this.answer=answer;
+//        this.quiz=quiz;
+//        this.content=content;
+//    }
     public void updateContent(String content){
         this.content=content;
     }
