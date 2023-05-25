@@ -67,6 +67,22 @@ public class ResponseService {
         return responseCnt;
     }
 
+    //객관식 각각의 인원수와 각각의 응다 여부 파악
+    //front는 해당 문제의 객관식 인덱스를 넘겨주는것 번호가 아님 번호는 1부터 시작하지만 index는 0붜터임 -> 이거 통일하는게 나으려나 번호로? 0번부터
+    @Transactional
+    public List<ResponseSimpleInfoDTO>[] readStatisticByQuestionId(Long questionID){
+        List<Response> responses = responseRepository.findByQuestionId(questionID);
+        Question question = questionRepository.findById(questionID).orElseThrow(NotFoundByIdException::new);
+        //객관식 옵션이 수만큼 새로운 배열을 생성 -> 질문이 수정이 되면 배열의 경우 수를 늘릴 수 없으니까 List가 돠어야한다고 생각했는데 그때그때 새로 초기화 되어서 만들어지니까 상관노일듯
+        //int[] countEachResponse = new int[question.getOptions().size()];
+        List<ResponseSimpleInfoDTO>[] statistic = new List[question.getOptions().size()];
+        //배열의 인덱스가 옵션들의 인덱스
+        for(Response response : responses){
+            statistic[response.getNum()].add(response.toResponseSimpleInfoDTO(response.getResponsor(), question)); //인덱스에 맞는 count를 증가시킴
+        }
+        return statistic;
+    }
+
     //객관식 퀴즈 일 경우, 정답자 출력
     //TODO 객관식 중복 정답일 경우 구현
     //굳이 자세하게 볼 필요 없을 것 같아서 simpleDTO로 함. => 인원을 같이 출력하는게 좋을 듯
