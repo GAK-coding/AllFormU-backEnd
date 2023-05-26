@@ -8,6 +8,7 @@ import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.exception.NotFoundFormException;
 import gak.backend.domain.form.exception.NotFoundMemberException;
+import gak.backend.domain.form.model.Correspond;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.form.model.QForm;
 import gak.backend.domain.form.model.Separator;
@@ -30,10 +31,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import java.util.Timer;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import javax.swing.text.html.Option;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -66,25 +72,59 @@ public class FormService {
         question 작성 후 리스트 완성 후 저장
     */
     @Transactional
-    public Long createForm(FormDTO formDto, Long id) {
+    public Long createForm(FormDTO formDto, Long id){
 
         //폼 엔티티 데이터 저장 (of메소드 호출)
         Form form=formDto.of();
-//        Timer timer;
-//        timer=new Timer(true);
-//        TimesCheck tc=new TimesCheck();
-//        timer.schedule(tc,1000000);
-//        System.out.println("FixBefore: "+form.isFix());
-//        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-//        executor.schedule(() -> {
-//            form.FixSetting(false);
-//        }, 3, TimeUnit.HOURS);
 
+        List<String> datetime= formDto.getTimeout();
+        int flag=0;
 
+        //첫번 째 배열이 시작시간 두번 째가 만료시간
+        for(String time : datetime){
+
+            //현재 시간 받아옴
+            Date now=Calendar.getInstance().getTime();
+            Correspond status=Correspond.STATUS_BEFORE;
+            //받은 시간 형식 설정
+            DateFormat format=new SimpleDateFormat("yyyy MM dd HH mm ss");
+            try {
+
+                Date end = format.parse(time);
+                //전달 받은 시간과 현재시간 차이 계산
+                Long sec=(end.getTime() -now.getTime())/1000;
+
+                //시작
+                //만일 받아 온 시간보다 지나 있을 경우엔 0으로 초기화해서 바로 진행 중으로 바뀌게 함.
+
+                if(sec<0 && flag==0){
+                    status=Correspond.STATUS_PROCESS;
+                    sec=0L;
+                }
+                //시작
+                else if(sec>=0 && flag==0) {
+                    status = Correspond.STATUS_PROCESS;
+                }
+                //만료
+                if(flag==1){
+                    status=Correspond.STATUS_EXPIRE;
+                }
+                //현재 form, 카운트시간, status
+                ExpireCorrespond(form,sec,status);
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+            //2개 배열.
+            flag++;
+        }
+
+        //ExpireCorrespond(form,formDto);
         //member 연관관계 갖기위해 해당 id의 member 객체 가져옴
         Member author=memberRepository.findById(id).orElseThrow(() -> new NotFoundMemberException(id));
         form.AuthorSetting(author);
         form.SeparatorSetting(Separator.SEPARATOR_WRITER);
+        form.CorrespondSetting(Correspond.STATUS_BEFORE);
 
         //question리스트 저장 , que   stion엔티티 객체 자동 생성.
         List<Question> questions= formDto.toQuestions(form);
@@ -92,6 +132,17 @@ public class FormService {
         formRepository.save(form);
 
         return form.getId(); //question에서 여기서 생성 된 객체 사용하기 위해 id값 반환
+    }
+    @Transactional
+    public void ExpireCorrespond(Form form, Long time, Correspond status){
+
+            //스레드로 넘어가서 독립적으로 실행되게 함
+            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+            executor.schedule(() -> {
+                form.CorrespondSetting(status);
+                formRepository.save(form);
+            }, time, TimeUnit.SECONDS);// 받은 시간이 만료 될때 위의 status가 변경.
+
     }
 
 
@@ -150,12 +201,12 @@ public class FormService {
         (하위 객체(List) 제외)
     */
    @Transactional
-  public FormDTO updateSelectForm(FormDTO formDto,Long Userid, Long FormId ) {
+  public Form updateSelectForm(FormDTO formDto,Long Userid, Long FormId ) {
 
        Form form=getSelectFormById(Userid,FormId);
        form.UpdateSelectForm(formDto);
 
-       return formDto;
+       return form;
   }
 
 

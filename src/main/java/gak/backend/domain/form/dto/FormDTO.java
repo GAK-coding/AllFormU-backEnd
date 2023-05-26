@@ -1,5 +1,6 @@
 package gak.backend.domain.form.dto;
 
+import gak.backend.domain.form.model.Correspond;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.form.model.Separator;
 import gak.backend.domain.member.dao.MemberRepository;
@@ -17,6 +18,8 @@ import gak.backend.domain.question.dto.QuestionDTO;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @Getter
@@ -32,14 +35,18 @@ public class FormDTO implements Serializable {
     private String title;
     private String content;
 
+    private List<String> timeout;
+    //private List<Integer> Timeout;
     @Enumerated(EnumType.STRING)
     private Separator separator;
+    @Enumerated(EnumType.STRING)
+    private Correspond correspond;
 
     //private boolean required;
-    private boolean fix;
+    private Boolean fix;
 
     @Builder
-    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content,boolean fix){
+    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content,Boolean fix,List<String> Timeout){
 
         this.id=id;
         this.fix=fix;
@@ -47,15 +54,15 @@ public class FormDTO implements Serializable {
         this.questions=questions;
         this.title=title;
         this.content=content;
+        this.timeout=timeout;
 
 
     }
 
     public Form of (){
-
         return Form.builder()
                 .title(title)
-                .fix(fix)
+                .fix((fix!=null)?fix:false)
                 .content(content)
                 .build();
     }
@@ -66,7 +73,7 @@ public class FormDTO implements Serializable {
             Question question = Question.builder()
                     .form(form)
                     .title(questionDTO.getTitle())
-                    .required(questionDTO.isRequired())
+                    .required(questionDTO.getRequired())
                     .sectionNum(questionDTO.getSectionNum())
                     .type(questionDTO.getType())
                     .build();

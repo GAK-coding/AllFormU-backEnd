@@ -63,7 +63,7 @@ public class FormController {
 
     }
     @PutMapping("/form/updateSelectform/{UserId}/{FormId}")
-    public FormDTO getId(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long userid,@PathVariable("FormId")Long formid){
+    public Form getId(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long userid,@PathVariable("FormId")Long formid){
         return formService.updateSelectForm(formDTO,userid,formid);
     }
     /*

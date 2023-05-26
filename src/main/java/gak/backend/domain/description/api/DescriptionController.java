@@ -30,10 +30,10 @@ public class DescriptionController {
     //quiz가 false일때 answer은 null
 
     //description생성
-    @PostMapping("/description/createDescription")
-    public String add(@RequestBody DescriptionDTO descriptionDTO){
-        descriptionService.createDescription(descriptionDTO);
-        return "create description";
+    @PostMapping("/description/createDescription/{questionid}")
+    public Long add(@RequestBody DescriptionDTO descriptionDTO,@PathVariable("questionid")Long QuestionId){
+
+        return descriptionService.createDescription(descriptionDTO,QuestionId);
     }
 
     //description조회
@@ -49,12 +49,13 @@ public class DescriptionController {
     }
 
 
-    @PutMapping("/description/updateAnswer/{id}")
-    public ResponseEntity<Description> updateDescriptionAnswer(@PathVariable(value = "id") Long id,
+    @PutMapping("/description/updateContent/{questionid}/{descriptionid}")
+    public ResponseEntity<Description> updateDescriptionAnswer(@PathVariable(value = "questionid") Long QuestionId,
+                                                               @PathVariable(value = "descriptionid") Long DescriptionId,
                                                                @RequestBody Map<String, String> requestBody){
 
-        String answer = requestBody.get("answer");
-        final Description updatedDescription=descriptionService.updateDescription(id,answer);
+        String content = requestBody.get("content");
+        final Description updatedDescription=descriptionService.updateDescription(QuestionId,DescriptionId,content);
         return ResponseEntity.ok(updatedDescription);
     }
     @DeleteMapping("/description/deleteDescription/{id}")

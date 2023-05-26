@@ -14,6 +14,8 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @Entity
@@ -44,6 +46,9 @@ public class Form extends BaseTime {
     @Column(name = "user_status")
     private Separator separator;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Correspond_status")
+    private Correspond correspond;
     private String title;
     private String content;
 
@@ -57,8 +62,9 @@ public class Form extends BaseTime {
     }
 
     public void UpdateSelectForm(FormDTO formDTO){
-        this.content=formDTO.getContent();
-        this.title=formDTO.getTitle();
+        this.content=(formDTO.getContent()!=null) ? formDTO.getContent() : this.content;
+        this.fix=(formDTO.getFix()!=null) ? formDTO.getFix() : this.fix;
+        this.title=(formDTO.getTitle()!=null) ? formDTO.getTitle() : this.title;
     }
 
 
@@ -70,6 +76,9 @@ public class Form extends BaseTime {
     }
     public void SeparatorSetting(Separator separator){
         this.separator=separator;
+    }
+    public void CorrespondSetting(Correspond correspond){
+        this.correspond=correspond;
     }
 
     // =========변경 가능-----------

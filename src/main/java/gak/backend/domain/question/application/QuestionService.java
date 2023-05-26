@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,12 +143,13 @@ public class QuestionService {
             (selection과 같은 하위 list 제외한)
         */
     @Transactional
-    public QuestionDTO UpdateSelectQuestion(QuestionDTO questionDTO,Long FormId,Long QuestionId){
+    public Question UpdateSelectQuestion(QuestionDTO questionDTO,Long FormId,Long QuestionId){
+
 
         Question question_List=getSelectQuestion(FormId,QuestionId);
         question_List.UpdateSelectQuestion(questionDTO);
 
-        return questionDTO;
+        return question_List;
 
 
     }
@@ -190,7 +192,7 @@ public class QuestionService {
         Question question_sgl = query
                 .selectFrom(qQuestion)
                 .where(qQuestion.question.id.eq(QuestionId)
-                        .and(qForm.author.id.eq(FormId)))
+                        .and(qForm.id.eq(FormId)))
                 .fetchOne();
 
         if(question_sgl==null){
