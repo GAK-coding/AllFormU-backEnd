@@ -19,10 +19,10 @@ import gak.backend.global.error.exception.NotFoundByIdException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -93,6 +93,7 @@ public class DescriptionService {
     }
 
     //question_id로 해당 description 조회
+    @Transactional(readOnly = true)
     public List <Description> getDescriptionByQ(Long question_id){
         return descriptionRepository.findByQuestionId(question_id);
 
@@ -100,11 +101,12 @@ public class DescriptionService {
 
     //description은 생성과 응답이 동시에 일어나니까 응답수를 셀때는 -1을 해야함.
 
-    @Transactional//(readOnly=true)
+    @Transactional(readOnly=true)
     public int countDescriptionsByQuestionId(Long questionId){
         int responseCnt = descriptionRepository.countDescriptionByQuestionId(questionId)-1;
         return responseCnt;
     }
+
 
     //퀴즈 정답자 출력
 //    @Transactional//(reaOnly=true)
@@ -159,7 +161,6 @@ public class DescriptionService {
             throw new RuntimeException("Form is not present");
         }
         descriptionRepository.deleteById(id);
-
     }
 
 
