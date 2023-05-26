@@ -60,16 +60,16 @@ public class QuestionDTO implements Serializable{
     //보여지는 것은 title이고 title은 실제 값 저장 되야하고
     //추가로 sectionNum은 따로 받아야 함.
     public Question of (Form form){
-      return Question.builder()
-              .form(form)
-              .title(title)
-              .content(content)
-              .required((required!=null)?required:false)
-              .quiz(quiz)
-              .sectionNum((sectionNum!=null)?sectionNum:0)
-              .type((type!=null)?type:Description_SHORT)
-              .build();
-   }
+        return Question.builder()
+                .form(form)
+                .title(title)
+                .content(content)
+                .required((required!=null)?required:false)
+                .quiz(quiz)
+                .sectionNum((sectionNum!=null)?sectionNum:0)
+                .type((type!=null)?type:Description_SHORT)
+                .build();
+    }
     public List<Selection> toSelection(SelectionRepository selectionRepository,Question question) {
         List<Selection> selectionList = new ArrayList<>();
         if(options.size()<1){
