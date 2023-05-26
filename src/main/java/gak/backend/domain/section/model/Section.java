@@ -20,8 +20,8 @@ public class Section {
 
     private String content;
 
-    @OneToMany(mappedBy = "section")
-    private List<Question> questions;
+//    @OneToMany(mappedBy = "section")
+//    private List<Question> questions;
 
     private int pageNum;
 
