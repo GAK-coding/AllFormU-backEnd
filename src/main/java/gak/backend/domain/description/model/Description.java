@@ -17,8 +17,6 @@ public class Description extends BaseTime {
     @Column(name = "description_id")
     private Long id;
 
-
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quesion_id")

@@ -126,7 +126,7 @@ public class FormService {
         form.SeparatorSetting(Separator.SEPARATOR_WRITER);
         form.CorrespondSetting(Correspond.STATUS_BEFORE);
 
-        //question리스트 저장 , que   stion엔티티 객체 자동 생성.
+        //question리스트 저장 , question엔티티 객체 자동 생성.
         List<Question> questions= formDto.toQuestions(form);
         form.QuestionSetting(questions);
         formRepository.save(form);
