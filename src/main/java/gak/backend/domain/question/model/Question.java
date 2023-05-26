@@ -1,14 +1,11 @@
 package gak.backend.domain.question.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.model.Form;
-//import gak.backend.domain.grid.model.Grid;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,40 +16,28 @@ import java.util.List;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Question extends BaseTime {
     @Id
     @GeneratedValue
     @Column(name = "question_id")
     private Long id;
 
-
-
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id")
     private Form form;
 
-
-
-    @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "question")
     private List<Selection> options = new ArrayList<>();
 
-
-
-    @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "question")
     private List<Description> descriptions = new ArrayList<>();
-
-//    @OneToMany(mappedBy="question")
-//    private List<Grid> grids = new ArrayList<>();
 
     private String title;
     private String content;
     private boolean required;
     private int sectionNum;
-
+    private boolean quiz;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type")
@@ -72,6 +57,16 @@ public class Question extends BaseTime {
         this.descriptions = descriptions;
     }
 
+    @Builder
+    public Question(Long id,Form form, String title, String content,boolean required, int sectionNum, boolean quiz, Format type){
+        this.form = form;
+        this.title = title;
+        this.content = content;
+        this.required = required;
+        this.sectionNum = sectionNum;
+        this.quiz = quiz;
+        this.type = type;
+    }
     public void UpdateSelectQuestion(QuestionDTO questionDTO){
         this.title=questionDTO.getTitle();
         this.required=questionDTO.isRequired();
@@ -92,5 +87,4 @@ public class Question extends BaseTime {
     public void setRequired(boolean required) {
         this.required = required;
     }
-
 }
