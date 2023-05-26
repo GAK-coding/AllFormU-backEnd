@@ -7,6 +7,7 @@ import gak.backend.domain.description.exception.NotFoundDescriptionException;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.exception.NotFoundQuestionException;
 import gak.backend.domain.question.model.QQuestion;
@@ -14,6 +15,7 @@ import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.exception.NotFoundSelectionException;
 import gak.backend.domain.selection.model.QSelection;
 import gak.backend.domain.selection.model.Selection;
+import gak.backend.global.error.exception.NotFoundByIdException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
@@ -26,14 +28,16 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Optional;
 
+import static gak.backend.domain.description.dto.DescriptionDTO.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class DescriptionService {
-
-    @PersistenceContext
+    //@PersistenceContext
     private EntityManager entityManager;
     private final DescriptionRepository descriptionRepository;
+    private final QuestionRepository questionRepository;
 
 
 //    @Transactional
@@ -54,9 +58,12 @@ public class DescriptionService {
 //        //description.create(descriptionDTO.getAnswer(),descriptionDTO.getQuiz(),descriptionDTO.getContent());
 //        return descriptionRepository.save(description);
 //    }
-    //description 생성
+    //====================================description 생성================================
     @Transactional
     public Long createDescription(DescriptionDTO descriptionDTO,Long QuestionId){
+        //description은 응답자와 생성자로 나뉘기 때문에 form의 memberId와 똑같으면 멤버 구분 해놓고 정답을 처리해야되는 column으로 박아야할지 아니면 돌아가면서 찾아야할지
+        //그럼 이론상 두번 돌아가는 거라서 좀 그렇다.
+        //근데 question에서 질문의 형식으로 description을 갖고 있는데 이건 응답도 갖고 있는거니까 question이랑 떼어놔야할것같음.
 
         QQuestion qQuestion=QQuestion.question;
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
@@ -77,6 +84,8 @@ public class DescriptionService {
         return DescriptionId;
     }
 
+    //========================read============================================
+
     //descriptionid로 해당 description 조회
     public Description getDescription(Long id){
         return descriptionRepository.findById(id)
@@ -84,11 +93,36 @@ public class DescriptionService {
     }
 
     //question_id로 해당 description 조회
-    public List <Description> getDescriptionByQ(Long quesion_id){
-        return descriptionRepository.findByQuestionId(quesion_id);
+    public List <Description> getDescriptionByQ(Long question_id){
+        return descriptionRepository.findByQuestionId(question_id);
 
     }
 
+    //description은 생성과 응답이 동시에 일어나니까 응답수를 셀때는 -1을 해야함.
+
+    @Transactional//(readOnly=true)
+    public int countDescriptionsByQuestionId(Long questionId){
+        int responseCnt = descriptionRepository.countDescriptionByQuestionId(questionId)-1;
+        return responseCnt;
+    }
+
+    //퀴즈 정답자 출력
+//    @Transactional//(reaOnly=true)
+//    public List<DescriptionSimpleInfoDTO> findQuizRightDescriptions(Long questionId){
+//        List<Description> descriptions = descriptionRepository.findByQuestionId(questionId);
+//        Question question = questionRepository.findById(questionId).orElseThrow(NotFoundByIdException::new);
+//        for(Re)
+//
+//
+//    }
+
+    //questionId로 description 응답수 조회
+
+
+
+
+
+//===================Update=================================
 
     //응답자가 없을때 질문 수정(응답자가 있는지 없는지는 formService에서 확인..?)
     //응답자가 없다고치면 description에서는 퀴즈일 경우 퀴즈 답만 수정이 가능한겨
