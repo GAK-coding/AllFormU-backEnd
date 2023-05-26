@@ -53,6 +53,7 @@ public class Question extends BaseTime {
     private String content;
     private boolean required;
     private int sectionNum;
+    private boolean quiz;
 
 
     @Enumerated(EnumType.STRING)
