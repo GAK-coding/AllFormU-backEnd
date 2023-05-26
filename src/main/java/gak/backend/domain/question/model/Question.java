@@ -53,6 +53,7 @@ public class Question extends BaseTime {
     private String content;
     private boolean required;
     private int sectionNum;
+    private boolean quiz;
 
 
     @Enumerated(EnumType.STRING)
@@ -101,5 +102,16 @@ public class Question extends BaseTime {
 //    public void setRequired(boolean required) {
 //        this.required = required;
 //    }
+
+    @Builder
+    public Question(Long id,Form form, String title, String content,boolean required, int sectionNum, boolean quiz, Format type){
+        this.form = form;
+        this.title = title;
+        this.content = content;
+        this.required = required;
+        this.sectionNum = sectionNum;
+        this.quiz = quiz;
+        this.type = type;
+    }
 
 }

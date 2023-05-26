@@ -34,6 +34,7 @@ public class QuestionDTO implements Serializable{
     private String title;
     private String content;
     private Boolean required;
+    private boolean quiz;
     private Integer sectionNum;
 
     @Enumerated(EnumType.STRING)
@@ -41,7 +42,7 @@ public class QuestionDTO implements Serializable{
 
 
     @Builder
-    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, Integer sectionNum, Format type) {
+    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, boolean quiz, Integer sectionNum, Format type) {
         this.id = id;
         this.form = form;
         this.options = options;
@@ -49,6 +50,7 @@ public class QuestionDTO implements Serializable{
         this.title = title;
         this.content = content;
         this.required = required;
+        this.quiz = quiz;
         this.sectionNum = sectionNum;
         this.type = type;
     }
@@ -58,15 +60,16 @@ public class QuestionDTO implements Serializable{
     //보여지는 것은 title이고 title은 실제 값 저장 되야하고
     //추가로 sectionNum은 따로 받아야 함.
     public Question of (Form form){
-      return Question.builder()
-              .form(form)
-              .title(title)
-              .content(content)
-              .required((required!=null)?required:false)
-              .sectionNum((sectionNum!=null)?sectionNum:0)
-              .type((type!=null)?type:Description_SHORT)
-              .build();
-   }
+        return Question.builder()
+                .form(form)
+                .title(title)
+                .content(content)
+                .required((required!=null)?required:false)
+                .quiz(quiz)
+                .sectionNum((sectionNum!=null)?sectionNum:0)
+                .type((type!=null)?type:Description_SHORT)
+                .build();
+    }
     public List<Selection> toSelection(SelectionRepository selectionRepository,Question question) {
         List<Selection> selectionList = new ArrayList<>();
         if(options.size()<1){

@@ -1,17 +1,23 @@
 package gak.backend.global.service;
 
+import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.dto.MemberDTO.EmailReqest;
+import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
+import gak.backend.domain.member.model.Member;
 import gak.backend.global.GlobalMethod;
+import gak.backend.global.error.ErrorResponse;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 
@@ -20,12 +26,14 @@ import java.io.UnsupportedEncodingException;
 @Service
 public class MailService {
     private final JavaMailSender javaMailSender;
+    private final MemberRepository memberRepository;
     private final GlobalMethod globalMethod = new GlobalMethod();
 
     //인증번호 생성
     private String authNum = "";
     private String id;
 
+    @Transactional
     public MimeMessage createMessage(String to, int n, String title, String type) throws MessagingException, UnsupportedEncodingException, jakarta.mail.MessagingException {
         //인증번호 생성
         authNum = globalMethod.makeRandom(n);
@@ -89,7 +97,8 @@ public class MailService {
     //bean으로 등록해둔 javaMail 객체를 사용해서 이메일 보낸다.
     //0이면 회원가입 관련 이메일
     //1이면 비밀 번호 재설정 이메일
-    public String sendSimpleMessage(EmailReqest emailReqest) throws Exception{
+    @Transactional
+    public ErrorResponse sendSimpleMessage(EmailReqest emailReqest) throws Exception{
         String title="";
         String s="";
         int n = 0; //인증코드 자릿수
@@ -112,7 +121,15 @@ public class MailService {
             e.printStackTrace();
             throw new IllegalArgumentException("Failed to send email", e);
         }
-        return authNum; //메일로 보냈던 인증 코드 서버로 리턴
+        if(emailReqest.getNum()==1){
+            Member member = memberRepository.findByEmail(emailReqest.getEmail()).orElseThrow(NotFoundMemberByEmailException::new);
+            member.UpdateMemberPassword(authNum);
+            log.info("임시 비번"+ member.getPassword());
+        }
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message(authNum)
+                .build(); //메일로 보냈던 인증 코드 서버로 리턴
     }
 
 

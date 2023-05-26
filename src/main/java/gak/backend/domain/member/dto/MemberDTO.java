@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
@@ -60,6 +61,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePasswordRequest{
@@ -88,6 +90,13 @@ public class MemberDTO {
     }
 
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EmailDTO{
+        private String email;
+    }
+
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -112,4 +121,14 @@ public class MemberDTO {
         private LocalDateTime modifiedTime;
 
     }
+
+//    @Getter
+//    @Builder
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class MemberResponseDTO{
+//        private HttpStatus httpStatus;
+//        private String message;
+//    }
+
 }
