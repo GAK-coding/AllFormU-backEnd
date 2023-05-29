@@ -103,6 +103,7 @@ public class DescriptionService {
     //========================read============================================
 
     //descriptionid로 해당 description 조회
+    @Transactional(readOnly = true)
     public Description getDescription(Long id){
         return descriptionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Description not found with id: " + id));
