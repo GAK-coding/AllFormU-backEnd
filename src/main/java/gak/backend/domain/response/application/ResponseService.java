@@ -158,9 +158,9 @@ public class ResponseService {
 
     //========================Update===================================
     @Transactional
-    public ResponseInfoDTO updateResponse(UpdateResponseRequest updateResponseRequest){
+    public ResponseInfoDTO updateResponse(Long responseId, UpdateResponseRequest updateResponseRequest){
         //response가 존재하는지 확인해야함.
-        Response response = responseRepository.findById(updateResponseRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Response response = responseRepository.findById(responseId).orElseThrow(NotFoundByIdException::new);
         Question question = questionRepository.findById(response.getQuestion().getId()).orElseThrow(NotFoundByIdException::new);
         //폼의 수정 여부를 불러오기 위해 찾아놓기
         Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
