@@ -111,7 +111,7 @@ public class DescriptionService {
 
     //question_id로 해당 description 조회 -> responsor, content만 나오게
     @Transactional(readOnly = true)
-    public List <DescriptionSimpleInfoDTO> getDescriptionByQ(Long question_id){
+    public List <DescriptionSimpleInfoDTO> getDescriptionByQuestionId(Long question_id){
         List<Description> dList = descriptionRepository.findByQuestionId(question_id);
         List<DescriptionSimpleInfoDTO> dsList = new ArrayList<>();
         for(Description d : dList){
