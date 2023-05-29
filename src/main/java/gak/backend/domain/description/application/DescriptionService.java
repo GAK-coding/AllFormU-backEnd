@@ -103,6 +103,7 @@ public class DescriptionService {
     //========================read============================================
 
     //descriptionid로 해당 description 조회
+    @Transactional(readOnly = true)
     public Description getDescription(Long id){
         return descriptionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Description not found with id: " + id));
@@ -110,7 +111,7 @@ public class DescriptionService {
 
     //question_id로 해당 description 조회 -> responsor, content만 나오게
     @Transactional(readOnly = true)
-    public List <DescriptionSimpleInfoDTO> getDescriptionByQ(Long question_id){
+    public List <DescriptionSimpleInfoDTO> getDescriptionByQuestionId(Long question_id){
         List<Description> dList = descriptionRepository.findByQuestionId(question_id);
         List<DescriptionSimpleInfoDTO> dsList = new ArrayList<>();
         for(Description d : dList){
@@ -125,7 +126,6 @@ public class DescriptionService {
 
 
     //description은 생성과 응답이 동시에 일어나니까 응답수를 셀때는 -1을 해야함.
-
     @Transactional(readOnly=true)
     public int countDescriptionsByQuestionId(Long questionId){
         int responseCnt = descriptionRepository.countDescriptionByQuestionId(questionId)-1;
