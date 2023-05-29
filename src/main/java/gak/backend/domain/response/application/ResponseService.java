@@ -79,10 +79,10 @@ public class ResponseService {
         return responseCnt;
     }
 
-    //객관식 각각의 인원수와 각각의 응다 여부 파악
+    //객관식 각각의 인원수와 각각의 응답 여부 파악
     //front는 해당 문제의 객관식 인덱스를 넘겨주는것 번호가 아님 번호는 1부터 시작하지만 index는 0붜터임 -> 이거 통일하는게 나으려나 번호로? 0번부터
     @Transactional(readOnly = true)
-    public List<ResponseSimpleInfoDTO>[] readStatisticByQuestionId(Long questionID){
+    public StatisticResponseDTO readStatisticByQuestionId(Long questionID){
         List<Response> responses = responseRepository.findByQuestionId(questionID);
         Question question = questionRepository.findById(questionID).orElseThrow(NotFoundByIdException::new);
         //객관식 옵션이 수만큼 새로운 배열을 생성 -> 질문이 수정이 되면 배열의 경우 수를 늘릴 수 없으니까 List가 돠어야한다고 생각했는데 그때그때 새로 초기화 되어서 만들어지니까 상관노일듯
@@ -92,7 +92,15 @@ public class ResponseService {
         for(Response response : responses){
             statistic[response.getNum()].add(response.toResponseSimpleInfoDTO(response.getResponsor(), question)); //인덱스에 맞는 count를 증가시킴
         }
-        return statistic;
+        //각각의 갯수 계산
+        int[] nums = new int[question.getOptions().size()];
+        for(int i = 0 ; i < question.getOptions().size(); i++){
+            nums[i] = statistic[i].size();
+        }
+        return StatisticResponseDTO.builder()
+                .responses(statistic)
+                .nums(nums)
+                .build();
     }
 
     //객관식 퀴즈 일 경우, 정답자 출력
