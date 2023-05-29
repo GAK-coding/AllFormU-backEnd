@@ -135,14 +135,14 @@ public class MemberService {
 //================================================Read==========================================
 
     //아이디로 멤버 객체 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public Member readMemberById(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return member;
     }
 
     //아이디로 멤버 infoDTO 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public MemberInfoDTO readMemberDTOById(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return member.toMemberInfoDTO();
@@ -150,14 +150,14 @@ public class MemberService {
 
 
     //이메일로 멤버 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public Member readMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundByIdException::new);
         return member;
     }
 
     //이메일로 멤버 infoDTO 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public MemberInfoDTO readMemberDTOByEmail(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
         return member.toMemberInfoDTO();
@@ -166,7 +166,7 @@ public class MemberService {
     //이메일로 비밀번호 조회
     //TODO 랜덤값으로 수정
     //TODO 비밀 번호 모를시에, 랜덤값으로 넘겨주고 변경하게 하기
-    @Transactional
+    @Transactional(readOnly = true)
     public String findPasswordByEmail(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberByEmailException::new);
         return member.getPassword();
