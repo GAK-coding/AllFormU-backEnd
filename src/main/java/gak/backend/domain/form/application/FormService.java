@@ -80,6 +80,18 @@ public class FormService {
         List<String> datetime= formDto.getTimeout();
         int flag=0;
 
+        //ExpireCorrespond(form,formDto);
+        //member 연관관계 갖기위해 해당 id의 member 객체 가져옴
+        Member author=memberRepository.findById(id).orElseThrow(() -> new NotFoundMemberException(id));
+        form.AuthorSetting(author);
+        form.SeparatorSetting(Separator.SEPARATOR_WRITER);
+        form.CorrespondSetting(Correspond.STATUS_BEFORE);
+
+        //question리스트 저장 , question엔티티 객체 자동 생성.
+        List<Question> questions= formDto.toQuestions(form);
+        form.QuestionSetting(questions);
+        formRepository.save(form);
+
         //첫번 째 배열이 시작시간 두번 째가 만료시간
         for(String time : datetime){
 
@@ -94,20 +106,23 @@ public class FormService {
                 //전달 받은 시간과 현재시간 차이 계산
                 Long sec=(end.getTime() -now.getTime())/1000;
 
+
                 //시작
                 //만일 받아 온 시간보다 지나 있을 경우엔 0으로 초기화해서 바로 진행 중으로 바뀌게 함.
 
                 if(sec<0 && flag==0){
                     status=Correspond.STATUS_PROCESS;
-                    sec=0L;
+                    sec=1L;
                 }
                 //시작
                 else if(sec>=0 && flag==0) {
                     status = Correspond.STATUS_PROCESS;
+
                 }
                 //만료
                 if(flag==1){
                     status=Correspond.STATUS_EXPIRE;
+
                 }
                 //현재 form, 카운트시간, status
                 ExpireCorrespond(form,sec,status);
@@ -119,17 +134,7 @@ public class FormService {
             flag++;
         }
 
-        //ExpireCorrespond(form,formDto);
-        //member 연관관계 갖기위해 해당 id의 member 객체 가져옴
-        Member author=memberRepository.findById(id).orElseThrow(() -> new NotFoundMemberException(id));
-        form.AuthorSetting(author);
-        form.SeparatorSetting(Separator.SEPARATOR_WRITER);
-        form.CorrespondSetting(Correspond.STATUS_BEFORE);
 
-        //question리스트 저장 , question엔티티 객체 자동 생성.
-        List<Question> questions= formDto.toQuestions(form);
-        form.QuestionSetting(questions);
-        formRepository.save(form);
 
         return form.getId(); //question에서 여기서 생성 된 객체 사용하기 위해 id값 반환
     }

@@ -11,6 +11,7 @@ import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
+import gak.backend.domain.member.model.Role;
 import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.exception.NotFoundQuestionException;
@@ -72,13 +73,16 @@ public class DescriptionService {
         //그럼 이론상 두번 돌아가는 거라서 좀 그렇다.
         //근데 question에서 질문의 형식으로 description을 갖고 있는데 이건 응답도 갖고 있는거니까 question이랑 떼어놔야할것같음.
         //member가 작성자인 동시에 응답자일수도 있기 대문에 STATUS로 상태를 비교하는 건 안좋은 것 같음.
-//        Question question = questionRepository.findById(QuestionId).orElseThrow(NotFoundByIdException::new);
-//        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
-//        Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-//
-//        if(descriptionDTO.getMember().getId() == author.getId()){
-//
-//        }
+        Question question = questionRepository.findById(QuestionId).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(descriptionDTO.getMember().getId()).orElseThrow(NotFoundByIdException::new);
+        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+        Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+
+        //응답자면 멤버 상태 변경
+        if(member.getId() != author.getId()){
+            member.UpdateMemberRole(Role.Role_Responsor);
+        }
+
 
 
         QQuestion qQuestion=QQuestion.question;
