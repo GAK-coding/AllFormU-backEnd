@@ -55,7 +55,7 @@ public class DescriptionController {
     }
 
     //해당 문제의 응답자 수 확인
-    @GetMapping("/description/statistic/{question_id}")
+    @GetMapping("/description/statistic/count/{question_id}")
     public int countDescriptionsByQuestionId(@PathVariable(name = "question_id") Long quesitonId){
         int num = descriptionService.countDescriptionsByQuestionId(quesitonId);
         return num;
