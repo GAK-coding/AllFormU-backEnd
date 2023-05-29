@@ -51,7 +51,6 @@ public class ResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdateResponseRequest{
-        private Long id;
         private int changeNum;
     }
 
