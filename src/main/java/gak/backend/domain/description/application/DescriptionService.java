@@ -126,7 +126,6 @@ public class DescriptionService {
 
 
     //description은 생성과 응답이 동시에 일어나니까 응답수를 셀때는 -1을 해야함.
-
     @Transactional(readOnly=true)
     public int countDescriptionsByQuestionId(Long questionId){
         int responseCnt = descriptionRepository.countDescriptionByQuestionId(questionId)-1;
