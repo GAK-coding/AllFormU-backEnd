@@ -68,13 +68,13 @@ public class DescriptionService {
 //    }
     //====================================description 생성================================
     @Transactional
-    public Long createDescription(DescriptionDTO descriptionDTO,Long QuestionId){
+    public Long createDescription(DescriptionSaveRequest descriptionSaveRequest,Long QuestionId){
         //description은 응답자와 생성자로 나뉘기 때문에 form의 memberId와 똑같으면 멤버 구분 해놓고 정답을 처리해야되는 column으로 박아야할지 아니면 돌아가면서 찾아야할지
         //그럼 이론상 두번 돌아가는 거라서 좀 그렇다.
         //근데 question에서 질문의 형식으로 description을 갖고 있는데 이건 응답도 갖고 있는거니까 question이랑 떼어놔야할것같음.
         //member가 작성자인 동시에 응답자일수도 있기 대문에 STATUS로 상태를 비교하는 건 안좋은 것 같음.
         Question question = questionRepository.findById(QuestionId).orElseThrow(NotFoundByIdException::new);
-        Member member = memberRepository.findById(descriptionDTO.getMember().getId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(descriptionSaveRequest.getMember_id()).orElseThrow(NotFoundByIdException::new);
         Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
         Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
 
@@ -97,7 +97,7 @@ public class DescriptionService {
             throw new NotFoundDescriptionException(QuestionId);
         }
 
-        Description description=descriptionDTO.of(question_sgl);
+        Description description=descriptionSaveRequest.of(question_sgl);
         Description saveDescription=descriptionRepository.save(description);
         Long DescriptionId=saveDescription.getId();
 

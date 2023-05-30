@@ -2,6 +2,7 @@ package gak.backend.domain.description.api;
 
 import gak.backend.domain.description.application.DescriptionService;
 import gak.backend.domain.description.dto.DescriptionDTO;
+import gak.backend.domain.description.dto.DescriptionDTO.DescriptionSaveRequest;
 import gak.backend.domain.description.dto.DescriptionDTO.DescriptionSimpleInfoDTO;
 import gak.backend.domain.description.dto.DescriptionDTO.DescriptionStatisticDTO;
 import gak.backend.domain.description.model.Description;
@@ -34,9 +35,9 @@ public class DescriptionController {
 
     //description생성
     @PostMapping("/description/createDescription/{questionid}")
-    public Long add(@RequestBody DescriptionDTO descriptionDTO,@PathVariable("questionid")Long QuestionId){
+    public Long add(@RequestBody @Validated DescriptionSaveRequest descriptionSaveRequest, @PathVariable(name="questionid")Long questionId){
 
-        return descriptionService.createDescription(descriptionDTO,QuestionId);
+        return descriptionService.createDescription(descriptionSaveRequest,questionId);
     }
 
 

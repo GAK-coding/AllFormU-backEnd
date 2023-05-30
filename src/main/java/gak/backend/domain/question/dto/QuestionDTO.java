@@ -102,7 +102,7 @@ public class QuestionDTO implements Serializable{
         }
         for (DescriptionDTO descriptionDTO : descriptions) {
             Description description = Description.builder()
-                    .content((descriptionDTO.getContent()!="")? descriptionDTO.getContent():"입력 값 없음")
+                    .content((this.content!="")? this.content:"입력 값 없음")
                     .question(question)
                     .build();
             descriptionList.add(description);
