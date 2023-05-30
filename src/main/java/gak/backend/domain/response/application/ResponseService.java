@@ -46,6 +46,7 @@ public class ResponseService {
                 //TODO 여기에서 Grid, 복수형과 차별점을 둘 것.
             }
             Response response = saveResponseRequest.toEntity(responsor, question);
+            responseRepository.save(response);
             ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
 
             return responseInfoDTO;
