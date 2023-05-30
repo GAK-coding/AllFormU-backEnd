@@ -46,7 +46,7 @@ public class FormDTO implements Serializable {
     private Boolean fix;
 
     @Builder
-    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content,Boolean fix,List<String> Timeout){
+    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content,Boolean fix){
 
         this.id=id;
         this.fix=fix;
@@ -54,7 +54,7 @@ public class FormDTO implements Serializable {
         this.questions=questions;
         this.title=title;
         this.content=content;
-        this.timeout=timeout;
+        //this.timeout=timeout;
 
 
     }
