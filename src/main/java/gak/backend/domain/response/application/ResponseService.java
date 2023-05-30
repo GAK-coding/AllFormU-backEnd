@@ -39,6 +39,17 @@ public class ResponseService {
         Member responsor = memberRepository.findById(saveResponseRequest.getResponsorId()).orElseThrow(NotFoundByIdException::new);
         Question question = questionRepository.findById(saveResponseRequest.getQuestionId()).orElseThrow(NotFoundByIdException::new);
         Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+        List<Response> responses = responseRepository.findByQuestionId(question.getId());
+//        if(responsor.getId()==form.getAuthor().getId()){
+//            throw new CanNotAccessResponse("작성자는 응답을 할 수 없습니다.");
+//        }
+        //이미했던 응답자 거름
+        for(Response rp: responses){
+            if(rp.getId()==saveResponseRequest.getResponsorId()){
+                throw new CanNotAccessResponse("이미 설문에 참여한 응답자 입니다.");
+            }
+        }
+
         if(form.getCorrespond()==Correspond.STATUS_PROCESS) {
             responsor.UpdateMemberRole(Role.Role_Responsor);
             //문제 유형마다 다르게 답변이 저장되어야함.
