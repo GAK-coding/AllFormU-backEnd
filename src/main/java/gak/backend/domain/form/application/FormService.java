@@ -1,5 +1,11 @@
 package gak.backend.domain.form.application;
 
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.cloud.StorageClient;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.model.Description;
@@ -29,9 +35,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -64,8 +75,34 @@ public class FormService {
     private final SelectionRepository selectionRepository;
     private final QuestionRepository questionRepository;
 
+    @Value("${app.firebase-bucket}")
+    private String firebaseBucket;
+
+
     @PersistenceContext
     private EntityManager entityManager;
+
+
+
+    public String uploadFiles(MultipartFile file, String nameFile) throws IOException, FirebaseAuthException{
+
+        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
+        InputStream content= new ByteArrayInputStream(file.getBytes());
+        Blob blob=bucket.create(nameFile.toString(), content, file.getContentType());
+        return blob.getMediaLink();
+    }
+
+    public byte[] getImage(String fileName){
+        System.out.println("BYTE: ");
+        Storage storage= StorageOptions.getDefaultInstance().getService();
+        Bucket bucket = storage.get(firebaseBucket);
+        Blob blob=bucket.get(fileName);
+        System.out.println("blob: "+blob);
+        if(blob!=null){
+            return blob.getContent();
+        }
+        return null;
+    }
 
     /*
         title, content까지 저장
@@ -117,12 +154,10 @@ public class FormService {
                 //시작
                 else if(sec>=0 && flag==0) {
                     status = Correspond.STATUS_PROCESS;
-
                 }
                 //만료
                 if(flag==1){
                     status=Correspond.STATUS_EXPIRE;
-
                 }
                 //현재 form, 카운트시간, status
                 ExpireCorrespond(form,sec,status);

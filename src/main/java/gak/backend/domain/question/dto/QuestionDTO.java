@@ -12,6 +12,7 @@ import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,14 @@ public class QuestionDTO implements Serializable{
         this.sectionNum = sectionNum;
         this.type = type;
     }
+
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class Id_list{
+//        private Form form;
+//        private ;
+//    }
 
 
     //첫 생성 시에는 (create) 타입형식만 받아오기 때문에 다른 값들은 뭐가 들어가도 상관 x

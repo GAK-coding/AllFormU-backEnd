@@ -78,6 +78,7 @@ public class DescriptionService {
         Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
         Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
 
+
         //응답자면 멤버 상태 변경
         if(member.getId() != author.getId()){
             member.UpdateMemberRole(Role.Role_Responsor);
