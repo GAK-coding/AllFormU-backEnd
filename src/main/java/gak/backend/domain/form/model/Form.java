@@ -62,6 +62,7 @@ public class Form extends BaseTime {
     }
 
     public void UpdateSelectForm(FormDTO formDTO){
+
         this.content=(formDTO.getContent()!=null) ? formDTO.getContent() : this.content;
         this.fix=(formDTO.getFix()!=null) ? formDTO.getFix() : this.fix;
         this.title=(formDTO.getTitle()!=null) ? formDTO.getTitle() : this.title;
