@@ -15,6 +15,9 @@ configurations {
 		extendsFrom annotationProcessor
 	}
 }
+//configurations.all {
+//	exclude module: 'commons-logging' // 중복된 의존성 충돌 방지
+//}
 
 repositories {
 	mavenCentral()
@@ -22,26 +25,40 @@ repositories {
 
 dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' //swagger
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-
+	implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.0'
 	//Querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-	//Swagger 추가
-	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
-//	implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
-//	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-//	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+	//이메일 인증
+	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
+	compile "org.springframework.integration:spring-integration-mail:6.0.5"
+	//이 버전으로 하면 무조건 "Not provider of jakarta.mail.util.StreamProvider was found" 이 에러가 남.
+	//implementation 'jakarta.mail:jakarta.mail-api:2.1.0'
+	implementation('jakarta.activation:jakarta.activation-api:2.0.1')
+	implementation('jakarta.mail:jakarta.mail-api:2.0.1')
+	implementation('com.sun.mail:jakarta.mail:2.0.1')
+
+//	//security
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+//	testImplementation 'org.springframework.security:spring-security-test'
+//
+//	//JWT
+//	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+//	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+//	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 
 }

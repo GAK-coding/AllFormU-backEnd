@@ -22,10 +22,10 @@ public class SelectionController {
     private final SelectionService selectionService;
 
     //Selection 생성
-    @PostMapping("/selection/createSelection")
-    public String add(@RequestBody SelectionDTO selectionDTO){
-        selectionService.createSelection(selectionDTO);
-        return "create selection";
+    @PostMapping("/selection/createSelection/{questionid}")
+    public List<Long> add(@RequestBody SelectionDTO selectionDTO,@PathVariable("questionid")Long QuestionId){
+
+        return selectionService.createSelection(selectionDTO,QuestionId);
     }
 
     //Selection 조회
@@ -42,11 +42,11 @@ public class SelectionController {
     }
 
     //객관식 수정
-    @PutMapping("/selection/updateContent/{id}")
-    public ResponseEntity<Selection> updateSelectionContent(@PathVariable(value="id")Long id,
+    @PutMapping("/selection/updateContent/{questionid}/{selectionid}")
+    public ResponseEntity<Selection> updateSelectionContent(@PathVariable(value="questionid")Long QuestionId,@PathVariable(value="selectionid")Long SelectionId,
                                                             @RequestBody Map<String, String> requestBody){
         String updateContent=requestBody.get("content");
-        final Selection updatedSelection=selectionService.updateContent(id,updateContent);
+        final Selection updatedSelection=selectionService.updateContent(QuestionId,SelectionId,updateContent);
         return ResponseEntity.ok(updatedSelection);
     }
 
