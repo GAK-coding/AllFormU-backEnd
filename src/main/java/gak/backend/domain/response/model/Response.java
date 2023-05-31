@@ -56,10 +56,11 @@ public class Response extends BaseTime {
                 .build();
     }
 
-    public ResponseSimpleInfoDTO toResponseSimpleInfoDTO(Member responsor, Question question){
+    public ResponseSimpleInfoDTO toResponseSimpleInfoDTO(){
         return ResponseSimpleInfoDTO.builder()
-                .responsorId(responsor.getId())
-                .questionId(question.getId())
+                .id(this.id)
+                .responsorId(this.responsor.getId())
+                .questionId(this.question.getId())
                 .num(this.num)
                 .build();
     }

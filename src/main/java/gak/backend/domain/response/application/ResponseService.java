@@ -1,5 +1,6 @@
 package gak.backend.domain.response.application;
 
+import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.model.Correspond;
 import gak.backend.domain.form.model.Form;
@@ -44,11 +45,9 @@ public class ResponseService {
 //            throw new CanNotAccessResponse("작성자는 응답을 할 수 없습니다.");
 //        }
         //이미했던 응답자 거름
-        for(Response rp: responses){
-            if(rp.getId()==saveResponseRequest.getResponsorId()){
+        if(responseRepository.existsByResponsorId(saveResponseRequest.getResponsorId())){
                 throw new CanNotAccessResponse("이미 설문에 참여한 응답자 입니다.");
             }
-        }
 
         if(form.getCorrespond()==Correspond.STATUS_PROCESS) {
             responsor.UpdateMemberRole(Role.Role_Responsor);
@@ -77,7 +76,7 @@ public class ResponseService {
 
         List<ResponseSimpleInfoDTO> responsesSimpleInfoDTOs = new ArrayList<>();
         for(Response response : responses){
-            ResponseSimpleInfoDTO responseSimpleInfoDTO = response.toResponseSimpleInfoDTO(response.getResponsor(), response.getQuestion());
+            ResponseSimpleInfoDTO responseSimpleInfoDTO = response.toResponseSimpleInfoDTO();
             responsesSimpleInfoDTOs.add(responseSimpleInfoDTO);
         }
         return responsesSimpleInfoDTOs;
@@ -99,15 +98,19 @@ public class ResponseService {
         Question question = questionRepository.findById(questionID).orElseThrow(NotFoundByIdException::new);
         //객관식 옵션이 수만큼 새로운 배열을 생성 -> 질문이 수정이 되면 배열의 경우 수를 늘릴 수 없으니까 List가 돠어야한다고 생각했는데 그때그때 새로 초기화 되어서 만들어지니까 상관노일듯
         //int[] countEachResponse = new int[question.getOptions().size()];
-        List<ResponseSimpleInfoDTO>[] statistic = new List[question.getOptions().size()];
+        List<List<ResponseSimpleInfoDTO>> statistic = new ArrayList<List<ResponseSimpleInfoDTO>>();
+        //인덱스 초기화
+        for(int i = 0; i < question.getOptions().size()  ; i++){
+            statistic.add(new ArrayList<>());
+        }
         //배열의 인덱스가 옵션들의 인덱스
         for(Response response : responses){
-            statistic[response.getNum()].add(response.toResponseSimpleInfoDTO(response.getResponsor(), question)); //인덱스에 맞는 count를 증가시킴
+            statistic.get(response.getNum()).add(response.toResponseSimpleInfoDTO()); //인덱스에 맞는 count를 증가시킴
         }
         //각각의 갯수 계산
         int[] nums = new int[question.getOptions().size()];
         for(int i = 0 ; i < question.getOptions().size(); i++){
-            nums[i] = statistic[i].size();
+            nums[i] = statistic.get(i).size();
         }
         return StatisticResponseDTO.builder()
                 .responses(statistic)
@@ -133,7 +136,7 @@ public class ResponseService {
         //num이랑 answer가 같으면 정답임 -> 그럼 정답 응답을 list에 넣고 반환
         for(Response response : responses){
             if(response.getNum()==answer){
-                quizRightResponses.add(response.toResponseSimpleInfoDTO(response.getResponsor(), question));
+                quizRightResponses.add(response.toResponseSimpleInfoDTO());
             }
         }
 
@@ -170,7 +173,7 @@ public class ResponseService {
 
     //========================Update===================================
     @Transactional
-    public ResponseInfoDTO updateResponse(Long responseId, UpdateResponseRequest updateResponseRequest){
+    public ResponseSimpleInfoDTO updateResponse(Long responseId, UpdateResponseRequest updateResponseRequest){
         //response가 존재하는지 확인해야함.
         Response response = responseRepository.findById(responseId).orElseThrow(NotFoundByIdException::new);
         Question question = questionRepository.findById(response.getQuestion().getId()).orElseThrow(NotFoundByIdException::new);
@@ -182,8 +185,8 @@ public class ResponseService {
         if(form.isFix()) { //응답이 수정 가능 하고 설문이 유효한 경우
             if(form.getCorrespond()== Correspond.STATUS_PROCESS) {// 사실 조건 검사를 &&로 묶어도 되나 예외를 세분화 하기 위해서 두개의 if문을 사용함.
                 response.updateResponse(updateResponseRequest.getChangeNum());
-                ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
-                return responseInfoDTO;
+                ResponseSimpleInfoDTO responseSimpleInfoDTO = response.toResponseSimpleInfoDTO();
+                return responseSimpleInfoDTO;
             }
             else{ //응답 수정은 가능하나 , 상태가 맞지 않아서 불가능 한 경우
                 throw new CanNotAccessResponse("설문 응답 시간이 아닙니다.");
