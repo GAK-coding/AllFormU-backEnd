@@ -21,9 +21,11 @@ public class DescriptionDTO{
         private Long question_id;
         private String content;
 
-        public Description of(Question question){
+        public Description of(Member member, Question question){
             return Description.builder()
+                    .member(member)
                     .question(question)
+                    .content(this.content)
                     .build();
         }
     }
@@ -33,11 +35,20 @@ public class DescriptionDTO{
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DescriptionSimpleInfoDTO{
+        private Long id;
         private Long member_id;
-        private String content;
-        private Long question_id;
     }
 
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DescriptionInfoDTO{
+        private Long id;
+        private Long member_id;
+        private Long question_id;
+        private String content;
+    }
     @Builder
     @Getter
     @AllArgsConstructor
@@ -46,6 +57,16 @@ public class DescriptionDTO{
         List<List<DescriptionSimpleInfoDTO>> response;
         int[] num;
 
+    }
+
+    //원래 응답은 삭제가 안되지만 생성에도 사용되니까 사용자가 삭제를 원할 경우, 삭제
+    //응답이 1개라도 있으면 삭제 불가능하게
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteDescriptionDTO{
+        private Long memberId;
+       // private Long descriptionId;
     }
 
 }

@@ -2,6 +2,7 @@ package gak.backend.domain.description.api;
 
 import gak.backend.domain.description.application.DescriptionService;
 import gak.backend.domain.description.dto.DescriptionDTO;
+import gak.backend.domain.description.dto.DescriptionDTO.DescriptionInfoDTO;
 import gak.backend.domain.description.dto.DescriptionDTO.DescriptionSaveRequest;
 import gak.backend.domain.description.dto.DescriptionDTO.DescriptionSimpleInfoDTO;
 import gak.backend.domain.description.dto.DescriptionDTO.DescriptionStatisticDTO;
@@ -9,6 +10,7 @@ import gak.backend.domain.description.model.Description;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
@@ -35,7 +37,7 @@ public class DescriptionController {
 
     //description생성
     @PostMapping("/description/createDescription/{questionid}")
-    public Long add(@RequestBody @Validated DescriptionSaveRequest descriptionSaveRequest, @PathVariable(name="questionid")Long questionId){
+    public DescriptionInfoDTO add(@RequestBody @Validated DescriptionSaveRequest descriptionSaveRequest, @PathVariable(name="questionid")Long questionId){
 
         return descriptionService.createDescription(descriptionSaveRequest,questionId);
     }
@@ -43,23 +45,25 @@ public class DescriptionController {
 
     //===============================read===========================
 
-    //description조회
-    @GetMapping("/description/getDescription/{id}")
-    public Description getId(@PathVariable("id")Long id){
-        return descriptionService.getDescription(id);
+    //descriptionId로 description 조회
+    @GetMapping("/description/getDescription/{description_id}")
+    public ResponseEntity<DescriptionInfoDTO> getId(@PathVariable("description_id")Long id){
+        DescriptionInfoDTO descriptionInfoDTO = descriptionService.getDescription(id);
+        return new ResponseEntity<>(descriptionInfoDTO, HttpStatus.OK);
     }
 
     //quesstion_id로 description조회
     @GetMapping("/description/{question_id}")
-    public List<DescriptionSimpleInfoDTO> getIdByQ(@PathVariable("question_id")Long question_id){
-        return descriptionService.getDescriptionByQuestionId(question_id);
+    public ResponseEntity<List<DescriptionInfoDTO>> getIdByQ(@PathVariable("question_id")Long question_id){
+        List<DescriptionInfoDTO> descriptionInfoDTO = descriptionService.getDescriptionByQuestionId(question_id);
+        return new ResponseEntity<>(descriptionInfoDTO, HttpStatus.OK);
     }
 
     //해당 문제의 응답자 수 확인
     @GetMapping("/description/statistic/{question_id}/count")
-    public int countDescriptionsByQuestionId(@PathVariable(name = "question_id") Long quesitonId){
+    public ResponseEntity<Integer> countDescriptionsByQuestionId(@PathVariable(name = "question_id") Long quesitonId){
         int num = descriptionService.countDescriptionsByQuestionId(quesitonId);
-        return num;
+        return new ResponseEntity<>(num, HttpStatus.OK);
     }
 
     //퀴즈 & 통계 -> 정담자 출력
@@ -87,11 +91,10 @@ public class DescriptionController {
     }
 
     //==================delete======================
-    @DeleteMapping("/description/deleteDescription/{id}")
-    public String deleteId(@PathVariable("id")Long id){
-        descriptionService.deleteSelectionById(id);
-
-        return "description delete";
+    @DeleteMapping("/description/deleteDescription/{description_id}")
+    public ResponseEntity<String> deleteId(@PathVariable(value="description_id")Long descriptionId, @RequestBody DescriptionDTO.DeleteDescriptionDTO deleteDescriptionDTO){
+        String s = descriptionService.deleteSelectionById(deleteDescriptionDTO, descriptionId);
+        return new ResponseEntity<>(s, HttpStatus.OK);
     }
 
 }
