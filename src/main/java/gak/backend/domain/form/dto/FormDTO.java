@@ -71,6 +71,16 @@ public class FormDTO implements Serializable {
         private String title;
     }
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getSelectForm{
+
+        private List<String> SectionName;
+        private Form form;
+
+
+    }
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor

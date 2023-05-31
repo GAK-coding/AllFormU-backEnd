@@ -242,7 +242,7 @@ public class FormService {
     /*
         author id의 formid에 해당되는 설문지 조회.
     */
-    public Form getSelectFormById(Long id, Long FormId) {
+    public FormDTO.getSelectForm getSelectFormById(Long id, Long FormId) {
 
         QForm form = QForm.form;
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
@@ -255,8 +255,13 @@ public class FormService {
         if(form_sgl==null)
             throw new NotFoundFormException(id,FormId);
 
+        List<String>temp_SecName=new ArrayList<>();
+        for(Question question:form_sgl.getQuestions()){
+            temp_SecName.add(question.getSectionName());
+        }
+        FormDTO.getSelectForm getSelectForm=new FormDTO.getSelectForm(temp_SecName,form_sgl);
 
-        return form_sgl;
+        return getSelectForm;
 
 
     }
@@ -274,10 +279,20 @@ public class FormService {
     @Transactional
   public Form updateSelectForm(FormDTO.UpdateFormData updateFormData, Long Userid, Long FormId ) {
 
-       Form form=getSelectFormById(Userid,FormId);
-       form.UpdateSelectForm(updateFormData);
+        QForm form = QForm.form;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+        Form form_sgl = query
+                .selectFrom(form)
+                .where(form.author.id.eq(Userid)
+                        .and(form.id.eq(FormId)))
+                .fetchOne();
 
-       return form;
+        if(form_sgl==null)
+            throw new NotFoundFormException(Userid,FormId);
+
+        form_sgl.UpdateSelectForm(updateFormData);
+
+       return form_sgl;
   }
 
 

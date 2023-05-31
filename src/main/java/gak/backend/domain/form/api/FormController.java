@@ -99,7 +99,7 @@ public class FormController {
 
     }
     @GetMapping("/form/findform/{UserId}/{FormId}")
-    public Form getSelectForm(@PathVariable("UserId")Long authorid,@PathVariable("FormId")Long Formid){
+    public FormDTO.getSelectForm getSelectForm(@PathVariable("UserId")Long authorid,@PathVariable("FormId")Long Formid){
 
         return formService.getSelectFormById(authorid,Formid);
 
