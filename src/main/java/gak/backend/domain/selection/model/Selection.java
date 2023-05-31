@@ -1,8 +1,10 @@
 package gak.backend.domain.selection.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
+import gak.backend.domain.selection.dto.SelectionDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +43,12 @@ public class Selection extends BaseTime {
         this.answer=answer;
 //        this.quiz=quiz;
     }
-
+    public SelectionDTO.SelectionInfoDTO SelectionInfoDTO(){
+        return SelectionDTO.SelectionInfoDTO.builder()
+                .id(this.id)
+                .content(this.content)
+                .build();
+    }
     public void updateContent(String content){
         this.content=content;
     }

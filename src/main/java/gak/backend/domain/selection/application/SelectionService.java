@@ -55,7 +55,7 @@ public class SelectionService {
 //        return selectionRepository.save(selection);
 //    }
     @Transactional
-    public List<Long> createSelection(SelectionDTO selectionDTO,Long QuestionId){
+    public List<SelectionDTO.SelectionInfoDTO> createSelection(SelectionDTO.AllSelectionData allSelectionData, Long QuestionId){
         QQuestion qQuestion=QQuestion.question;
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
         List<Long> SelectionId=new ArrayList<>();
@@ -72,17 +72,19 @@ public class SelectionService {
 
 
         List<Selection> sel_List=question_sgl.getOptions();
-        sel_List.add(selectionDTO.of(question_sgl));
+        sel_List.add(allSelectionData.of(question_sgl));
         List<Selection> saveSelection=selectionRepository.saveAll(sel_List);
 
-
+        List<SelectionDTO.SelectionInfoDTO> ListSelectionInfo=new ArrayList<>();
         //save이후에 pk값을 받아올 수 있음.
         for(Selection savedSelection : saveSelection) {
-            Long id = savedSelection.getId();
-            SelectionId.add(id);
-            System.out.println("SelectionId:" + id);
+            SelectionDTO.SelectionInfoDTO temp_data=savedSelection.SelectionInfoDTO();
+//            Long id = savedSelection.getId();
+//            SelectionId.add(id);
+            //System.out.println("SelectionId:" + id);
+            ListSelectionInfo.add(temp_data);
         }
-        return SelectionId;
+        return ListSelectionInfo;
     }
 
     //SelectionId 해당 Selection 조회
