@@ -25,7 +25,6 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @Slf4j
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
     //private final RegisterMailService registerMailService;
