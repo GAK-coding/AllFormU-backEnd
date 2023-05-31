@@ -29,7 +29,7 @@ public class QuestionDTO implements Serializable{
 
     private Long id;
     private Form form;
-    private List<SelectionDTO> options =new ArrayList<>();
+    private List<SelectionDTO.AllSelectionData> options =new ArrayList<>();
     private List<DescriptionDTO> descriptions =new ArrayList<>();
     private String title;
     private String content;
@@ -42,7 +42,7 @@ public class QuestionDTO implements Serializable{
 
 
     @Builder
-    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, boolean quiz, Integer sectionNum, Format type) {
+    public QuestionDTO(Long id, Form form, List<SelectionDTO.AllSelectionData> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, boolean quiz, Integer sectionNum, Format type) {
         this.id = id;
         this.form = form;
         this.options = options;
@@ -80,9 +80,9 @@ public class QuestionDTO implements Serializable{
             selectionRepository.saveAll(selectionList);
         }
 
-        for (SelectionDTO selectionDTO : options) {
+        for (SelectionDTO.AllSelectionData allSelectionData : options) {
             Selection selection = Selection.builder()
-                    .content((selectionDTO.getContent() !="")? selectionDTO.getContent():"입력 값 없음")
+                    .content((allSelectionData.getContent() !="")? allSelectionData.getContent():"입력 값 없음")
                     .question(question)
                     .build();
             selectionList.add(selection);
