@@ -23,9 +23,9 @@ public class SelectionController {
 
     //Selection 생성
     @PostMapping("/selection/createSelection/{questionid}")
-    public List<Long> add(@RequestBody SelectionDTO selectionDTO,@PathVariable("questionid")Long QuestionId){
+    public List<SelectionDTO.SelectionInfoDTO> add(@RequestBody SelectionDTO.AllSelectionData allSelectionData, @PathVariable("questionid")Long QuestionId){
 
-        return selectionService.createSelection(selectionDTO,QuestionId);
+        return selectionService.createSelection(allSelectionData,QuestionId);
     }
 
     //Selection 조회

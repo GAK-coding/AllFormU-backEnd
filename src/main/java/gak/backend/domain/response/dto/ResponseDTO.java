@@ -38,12 +38,19 @@ public class ResponseDTO {
         private Long questionId;
         private int num;
     }
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class StatisticResponseDTO{
+        private List<ResponseSimpleInfoDTO>[] responses;
+        private int[] nums;
+    }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdateResponseRequest{
-        private Long id;
         private int changeNum;
     }
 

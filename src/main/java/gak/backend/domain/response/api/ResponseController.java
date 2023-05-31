@@ -44,8 +44,8 @@ public class ResponseController {
 
     //객관식 옵션별 응답 여부 파악
     @GetMapping(value="/response/{question_id}/statistic")
-    public ResponseEntity<List<ResponseSimpleInfoDTO>[]> readStatisticByQuestionId(@PathVariable(name="question_id") Long questionId){
-        List<ResponseSimpleInfoDTO>[] statistic = responseService.readStatisticByQuestionId(questionId);
+    public ResponseEntity<StatisticResponseDTO> readStatisticByQuestionId(@PathVariable(name="question_id") Long questionId){
+        StatisticResponseDTO statistic = responseService.readStatisticByQuestionId(questionId);
         return new ResponseEntity<>(statistic, HttpStatus.OK);
     }
     //객관식일 경우, 정답자 출력
@@ -57,8 +57,8 @@ public class ResponseController {
 
     //==================응답 수정======================
     @PatchMapping(value= "/response/{response_id}")
-    public ResponseEntity<ResponseInfoDTO> updateResponse(@PathVariable(name="response_id")Long resposeId,@RequestBody @Validated UpdateResponseRequest updateResponseRequest){
-        ResponseInfoDTO responseInfoDTO = responseService.updateResponse(updateResponseRequest);
+    public ResponseEntity<ResponseInfoDTO> updateResponse(@PathVariable(name="response_id")Long responseId,@RequestBody @Validated UpdateResponseRequest updateResponseRequest){
+        ResponseInfoDTO responseInfoDTO = responseService.updateResponse(responseId,updateResponseRequest);
         return new ResponseEntity<>(responseInfoDTO, HttpStatus.OK);
     }
 
