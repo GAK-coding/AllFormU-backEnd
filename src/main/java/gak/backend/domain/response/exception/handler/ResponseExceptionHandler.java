@@ -18,7 +18,7 @@ public class ResponseExceptionHandler {
     protected final ResponseEntity<ErrorResponse> CanNotAccessResponseHandler(CanNotAccessResponse e, WebRequest webRequest){
         log.debug("설문을 응답할 수 없습니다.");
         final ErrorResponse errorResponse = ErrorResponse.builder()
-                .httpStatus(HttpStatus.FORBIDDEN)
+                .httpStatus(HttpStatus.NOT_ACCEPTABLE)
                 .message(e.getMessage())
                 .build();
         return ResponseEntity.ok(errorResponse);
