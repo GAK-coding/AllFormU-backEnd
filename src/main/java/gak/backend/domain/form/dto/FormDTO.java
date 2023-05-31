@@ -22,10 +22,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class FormDTO implements Serializable {
 
 
@@ -37,52 +34,131 @@ public class FormDTO implements Serializable {
     private String title;
     private String content;
 
-    private List<String> timeout;
+    //private List<String> timeout;
     //private List<Integer> Timeout;
-    @Enumerated(EnumType.STRING)
-    private Separator separator;
-    @Enumerated(EnumType.STRING)
-    private Correspond correspond;
+//    @Enumerated(EnumType.STRING)
+//    private Separator separator;
+//    @Enumerated(EnumType.STRING)
+//    private Correspond correspond;
 
     //private boolean required;
     private Boolean fix;
 
-    @Builder
-    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content,Boolean fix){
 
-        this.id=id;
-        this.fix=fix;
-        this.authorId=authorId;
-        this.questions=questions;
-        this.title=title;
-        this.content=content;
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class CreateForm{
+//
+//        private String title;
+//        private String content;
+//        private Boolean fix;
+//        public Form of (){
+//            return Form.builder()
+//                    .title(title)
+//                    .fix((fix!=null)?fix:false)
+//                    .content(content)
+//                    .build();
+//        }
+//    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateFormData{
+        private String content;
+        private Boolean fix;
+        private String title;
+    }
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PagingDTO{
+        private Long id;
+        private String content;
+        private String title;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AllFormData{
+
+
+        private Long id;
+        private Boolean fix;
+        private Long authorId;
+        private List<QuestionDTO> questions;
+        private String title;
+        private String content;
+        private List<String> timeout;
+
+        public Form of (){
+            return Form.builder()
+                    .title(title)
+                    .fix((fix!=null)?fix:false)
+                    .content(content)
+                    .build();
+        }
+        public List<Question> toQuestions(Form form) {
+
+            List<Question> questionList = new ArrayList<>();
+            for (QuestionDTO questionDTO : questions) {
+                Question question = Question.builder()
+                        .form(form)
+                        .title(questionDTO.getTitle())
+                        .required(questionDTO.getRequired())
+                        .sectionNum(questionDTO.getSectionNum())
+                        .type(questionDTO.getType())
+                        .build();
+                questionList.add(question);
+            }
+            return questionList;
+        }
+
         //this.timeout=timeout;
 
 
     }
 
-    public Form of (){
-        return Form.builder()
-                .title(title)
-                .fix((fix!=null)?fix:false)
-                .content(content)
-                .build();
-    }
-    public List<Question> toQuestions(Form form) {
+//    @Builder
+//    public FormDTO(Long id, Long authorId, List<QuestionDTO> questions,  String title, String content,Boolean fix){
+//
+//        this.id=id;
+//        this.fix=fix;
+//        this.authorId=authorId;
+//        this.questions=questions;
+//        this.title=title;
+//        this.content=content;
+//        //this.timeout=timeout;
+//
+//
+//    }
 
-        List<Question> questionList = new ArrayList<>();
-        for (QuestionDTO questionDTO : questions) {
-            Question question = Question.builder()
-                    .form(form)
-                    .title(questionDTO.getTitle())
-                    .required(questionDTO.getRequired())
-                    .sectionNum(questionDTO.getSectionNum())
-                    .type(questionDTO.getType())
-                    .build();
-            questionList.add(question);
-        }
-        return questionList;
-    }
+//    public Form of (){
+//        return Form.builder()
+//                .title(title)
+//                .fix((fix!=null)?fix:false)
+//                .content(content)
+//                .build();
+//    }
+//    public List<Question> toQuestions(Form form) {
+//
+//        List<Question> questionList = new ArrayList<>();
+//        for (QuestionDTO questionDTO : questions) {
+//            Question question = Question.builder()
+//                    .form(form)
+//                    .title(questionDTO.getTitle())
+//                    .required(questionDTO.getRequired())
+//                    .sectionNum(questionDTO.getSectionNum())
+//                    .type(questionDTO.getType())
+//                    .build();
+//            questionList.add(question);
+//        }
+//        return questionList;
+//    }
 
 
 

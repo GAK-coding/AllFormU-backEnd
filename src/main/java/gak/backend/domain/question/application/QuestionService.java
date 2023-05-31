@@ -47,11 +47,11 @@ public class QuestionService {
             를 question엔티티의 모든 하위 List에 저장.
         */
     @Transactional
-    public Long createInit(FormDTO formDTO,Long id,Long FormId){
+    public Long createInit(FormDTO.AllFormData allFormData, Long id, Long FormId){
 
 
         List<Question> questions = questionRepository.findByFormId(FormId);
-        List<QuestionDTO> questionDto=formDTO.getQuestions();
+        List<QuestionDTO> questionDto=allFormData.getQuestions();
 
         if (questions==null)
             throw new NotFoundQuestionException("Question not found");
@@ -61,7 +61,7 @@ public class QuestionService {
         List<Question> Questions=new ArrayList<>();
         for (Question question : questions) {
             int count=0; //question 객체 하나 추가 될 때마다 해당 questionDTO 삭제 하기 위함.
-            if (!formDTO.getQuestions().isEmpty()) {
+            if (!allFormData.getQuestions().isEmpty()) {
                 for (QuestionDTO questionDTO : questionDto) {
                     if(question.getType()==questionDTO.getType())//같은 질문항목
                     {

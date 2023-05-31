@@ -6,6 +6,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.cloud.StorageClient;
+import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.model.Description;
@@ -36,8 +37,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
@@ -57,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.mysema.commons.lang.Assert.assertThat;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 /*
 멤버 서비스 로직
@@ -81,6 +86,32 @@ public class FormService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+
+
+    @Transactional
+    public List<FormDTO.PagingDTO> Paging(Long page){
+
+        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+        QForm form=QForm.form;
+
+
+        Long pageSize = 5L; // 페이지 당 데이터 개수
+        Long startPage = page * pageSize; // 시작 페이지 번호
+
+        List<Form> forms = query
+                .selectFrom(form)
+                .orderBy(form.id.desc())
+                .limit(pageSize)
+                .offset(startPage)
+                .fetch();
+
+        List<FormDTO.PagingDTO> pagingDTOList = forms.stream()
+                .map(Form::toPagingData)
+                .collect(Collectors.toList());
+
+        return pagingDTOList;
+    }
 
 
 
@@ -109,12 +140,12 @@ public class FormService {
         question 작성 후 리스트 완성 후 저장
     */
     @Transactional
-    public Long createForm(FormDTO formDto, Long id){
+    public Long createForm(FormDTO.AllFormData allFormData, Long id){
 
         //폼 엔티티 데이터 저장 (of메소드 호출)
-        Form form=formDto.of();
+        Form form=allFormData.of();
 
-        List<String> datetime= formDto.getTimeout();
+        List<String> datetime= allFormData.getTimeout();
         int flag=0;
 
         //ExpireCorrespond(form,formDto);
@@ -125,7 +156,7 @@ public class FormService {
         form.CorrespondSetting(Correspond.STATUS_BEFORE);
 
         //question리스트 저장 , question엔티티 객체 자동 생성.
-        List<Question> questions= formDto.toQuestions(form);
+        List<Question> questions= allFormData.toQuestions(form);
         form.QuestionSetting(questions);
         formRepository.save(form);
 
@@ -240,11 +271,11 @@ public class FormService {
         특정 user의 특정 form을 업데이트
         (하위 객체(List) 제외)
     */
-   @Transactional
-  public Form updateSelectForm(FormDTO formDto,Long Userid, Long FormId ) {
+    @Transactional
+  public Form updateSelectForm(FormDTO.UpdateFormData updateFormData, Long Userid, Long FormId ) {
 
        Form form=getSelectFormById(Userid,FormId);
-       form.UpdateSelectForm(formDto);
+       form.UpdateSelectForm(updateFormData);
 
        return form;
   }

@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import gak.backend.domain.description.application.DescriptionService;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.application.FormService;
+import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.question.application.QuestionService;
@@ -11,6 +12,8 @@ import gak.backend.domain.selection.application.SelectionService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,8 +33,18 @@ import java.util.Optional;
 public class FormController {
     private final FormService formService;
     private final QuestionService questionService;
+    private final FormRepository formRepository;
 
 
+
+
+
+    @GetMapping("form/pages/")
+    public List<FormDTO.PagingDTO> Paging(@RequestParam("page")Long page){
+
+
+        return formService.Paging(page);
+    }
 
     @PostMapping("/files")
     public String uploadFile(@RequestParam("file")MultipartFile file, String nameFile) throws IOException, FirebaseAuthException{
@@ -59,11 +72,11 @@ public class FormController {
 
     */
     @PostMapping("/form/createform/{UserId}")
-    public Long create(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long id){
+    public Long create(@RequestBody FormDTO.AllFormData allFormData, @PathVariable("UserId")Long id){
 
-        Long FormId=formService.createForm(formDTO,id);
+        Long FormId=formService.createForm(allFormData,id);
 
-        return questionService.createInit(formDTO,id,FormId);
+        return questionService.createInit(allFormData,id,FormId);
     }
 
     /*
@@ -92,8 +105,8 @@ public class FormController {
 
     }
     @PutMapping("/form/updateSelectform/{UserId}/{FormId}")
-    public Form getId(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long userid,@PathVariable("FormId")Long formid){
-        return formService.updateSelectForm(formDTO,userid,formid);
+    public Form getId(@RequestBody FormDTO.UpdateFormData updateFormData, @PathVariable("UserId")Long userid, @PathVariable("FormId")Long formid){
+        return formService.updateSelectForm(updateFormData,userid,formid);
     }
     /*
         user id로 모든설문지 삭제

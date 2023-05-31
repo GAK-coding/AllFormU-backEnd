@@ -7,6 +7,7 @@ import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
 import gak.backend.domain.model.BaseTime;
+import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,9 +21,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Form extends BaseTime {
     @Id
     @GeneratedValue
@@ -57,15 +56,31 @@ public class Form extends BaseTime {
 
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
+    @Builder
+    public Form(String title, boolean fix, String content){
+        this.title=title;
+        this.fix=fix;
+        this.content=content;
+    }
+
+    public FormDTO.PagingDTO toPagingData(){
+        return FormDTO.PagingDTO.builder()
+                .id(this.id)
+                .content(this.content)
+                .title(this.title)
+                .build();
+    }
+
+
     public void AuthorSetting(Member author){
         this.author=author;
     }
 
-    public void UpdateSelectForm(FormDTO formDTO){
+    public void UpdateSelectForm(FormDTO.UpdateFormData updateFormData){
 
-        this.content=(formDTO.getContent()!=null) ? formDTO.getContent() : this.content;
-        this.fix=(formDTO.getFix()!=null) ? formDTO.getFix() : this.fix;
-        this.title=(formDTO.getTitle()!=null) ? formDTO.getTitle() : this.title;
+        this.content=(updateFormData.getContent()!=null) ? updateFormData.getContent() : this.content;
+        this.fix=(updateFormData.getFix()!=null) ? updateFormData.getFix() : this.fix;
+        this.title=(updateFormData.getTitle()!=null) ? updateFormData.getTitle() : this.title;
     }
 
 
