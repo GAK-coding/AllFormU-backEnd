@@ -53,7 +53,6 @@ public class Question extends BaseTime {
     private String content;
     private boolean required;
     private int sectionNum;
-    private String sectionName; //sectionName추가
     private boolean quiz;
 
 
@@ -105,13 +104,12 @@ public class Question extends BaseTime {
 //    }
 
     @Builder
-    public Question(Long id,Form form, String title, String content,boolean required, int sectionNum, String sectionName, boolean quiz, Format type){
+    public Question(Long id,Form form, String title, String content,boolean required, int sectionNum, boolean quiz, Format type){
         this.form = form;
         this.title = title;
         this.content = content;
         this.required = required;
         this.sectionNum = sectionNum;
-        this.sectionName= sectionName;
         this.quiz = quiz;
         this.type = type;
     }
