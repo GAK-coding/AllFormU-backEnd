@@ -38,6 +38,7 @@ public class QuestionDTO implements Serializable{
     private boolean quiz;
     private Integer sectionNum;
 
+
     @Enumerated(EnumType.STRING)
     private Format type;
 
