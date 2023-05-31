@@ -48,8 +48,8 @@ public class Response extends BaseTime {
     public ResponseInfoDTO toResponseInfoDTO(){
         return ResponseInfoDTO.builder()
                 .id(this.id)
-                .responsorId(this.getResponsor().getId())
-                .questionId(this.getQuestion().getId())
+                .responsorId(this.responsor.getId())
+                .questionId(this.question.getId())
                 .num(this.num)
                 .createdTime(super.getCreatedDate())
                 .modifiedTime(super.getModifiedDate())
