@@ -1,5 +1,6 @@
 package gak.backend.domain.description.exception.handler;
 
+import gak.backend.domain.description.exception.CanNotAccessDescriptionResponse;
 import gak.backend.domain.description.exception.CanNotDeleteDescription;
 import gak.backend.domain.description.exception.CanNotResponseDescription;
 import gak.backend.global.error.ErrorResponse;
@@ -30,6 +31,16 @@ public class DescriptionExceptionHandler {
         log.debug("이미 응답한 사용자입니다.");
         final ErrorResponse errorResponse = ErrorResponse.builder()
                 .httpStatus(HttpStatus.CONFLICT)
+                .message(e.getMessage())
+                .build();
+        return ResponseEntity.ok(errorResponse);
+    }
+
+    @ExceptionHandler(CanNotAccessDescriptionResponse.class)
+    protected final ResponseEntity<ErrorResponse> canNotAccessDescriptionHandler(CanNotAccessDescriptionResponse e, WebRequest webRequest){
+        log.debug("접근할 수 없는 응답입니다.");
+        final ErrorResponse errorResponse = ErrorResponse.builder()
+                .httpStatus(HttpStatus.NOT_ACCEPTABLE)
                 .message(e.getMessage())
                 .build();
         return ResponseEntity.ok(errorResponse);

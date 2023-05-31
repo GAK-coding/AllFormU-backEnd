@@ -271,6 +271,11 @@ public class DescriptionService {
     //description 수정
     @Transactional
     public Description updateDescription(Long QuestionId,Long DescriptionId, String newContent){
+        Question question = questionRepository.findById(QuestionId).orElseThrow(NotFoundByIdException::new);
+        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+
+        //TODO jwt 생겨서 getCurrent멤버 생기면 폼 생성자랑 똑같은지 비교해서 폼 생성자는 무조건 생성 가능한데 응답자는 폼 상태가 수정가능이어야만 숙제여야야함.
+
         QDescription qDescription=QDescription.description;
         QQuestion qQuestion=QQuestion.question;
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
