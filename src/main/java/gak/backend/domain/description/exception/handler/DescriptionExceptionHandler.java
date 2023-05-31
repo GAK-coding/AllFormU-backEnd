@@ -1,6 +1,7 @@
 package gak.backend.domain.description.exception.handler;
 
 import gak.backend.domain.description.exception.CanNotDeleteDescription;
+import gak.backend.domain.description.exception.CanNotResponseDescription;
 import gak.backend.global.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,4 +24,16 @@ public class DescriptionExceptionHandler {
                 .build();
         return ResponseEntity.ok(errorResponse);
     }
+
+    @ExceptionHandler(CanNotResponseDescription.class)
+    protected final ResponseEntity<ErrorResponse> canNotResponseDescription(CanNotResponseDescription e, WebRequest webRequest){
+        log.debug("이미 응답한 사용자입니다.");
+        final ErrorResponse errorResponse = ErrorResponse.builder()
+                .httpStatus(HttpStatus.CONFLICT)
+                .message(e.getMessage())
+                .build();
+        return ResponseEntity.ok(errorResponse);
+    }
+
+
 }
