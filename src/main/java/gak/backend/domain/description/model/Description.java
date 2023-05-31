@@ -29,14 +29,25 @@ public class Description extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @JsonIgnore
     private Member member;
 
     private String content;
 
     //근데 정답자만 볼거면 굳이 문제 번호는 다 똑같을텐데 PathVariable로만 넘겨줘도 될 것 같다.
-    public DescriptionSimpleInfoDTO toDescriptionSimpleInfoDTO(Member member){
+    public DescriptionSimpleInfoDTO toDescriptionSimpleInfoDTO(){
         return DescriptionSimpleInfoDTO.builder()
-                .member_id(member.getId())
+                .id(this.id)
+                .member_id(this.member.getId())
+                .build();
+    }
+
+    public DescriptionInfoDTO toDescriptionInfoDTO(){
+        return DescriptionInfoDTO.builder()
+                .id(this.id)
+                .member_id(this.member.getId())
+                .question_id(this.question.getId())
+                .content(this.content)
                 .build();
     }
 

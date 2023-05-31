@@ -10,26 +10,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DescriptionDTO {
-    private Member member;
-    private Question question;
-    private String content;
-    private String answer;
-    private boolean quiz;
-    private String title;
+public class DescriptionDTO{
 
     @Builder
-    public DescriptionDTO(Member member, Question question, String content, String answer, Boolean quiz,String title){
-        this.member=member;
-        this.question=question;
-        this.content=content;
-        this.answer=answer;
-        this.quiz=quiz;
-        this.title=title;
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DescriptionSaveRequest{
+        private Long member_id;
+        private Long question_id;
+        private String content;
+
+        public Description of(Member member, Question question){
+            return Description.builder()
+                    .member(member)
+                    .question(question)
+                    .content(this.content)
+                    .build();
+        }
     }
     //quiz정답자나 퀴즈 심플 조회 -> 퀴즈 정답자 조회의 경우 question_id는 뺌
     @Builder
@@ -37,14 +35,19 @@ public class DescriptionDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DescriptionSimpleInfoDTO{
+        private Long id;
         private Long member_id;
-        private String content;
-        private Long question_id;
     }
-    public Description of(Question question){
-        return Description.builder()
-                .question(question)
-                .build();
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DescriptionInfoDTO{
+        private Long id;
+        private Long member_id;
+        private Long question_id;
+        private String content;
     }
     @Builder
     @Getter
@@ -54,6 +57,16 @@ public class DescriptionDTO {
         List<List<DescriptionSimpleInfoDTO>> response;
         int[] num;
 
+    }
+
+    //원래 응답은 삭제가 안되지만 생성에도 사용되니까 사용자가 삭제를 원할 경우, 삭제
+    //응답이 1개라도 있으면 삭제 불가능하게
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteDescriptionDTO{
+        private Long memberId;
+       // private Long descriptionId;
     }
 
 }
