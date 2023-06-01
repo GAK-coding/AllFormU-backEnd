@@ -55,6 +55,7 @@ public class DescriptionDTO{
     @NoArgsConstructor
     public static class DescriptionStatisticDTO{
         List<List<DescriptionSimpleInfoDTO>> response;
+        List<String> opList;
         int[] num;
 
     }
