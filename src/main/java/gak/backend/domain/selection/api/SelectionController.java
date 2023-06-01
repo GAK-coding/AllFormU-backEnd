@@ -28,6 +28,12 @@ public class SelectionController {
         return selectionService.createSelection(allSelectionData,QuestionId);
     }
 
+    @PostMapping("/selection/createLinear/{questionId}")
+    public List<SelectionDTO.SelectionInfoDTO> addLinear(@RequestBody SelectionDTO.LinearInfoDTO linearInfoDTO,@PathVariable("questionId")Long QuestionId){
+
+        return selectionService.createLinear(linearInfoDTO,QuestionId);
+    }
+
     //Selection 조회
     @GetMapping("/selection/getSelection/{id}")
     public Selection getId(@PathVariable("id")Long id){
@@ -58,6 +64,7 @@ public class SelectionController {
         final Selection updatedSelection=selectionService.updateAnswer(id,updateAnswer);
         return ResponseEntity.ok(updatedSelection);
     }
+
 
     //객관식 하나 삭제
     @DeleteMapping("/selection/deleteSelection/{id}")
