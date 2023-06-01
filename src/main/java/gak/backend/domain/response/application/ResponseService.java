@@ -67,7 +67,6 @@ public class ResponseService {
     }
 
     //==========================Read=================================
-    //아마 이부분을 통계에서 쓰지 않을까 생각함.
 
     //Question아이디로 응답 불러오기
     @Transactional(readOnly = true)
@@ -81,6 +80,13 @@ public class ResponseService {
         }
         return responsesSimpleInfoDTOs;
     }
+
+    //폼아이디와 멤버 아이디로 응답 설문 불러오기
+    //Querydsl로 변경
+//    @Transactional(readOnly = true)
+//    public List<Description> findResponsesByMemberIdAndQuestionId()
+
+    //이 부분들을 통계에 쓸 것 같음.
 
     //Question아이디로 응답 갯수 불러오기
     @Transactional(readOnly = true)
@@ -105,7 +111,7 @@ public class ResponseService {
         }
         //배열의 인덱스가 옵션들의 인덱스
         for(Response response : responses){
-            //size를 -1안해도 되는이유는 그냥 바로 그 넘버에 접근하기 때문. description은 인덱스에 접근
+            //size를 -1안해도 되는이유는 그냥 바로 그 넘버에 접근하기 때문. description은 인덱스에 접ㅇ
             statistic.get(response.getNum()).add(response.toResponseSimpleInfoDTO()); //인덱스에 맞는 count를 증가시킴
         }
         //각각의 갯수 계산
