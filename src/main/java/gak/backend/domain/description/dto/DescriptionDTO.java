@@ -36,7 +36,7 @@ public class DescriptionDTO{
     @NoArgsConstructor
     public static class DescriptionSimpleInfoDTO{
         private Long id;
-        private Long member_id;
+        private Long responsor_id;
     }
 
     @Builder
@@ -45,7 +45,7 @@ public class DescriptionDTO{
     @NoArgsConstructor
     public static class DescriptionInfoDTO{
         private Long id;
-        private Long member_id;
+        private Long responsor_id;
         private Long question_id;
         private String content;
     }
@@ -66,7 +66,7 @@ public class DescriptionDTO{
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeleteDescriptionDTO{
-        private Long memberId;
+        private Long responsor_id;
        // private Long descriptionId;
     }
 
