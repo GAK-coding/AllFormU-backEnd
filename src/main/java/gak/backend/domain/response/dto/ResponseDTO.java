@@ -35,8 +35,8 @@ public class ResponseDTO {
     @NoArgsConstructor
     public static class ResponseSimpleInfoDTO{
         private Long id;
-        private Long responsorId;
-        private Long questionId;
+        private Long responsor_id;
+        private Long question_id;
         private int num;
     }
     @Builder
@@ -71,8 +71,8 @@ public class ResponseDTO {
     @AllArgsConstructor
     public static class ResponseInfoDTO{
         private Long id;
-        private Long responsorId;
-        private Long questionId;
+        private Long responsor_id;
+        private Long question_id;
         private int num;
         private LocalDateTime createdTime;
         private LocalDateTime modifiedTime;
