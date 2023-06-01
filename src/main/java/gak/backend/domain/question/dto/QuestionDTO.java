@@ -74,6 +74,8 @@ public class QuestionDTO implements Serializable{
     }
     public List<Selection> toSelection(SelectionRepository selectionRepository,Question question) {
         List<Selection> selectionList = new ArrayList<>();
+
+        //질문만 만들어졌을 때 selection 객체를 만들어 놓기만 해놓는 로직
         if(options.size()<1){
             Selection selection = Selection.builder()
                     .question(question)
