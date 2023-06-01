@@ -147,7 +147,7 @@ public class DescriptionService {
             dsList.add(DescriptionInfoDTO.builder()
                     .id(d.getId())
                     .question_id(d.getQuestion().getId())
-                    .member_id(d.getMember().getId())
+                    .responsor_id(d.getMember().getId())
                     .content(d.getContent())
                     .build());
         }
@@ -298,8 +298,8 @@ public class DescriptionService {
         Member member = memberRepository.findById(description.getQuestion().getForm().getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         List<Description> descriptions = descriptionRepository.findByQuestionId(description.getQuestion().getId());
         //요청자랑 삭제하려는 descripton의 작성자가 맞는지 확인
-        if (description.getMember().getId() == deleteDescriptionDTO.getMemberId()) {
-            if (deleteDescriptionDTO.getMemberId().equals(member.getId())) {//form의 작성자와 맞는지 확인
+        if (description.getMember().getId() == deleteDescriptionDTO.getResponsor_id()) {
+            if (deleteDescriptionDTO.getResponsor_id().equals(member.getId())) {//form의 작성자와 맞는지 확인
                 if (descriptions.isEmpty()) {
                     descriptionRepository.delete(description);
                     return "DELETE";
