@@ -14,7 +14,7 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
 
     int countResponseByQuestionId(Long question_id);
 
-    boolean existsById(Long id);
+    boolean existsByResponsorId(Long responsor_id);
 
     //통계를 위해 사용
     List<Response> findByQuestionId(Long question_id);

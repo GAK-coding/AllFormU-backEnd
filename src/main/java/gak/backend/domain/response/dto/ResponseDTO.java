@@ -34,6 +34,7 @@ public class ResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseSimpleInfoDTO{
+        private Long id;
         private Long responsorId;
         private Long questionId;
         private int num;
@@ -43,7 +44,7 @@ public class ResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class StatisticResponseDTO{
-        private List<ResponseSimpleInfoDTO>[] responses;
+        private List<List<ResponseSimpleInfoDTO>> responses;
         private int[] nums;
     }
 
