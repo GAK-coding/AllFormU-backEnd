@@ -51,7 +51,6 @@ public class Form extends BaseTime {
     private String title;
     private String content;
 
-
     //private boolean required;
 
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
@@ -63,8 +62,8 @@ public class Form extends BaseTime {
         this.content=content;
     }
 
-    public FormDTO.PagingDTO toPagingData(){
-        return FormDTO.PagingDTO.builder()
+    public FormDTO.PagingDataDTO toPagingData(){
+        return FormDTO.PagingDataDTO.builder()
                 .id(this.id)
                 .content(this.content)
                 .title(this.title)

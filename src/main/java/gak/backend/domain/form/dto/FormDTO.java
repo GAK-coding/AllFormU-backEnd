@@ -84,10 +84,18 @@ public class FormDTO implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PagingDTO{
+    public static class PagingDataDTO{
         private Long id;
         private String content;
         private String title;
+    }
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PagingDTO{
+        private boolean nextPage;
+        List<PagingDataDTO> PagingData=new ArrayList<>();
     }
 
     @Getter

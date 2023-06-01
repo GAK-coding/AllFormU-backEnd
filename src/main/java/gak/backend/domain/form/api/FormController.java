@@ -1,6 +1,6 @@
 package gak.backend.domain.form.api;
 
-import com.google.firebase.auth.FirebaseAuthException;
+
 import gak.backend.domain.description.application.DescriptionService;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.application.FormService;
@@ -40,32 +40,13 @@ public class FormController {
 
 
     @GetMapping("form/pages/")
-    public List<FormDTO.PagingDTO> Paging(@RequestParam("page")Long page){
+    public FormDTO.PagingDTO Paging(@RequestParam("page")Long page){
 
 
         return formService.Paging(page);
     }
 
-    @PostMapping("/files")
-    public String uploadFile(@RequestParam("file")MultipartFile file, String nameFile) throws IOException, FirebaseAuthException{
-        if(file.isEmpty()){
-            return "is empty";
-        }
-        return formService.uploadFiles(file, nameFile);
-    }
 
-    @GetMapping(value="/images/{fileName}", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getImage(@PathVariable String fileName){
-        byte[] imageData = formService.getImage(fileName);
-        System.out.println("BYTE: "+imageData);
-        if (imageData != null) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_PNG);
-            return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
     /*
         프론트에서 질문 생성 시 form 생성 service 호출 -> form과 question만듦
         questionservice 호출 -> selection과 description 따위의 하위 질문 객체들 만듦
@@ -99,7 +80,7 @@ public class FormController {
 
     }
     @GetMapping("/form/findform/{UserId}/{FormId}")
-    public FormDTO.getSelectForm getSelectForm(@PathVariable("UserId")Long authorid,@PathVariable("FormId")Long Formid){
+    public Form getSelectForm(@PathVariable("UserId")Long authorid,@PathVariable("FormId")Long Formid){
 
         return formService.getSelectFormById(authorid,Formid);
 

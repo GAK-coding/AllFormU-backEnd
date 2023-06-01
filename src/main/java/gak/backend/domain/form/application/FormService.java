@@ -1,11 +1,6 @@
 package gak.backend.domain.form.application;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.cloud.StorageClient;
+
 import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -80,8 +75,6 @@ public class FormService {
     private final SelectionRepository selectionRepository;
     private final QuestionRepository questionRepository;
 
-    @Value("${app.firebase-bucket}")
-    private String firebaseBucket;
 
 
     @PersistenceContext
@@ -90,7 +83,7 @@ public class FormService {
 
 
     @Transactional
-    public List<FormDTO.PagingDTO> Paging(Long page){
+    public FormDTO.PagingDTO Paging(Long page){
 
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
         QForm form=QForm.form;
@@ -99,6 +92,17 @@ public class FormService {
         Long pageSize = 5L; // 페이지 당 데이터 개수
         Long startPage = page * pageSize; // 시작 페이지 번호
 
+        Long totalDataCount = query
+                .selectFrom(form)
+                .fetchCount();
+
+        if (startPage >= totalDataCount) {
+            //데이터가 없는 거임
+        }
+        Long nextPage = startPage + pageSize;
+
+        boolean hasNextPage = nextPage < totalDataCount;
+
         List<Form> forms = query
                 .selectFrom(form)
                 .orderBy(form.id.desc())
@@ -106,34 +110,17 @@ public class FormService {
                 .offset(startPage)
                 .fetch();
 
-        List<FormDTO.PagingDTO> pagingDTOList = forms.stream()
+        List<FormDTO.PagingDataDTO> pagingDTOList = forms.stream()
                 .map(Form::toPagingData)
                 .collect(Collectors.toList());
+        FormDTO.PagingDTO paging=new FormDTO.PagingDTO(hasNextPage,pagingDTOList);
 
-        return pagingDTOList;
+        return paging;
     }
 
 
 
-    public String uploadFiles(MultipartFile file, String nameFile) throws IOException, FirebaseAuthException{
 
-        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
-        InputStream content= new ByteArrayInputStream(file.getBytes());
-        Blob blob=bucket.create(nameFile.toString(), content, file.getContentType());
-        return blob.getMediaLink();
-    }
-
-    public byte[] getImage(String fileName){
-        System.out.println("BYTE: ");
-        Storage storage= StorageOptions.getDefaultInstance().getService();
-        Bucket bucket = storage.get(firebaseBucket);
-        Blob blob=bucket.get(fileName);
-        System.out.println("blob: "+blob);
-        if(blob!=null){
-            return blob.getContent();
-        }
-        return null;
-    }
 
     /*
         title, content까지 저장
@@ -242,7 +229,7 @@ public class FormService {
     /*
         author id의 formid에 해당되는 설문지 조회.
     */
-    public FormDTO.getSelectForm getSelectFormById(Long id, Long FormId) {
+    public Form getSelectFormById(Long id, Long FormId) {
 
         QForm form = QForm.form;
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
@@ -255,13 +242,9 @@ public class FormService {
         if(form_sgl==null)
             throw new NotFoundFormException(id,FormId);
 
-        List<String>temp_SecName=new ArrayList<>();
-        for(Question question:form_sgl.getQuestions()){
-            temp_SecName.add(question.getSectionName());
-        }
-        FormDTO.getSelectForm getSelectForm=new FormDTO.getSelectForm(temp_SecName,form_sgl);
 
-        return getSelectForm;
+
+        return form_sgl;
 
 
     }
@@ -279,20 +262,11 @@ public class FormService {
     @Transactional
   public Form updateSelectForm(FormDTO.UpdateFormData updateFormData, Long Userid, Long FormId ) {
 
-        QForm form = QForm.form;
-        JPAQueryFactory query = new JPAQueryFactory(entityManager);
-        Form form_sgl = query
-                .selectFrom(form)
-                .where(form.author.id.eq(Userid)
-                        .and(form.id.eq(FormId)))
-                .fetchOne();
+        Form form=getSelectFormById(Userid,FormId);
 
-        if(form_sgl==null)
-            throw new NotFoundFormException(Userid,FormId);
+        form.UpdateSelectForm(updateFormData);
 
-        form_sgl.UpdateSelectForm(updateFormData);
-
-       return form_sgl;
+       return form;
   }
 
 

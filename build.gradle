@@ -50,9 +50,6 @@ dependencies {
 	implementation('jakarta.activation:jakarta.activation-api:2.0.1')
 	implementation('jakarta.mail:jakarta.mail-api:2.0.1')
 	implementation('com.sun.mail:jakarta.mail:2.0.1')
-	//파이어베이스
-	implementation group: 'com.google.firebase', name: 'firebase-admin', version: '8.1.0'
-
 //	//security
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 //	testImplementation 'org.springframework.security:spring-security-test'

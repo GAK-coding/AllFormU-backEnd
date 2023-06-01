@@ -29,6 +29,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gak.backend.domain.form.dto.FormDTO.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class QuestionService {
             를 question엔티티의 모든 하위 List에 저장.
         */
     @Transactional
-    public Long createInit(FormDTO.AllFormData allFormData, Long id, Long FormId){
+    public Long createInit(AllFormData allFormData, Long id, Long FormId){
 
 
         List<Question> questions = questionRepository.findByFormId(FormId);
