@@ -35,7 +35,7 @@ public class QuestionDTO implements Serializable{
     private String title;
     private String content;
     private Boolean required;
-    private boolean quiz;
+    private Boolean quiz;
     private Integer sectionNum;
 
 
@@ -44,7 +44,7 @@ public class QuestionDTO implements Serializable{
 
 
     @Builder
-    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, boolean quiz, Integer sectionNum, Format type) {
+    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, Boolean quiz, Integer sectionNum, Format type) {
         this.id = id;
         this.form = form;
         this.options = options;
@@ -67,7 +67,7 @@ public class QuestionDTO implements Serializable{
                 .title(title)
                 .content(content)
                 .required((required!=null)?required:false)
-                .quiz(quiz)
+                .quiz((quiz!=null)?quiz:false)
                 .sectionNum((sectionNum!=null)?sectionNum:0)
                 .type((type!=null)?type:Description_SHORT)
                 .build();
