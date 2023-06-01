@@ -57,9 +57,9 @@ public class ResponseController {
 
     //==================응답 수정======================
     @PatchMapping(value= "/response/{response_id}")
-    public ResponseEntity<ResponseInfoDTO> updateResponse(@PathVariable(name="response_id")Long responseId,@RequestBody @Validated UpdateResponseRequest updateResponseRequest){
-        ResponseInfoDTO responseInfoDTO = responseService.updateResponse(responseId,updateResponseRequest);
-        return new ResponseEntity<>(responseInfoDTO, HttpStatus.OK);
+    public ResponseEntity<ResponseSimpleInfoDTO> updateResponse(@PathVariable(name="response_id")Long responseId,@RequestBody @Validated UpdateResponseRequest updateResponseRequest){
+        ResponseSimpleInfoDTO responseSimpleInfoDTO = responseService.updateResponse(responseId,updateResponseRequest);
+        return new ResponseEntity<>(responseSimpleInfoDTO, HttpStatus.OK);
     }
 
     //===================응답 삭제 - 없음(필요시 추가 구현)==================

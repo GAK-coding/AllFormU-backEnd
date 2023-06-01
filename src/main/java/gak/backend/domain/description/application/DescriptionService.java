@@ -10,6 +10,7 @@ import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.form.model.Correspond;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
@@ -95,6 +96,9 @@ public class DescriptionService {
         }
         else{
             member.UpdateMemberRole(Role.Role_Responsor);
+            if(form.getCorrespond()!=Correspond.STATUS_PROCESS){
+                throw new CanNotResponseDescription("설문 응답 시간이 아닙니다.");
+            }
         }
 
 
@@ -109,7 +113,6 @@ public class DescriptionService {
         if(question_sgl==null){
             throw new NotFoundDescriptionException(QuestionId);
         }
-        //이거 추가 안해줘서 1번 조회할때 계속 널값 나옴.
         if(member.getRole() == Role.Role_Admin){
             Description description=descriptionSaveRequest.of(author, question_sgl);
             Description saveDescription=descriptionRepository.save(description);
@@ -268,6 +271,11 @@ public class DescriptionService {
     //description 수정
     @Transactional
     public Description updateDescription(Long QuestionId,Long DescriptionId, String newContent){
+        Question question = questionRepository.findById(QuestionId).orElseThrow(NotFoundByIdException::new);
+        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+
+        //TODO jwt 생겨서 getCurrent멤버 생기면 폼 생성자랑 똑같은지 비교해서 폼 생성자는 무조건 생성 가능한데 응답자는 폼 상태가 수정가능이어야만 숙제여야야함.
+
         QDescription qDescription=QDescription.description;
         QQuestion qQuestion=QQuestion.question;
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
