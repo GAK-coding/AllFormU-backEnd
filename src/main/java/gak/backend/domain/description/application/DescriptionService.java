@@ -51,7 +51,7 @@ public class DescriptionService {
     private final MemberRepository memberRepository;
 
 
-//    @Transactional
+    //    @Transactional
 //    public Description createInit(FormDTO formDTO){
 //        Description description=new Description();
 //
@@ -71,7 +71,7 @@ public class DescriptionService {
 //    }
     //====================================description 생성================================
     @Transactional
-    public DescriptionInfoDTO createDescription(DescriptionSaveRequest descriptionSaveRequest,Long QuestionId){
+    public DescriptionInfoDTO createDescription(DescriptionSaveRequest descriptionSaveRequest, Long QuestionId) {
         //description은 응답자와 생성자로 나뉘기 때문에 form의 memberId와 똑같으면 멤버 구분 해놓고 정답을 처리해야되는 column으로 박아야할지 아니면 돌아가면서 찾아야할지
         //그럼 이론상 두번 돌아가는 거라서 좀 그렇다.
         //근데 question에서 질문의 형식으로 description을 갖고 있는데 이건 응답도 갖고 있는거니까 question이랑 떼어놔야할것같음.
@@ -83,44 +83,43 @@ public class DescriptionService {
         List<Description> descriptions = descriptionRepository.findByQuestionId(QuestionId);
 
         //이미 응답한 사람이면 못하게 막아야함.
-        for(Description description : descriptions){
-            if(description.getMember().getId()==member.getId()){
+        for (Description description : descriptions) {
+            if (description.getMember().getId() == member.getId()) {
                 throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
             }
         }
 
         //응답자면 멤버 상태 변경 (한사람이 설문 생성자 이면서 다른쪽에서는 응답자일 수 있어서 이렇게 구별)
         //설문 생성시에 벌크로 들어오면 descripton 작성자가 누군지 안들어가고 자동으로 memberid에 들어가야함. 안그럼 널값이 들어감 미친 이걸 깨달았다니
-        if(member.getId() == author.getId()){
+        if (member.getId() == author.getId()) {
             member.UpdateMemberRole(Role.Role_Admin);
-        }
-        else{
+        } else {
             member.UpdateMemberRole(Role.Role_Responsor);
-            if(form.getCorrespond()!=Correspond.STATUS_PROCESS){
+            if (form.getCorrespond() != Correspond.STATUS_PROCESS) {
                 throw new CanNotResponseDescription("설문 응답 시간이 아닙니다.");
             }
         }
 
 
-        QQuestion qQuestion=QQuestion.question;
-        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+        QQuestion qQuestion = QQuestion.question;
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
         Question question_sgl = query
                 .selectFrom(qQuestion)
                 .where(qQuestion.question.id.eq(QuestionId))
                 .fetchOne();
 
-        if(question_sgl==null){
+        if (question_sgl == null) {
             throw new NotFoundDescriptionException(QuestionId);
         }
-        if(member.getRole() == Role.Role_Admin){
-            Description description=descriptionSaveRequest.of(author, question_sgl);
-            Description saveDescription=descriptionRepository.save(description);
+        if (member.getRole() == Role.Role_Admin) {
+            Description description = descriptionSaveRequest.of(author, question_sgl);
+            Description saveDescription = descriptionRepository.save(description);
             DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
             return descriptionInfoDTO;
         }
-        Description description=descriptionSaveRequest.of(member, question_sgl);
-        Description saveDescription=descriptionRepository.save(description);
+        Description description = descriptionSaveRequest.of(member, question_sgl);
+        Description saveDescription = descriptionRepository.save(description);
         DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
 
         return descriptionInfoDTO;
@@ -130,7 +129,7 @@ public class DescriptionService {
 
     //descriptionid로 해당 description 조회
     @Transactional(readOnly = true)
-    public DescriptionInfoDTO getDescription(Long id){
+    public DescriptionInfoDTO getDescription(Long id) {
         Description description = descriptionRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 //        Question question = questionRepository.findById(description.getQuestion().getId()).orElseThrow(NotFoundByIdException::new);
         Member member = memberRepository.findById(description.getMember().getId()).orElseThrow(NotFoundByIdException::new);
@@ -141,14 +140,14 @@ public class DescriptionService {
 
     //question_id로 해당 description 조회 -> responsor, content만 나오게
     @Transactional(readOnly = true)
-    public List <DescriptionInfoDTO> getDescriptionByQuestionId(Long question_id){
+    public List<DescriptionInfoDTO> getDescriptionByQuestionId(Long question_id) {
         List<Description> descriptions = descriptionRepository.findByQuestionId(question_id);
         List<DescriptionInfoDTO> dsList = new ArrayList<>();
-        for(Description d : descriptions){
+        for (Description d : descriptions) {
             dsList.add(DescriptionInfoDTO.builder()
                     .id(d.getId())
                     .question_id(d.getQuestion().getId())
-                    .member_id(d.getMember().getId())
+                    .responsor_id(d.getMember().getId())
                     .content(d.getContent())
                     .build());
         }
@@ -158,9 +157,9 @@ public class DescriptionService {
 
 
     //description은 생성과 응답이 동시에 일어나니까 응답수를 셀때는 -1을 해야함.
-    @Transactional(readOnly=true)
-    public int countDescriptionsByQuestionId(Long questionId){
-        int responseCnt = descriptionRepository.countDescriptionByQuestionId(questionId)-1;
+    @Transactional(readOnly = true)
+    public int countDescriptionsByQuestionId(Long questionId) {
+        int responseCnt = descriptionRepository.countDescriptionByQuestionId(questionId) - 1;
         return responseCnt;
     }
 
@@ -170,7 +169,7 @@ public class DescriptionService {
     //우선 작성자가 아닌 사람의 답변은 문자열 비교를 통해 배열에 넣어둠. 배열에 넣어둔 것을 출력하는게 나을 것 같음. -> 이렇게 되면 나쁘지 않은 로직.
     //정답자를 알아도 사실은 한번은 돌아감. -> 메모리를 줄이냐의 차이?
     @Transactional(readOnly = true)
-    public List<DescriptionSimpleInfoDTO> findQuizRightDescriptions(Long questionId){
+    public List<DescriptionSimpleInfoDTO> findQuizRightDescriptions(Long questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(NotFoundByIdException::new);
         Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
         Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
@@ -181,40 +180,39 @@ public class DescriptionService {
         //정답 값들  SimpleInfo로 바꿈.
         List<DescriptionSimpleInfoDTO> sdList = new ArrayList<>();
 
-       for(Description description : descriptions){
-           //우선 돌면서 정답자를 찾아서 정답 입력
-           if(description.getMember().getId() == author.getId()){
-               answer = description.getContent();
-               continue;
-           }
-           else{
-               //정답 옵션과 비교 해야함. 만약에 같은 항목이 없다면 새로 추가하고 해당인덱스에 맞게 response에도 추가되어야함.
-               //TODO response 목록이 없을 때 null예외가 터지면 추가해주기
+        for (Description description : descriptions) {
+            //우선 돌면서 정답자를 찾아서 정답 입력
+            if (description.getMember().getId() == author.getId()) {
+                answer = description.getContent();
+                continue;
+            } else {
+                //정답 옵션과 비교 해야함. 만약에 같은 항목이 없다면 새로 추가하고 해당인덱스에 맞게 response에도 추가되어야함.
+                //TODO response 목록이 없을 때 null예외가 터지면 추가해주기
 //               if(responseOp.isEmpty()){
 //                   responseOp.add(description.getContent());
 //               }
-               //TODO 사용자들이 입력한 주관식들의 보기를 돌고 돌아서 확인. -> 오히려 나중에 구글보다 정교하게 답안 처리 가능할듯.
-               for(int i=0 ; i < responseOp.size(); i++){
-                   //responseOp에 새로들어온 응답의 보기가 있다면 넣어주기
-                   int num = responseOp.indexOf(description.getContent());
-                   if( num > 0){ //-1이면 없다는 얘기 있으면 해당 인덱스를 넘겨줌.
-                       response.get(num).add(description);
-                   }
-                   else{
-                       //없으면 추가
-                       responseOp.add(description.getContent());
-                       response.get(responseOp.size()).add(description);
-                   }
-               }
-               //정답으로 분류된 목록을 simpleInfoDTO로 바꾸고 출력.
-               int answerIndex = responseOp.indexOf(answer);
-               //for문 편하게 돌리려고 그냥 정답 리스트들 옮김.-> 여기서는 정답자들만 simpleDTO로 변환
-               List<Description> rigthResponses = response.get(answerIndex);
-               for(Description rd : rigthResponses){
-                   sdList.add(rd.toDescriptionSimpleInfoDTO());
-               }
-           }
-       }
+                //TODO 사용자들이 입력한 주관식들의 보기를 돌고 돌아서 확인. -> 오히려 나중에 구글, 사캠 보다 정교하게 답안 처리 가능할듯.
+//               for(int i=0 ; i < responseOp.size(); i++){
+                //responseOp에 새로들어온 응답의 보기가 있다면 넣어주기
+                int num = responseOp.indexOf(description.getContent());
+                if (num > 0) { //-1이면 없다는 얘기 있으면 해당 인덱스를 넘겨줌.
+                    response.get(num).add(description);
+                } else {
+                    //없으면 추가
+                    response.add(new ArrayList<>());
+                    responseOp.add(description.getContent());
+                    response.get(responseOp.size()).add(description);
+                }
+                //}
+            }
+        }
+        //정답으로 분류된 목록을 simpleInfoDTO로 바꾸고 출력.
+        int answerIndex = responseOp.indexOf(answer);
+        //for문 편하게 돌리려고 그냥 정답 리스트들 옮김.-> 여기서는 정답자들만 simpleDTO로 변환
+        List<Description> rigthResponses = response.get(answerIndex);
+        for (Description rd : rigthResponses) {
+            sdList.add(rd.toDescriptionSimpleInfoDTO());
+        }
         return sdList;
 
     }
@@ -225,39 +223,37 @@ public class DescriptionService {
     //TODO 나중에 일괄 정답 처리하는 로직도 만들기 -> 고도화 -> 그러러면 컬럼이 필요하다 정답자인지 아닌지!!
     //TODO query로 날릴 수 있다면 생각해보기
     @Transactional(readOnly = true)
-    public DescriptionStatisticDTO statistic(Long questionId){
+    public DescriptionStatisticDTO statistic(Long questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(NotFoundByIdException::new);
         List<Description> descriptions = descriptionRepository.findByQuestionId(questionId);
         List<String> descriptionOp = new ArrayList<>(); //옵션 저장
         List<List<DescriptionSimpleInfoDTO>> dsList = new ArrayList<>();
 
-        for(Description ds : descriptions){
-            for(String option : descriptionOp){
-                int num = descriptions.indexOf(option);
-                if(num > 0 ) {//항목에 있음.
+        for (Description ds : descriptions) {
+            //for (String option : descriptionOp) {
+                int num = descriptionOp.indexOf(ds.getContent());
+                if (num > 0) {//항목에 있음.
                     dsList.get(num).add(ds.toDescriptionSimpleInfoDTO());
+                } else {//항목에 없음
+                    dsList.add(new ArrayList<DescriptionSimpleInfoDTO>());
+                    descriptionOp.add(ds.getContent());
+                    dsList.get(descriptionOp.size()-1).add(ds.toDescriptionSimpleInfoDTO());
                 }
-                else{//항목에 없음
-                    descriptionOp.add(option);
-                    dsList.get(descriptionOp.size()).add(ds.toDescriptionSimpleInfoDTO());
-                }
-            }
+            //}
         }
         //size 각각 배열에 넣기
         int[] nums = new int[descriptionOp.size()];
-        for(int i = 0; i < descriptionOp.size(); i++){
+        for (int i = 0; i < descriptionOp.size(); i++) {
             nums[i] = dsList.get(i).size();
         }
         return DescriptionStatisticDTO.builder()
                 .response(dsList)
+                .opList(descriptionOp)
                 .num(nums)
                 .build();
     }
 
     //questionId로 description 응답수 조회
-
-
-
 
 
 //===================Update=================================
@@ -270,14 +266,14 @@ public class DescriptionService {
     //-> 그 지정해두었던 answer를 수정하는 로직임 밑에가
     //description 수정
     @Transactional
-    public Description updateDescription(Long QuestionId,Long DescriptionId, String newContent){
+    public Description updateDescription(Long QuestionId, Long DescriptionId, String newContent) {
         Question question = questionRepository.findById(QuestionId).orElseThrow(NotFoundByIdException::new);
         Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
 
         //TODO jwt 생겨서 getCurrent멤버 생기면 폼 생성자랑 똑같은지 비교해서 폼 생성자는 무조건 생성 가능한데 응답자는 폼 상태가 수정가능이어야만 숙제여야야함.
 
-        QDescription qDescription=QDescription.description;
-        QQuestion qQuestion=QQuestion.question;
+        QDescription qDescription = QDescription.description;
+        QQuestion qQuestion = QQuestion.question;
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
         Description description_sgl = query
@@ -286,8 +282,8 @@ public class DescriptionService {
                         .and(qQuestion.id.eq(QuestionId)))
                 .fetchOne();
 
-        if(description_sgl==null){
-            throw new NotFoundDescriptionException(QuestionId,DescriptionId);
+        if (description_sgl == null) {
+            throw new NotFoundDescriptionException(QuestionId, DescriptionId);
         }
 
         description_sgl.updateContent(newContent);
@@ -296,14 +292,14 @@ public class DescriptionService {
 
     //응답은 삭제가 안되니까 생성자부분만 삭제되게하기 \
     @Transactional
-    public String deleteSelectionById(DeleteDescriptionDTO deleteDescriptionDTO, Long descriptionId){
+    public String deleteSelectionById(DeleteDescriptionDTO deleteDescriptionDTO, Long descriptionId) {
         //descripton생성자랑 요청보낸 멤버랑 확인할 필요없음. 어차피 지우는건 생성자 단 한명임 그래서 그것만 확인하면 됨.
         Description description = descriptionRepository.findById(descriptionId).orElseThrow(NotFoundByIdException::new);
         Member member = memberRepository.findById(description.getQuestion().getForm().getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         List<Description> descriptions = descriptionRepository.findByQuestionId(description.getQuestion().getId());
         //요청자랑 삭제하려는 descripton의 작성자가 맞는지 확인
-        if(description.getMember().getId()==deleteDescriptionDTO.getMemberId()) {
-            if (deleteDescriptionDTO.getMemberId().equals(member.getId())) {//form의 작성자와 맞는지 확인
+        if (description.getMember().getId() == deleteDescriptionDTO.getResponsor_id()) {
+            if (deleteDescriptionDTO.getResponsor_id().equals(member.getId())) {//form의 작성자와 맞는지 확인
                 if (descriptions.isEmpty()) {
                     descriptionRepository.delete(description);
                     return "DELETE";
@@ -313,16 +309,10 @@ public class DescriptionService {
             } else {
                 throw new CanNotDeleteDescription("삭제할 수 있는 권한을 가진 생성자가 아닙니다.");
             }
-        }
-        else {
+        } else {
             throw new CanNotDeleteDescription("본인의 description이 아닙니다.");
         }
     }
-
-
-
-
-
 
 
 }
