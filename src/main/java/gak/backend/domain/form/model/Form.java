@@ -50,7 +50,8 @@ public class Form extends BaseTime {
     private Correspond correspond;
     private String title;
     private String content;
-    private List<String> timeout;
+    private List<String> timeout; //시작시간, 마감시간 추가
+    private int responsor_count; //응답자 수 추가
 
     //private boolean required;
 
@@ -68,6 +69,8 @@ public class Form extends BaseTime {
                 .id(this.id)
                 .content(this.content)
                 .title(this.title)
+                .timeout(this.timeout)
+                .responsor(this.responsor_count)
                 .build();
     }
 
@@ -86,6 +89,9 @@ public class Form extends BaseTime {
 
     public void QuestionSetting(List<Question> questions) {
         this.questions = questions;
+    }
+    public void ResponsorCntSetting(int responsor_count){
+        this.responsor_count=responsor_count;
     }
     public boolean FixSetting(boolean fix){
         this.fix=fix;
