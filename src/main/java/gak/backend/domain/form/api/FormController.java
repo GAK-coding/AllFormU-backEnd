@@ -1,9 +1,10 @@
 package gak.backend.domain.form.api;
 
-//import com.amazonaws.services.s3.AmazonS3;
+
 import gak.backend.domain.description.application.DescriptionService;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.application.FormService;
+import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.question.application.QuestionService;
@@ -11,13 +12,17 @@ import gak.backend.domain.selection.application.SelectionService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,11 +33,19 @@ import java.util.Optional;
 public class FormController {
     private final FormService formService;
     private final QuestionService questionService;
+    private final FormRepository formRepository;
 
-//    private final AmazonS3 amazonS3;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+
+
+
+    @GetMapping("form/pages/")
+    public FormDTO.PagingDTO Paging(@RequestParam("page")Long page){
+
+
+        return formService.Paging(page);
+    }
+
 
     /*
         프론트에서 질문 생성 시 form 생성 service 호출 -> form과 question만듦
@@ -40,11 +53,11 @@ public class FormController {
 
     */
     @PostMapping("/form/createform/{UserId}")
-    public Long create(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long id){
+    public Long create(@RequestBody FormDTO.AllFormData allFormData, @PathVariable("UserId")Long id){
 
-        Long FormId=formService.createForm(formDTO,id);
+        Long FormId=formService.createForm(allFormData,id);
 
-        return questionService.createInit(formDTO,id,FormId);
+        return questionService.createInit(allFormData,id,FormId);
     }
 
     /*
@@ -72,9 +85,13 @@ public class FormController {
         return formService.getSelectFormById(authorid,Formid);
 
     }
+    @PutMapping("/form/updateFix/{FormId}")
+    public boolean getFix(@PathVariable("FormId")Long FormId){
+        return formService.fixable(FormId);
+    }
     @PutMapping("/form/updateSelectform/{UserId}/{FormId}")
-    public Form getId(@RequestBody FormDTO formDTO,@PathVariable("UserId")Long userid,@PathVariable("FormId")Long formid){
-        return formService.updateSelectForm(formDTO,userid,formid);
+    public Form getId(@RequestBody FormDTO.UpdateFormData updateFormData, @PathVariable("UserId")Long userid, @PathVariable("FormId")Long formid){
+        return formService.updateSelectForm(updateFormData,userid,formid);
     }
     /*
         user id로 모든설문지 삭제

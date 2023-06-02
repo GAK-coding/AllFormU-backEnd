@@ -1,13 +1,14 @@
 package gak.backend.domain.form.application;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+
+import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.form.exception.NotFoundCorrException;
 import gak.backend.domain.form.exception.NotFoundFormException;
 import gak.backend.domain.form.exception.NotFoundMemberException;
 import gak.backend.domain.form.model.Correspond;
@@ -21,6 +22,7 @@ import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.exception.NotFoundQuestionException;
 import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
+import gak.backend.domain.response.model.QResponse;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.model.QSelection;
 import gak.backend.domain.selection.model.Selection;
@@ -31,11 +33,17 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -48,9 +56,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
 
 import static com.mysema.commons.lang.Assert.assertThat;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 /*
 멤버 서비스 로직
@@ -69,25 +77,106 @@ public class FormService {
     private final SelectionRepository selectionRepository;
     private final QuestionRepository questionRepository;
 
-//    private final AmazonS3 amazonS3;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
 
     @PersistenceContext
     private EntityManager entityManager;
+
+
+
+
+    @Transactional
+    public boolean fixable(Long FormId){
+
+        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+        QForm form=QForm.form;
+        QQuestion question=QQuestion.question;
+        QResponse Response=QResponse.response;
+
+
+        Form form_sgl = query
+                .selectFrom(form)
+                .where(form.id.eq(FormId))
+                .fetchOne();
+
+
+        if(form_sgl==null)
+            throw new NotFoundFormException("Not found Form Id");
+        /*
+        수정 버튼을 누르면 해당 FormId를 받아옴
+        그리고 response 테이블을 조회하고 각각의 questionId에 대응하는 form을 조회하고
+        그 form의 id와 수정 버튼이 눌린 form의 id가 일치하면 응답이 하나라도 있는 것
+        그렇게 되면 작성자는 수정이 불가능 하기에 해당 id를 가진 form의 fix값을 false로 수정.
+        * */
+        List<Long> form_id = query
+                .select(question.id)
+                .from(Response)
+                .join(Response.question,question)
+                .join(question.form,form)
+                .where(form.id.eq(FormId))
+                .fetch();
+
+
+        if(form_id.isEmpty()){
+            return form_sgl.FixSetting(true);
+        }
+
+
+
+
+        return form_sgl.FixSetting(false);
+    }
+    @Transactional
+    public FormDTO.PagingDTO Paging(Long page){
+
+        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+        QForm form=QForm.form;
+
+
+        Long pageSize = 5L; // 페이지 당 데이터 개수
+        Long startPage = page * pageSize; // 시작 페이지 번호
+
+        Long totalDataCount = query
+                .selectFrom(form)
+                .fetchCount();
+
+        if (startPage >= totalDataCount) {
+            //데이터가 없는 거임
+        }
+        Long nextPage = startPage + pageSize;
+
+        boolean hasNextPage = nextPage < totalDataCount;
+
+        List<Form> forms = query
+                .selectFrom(form)
+                .orderBy(form.id.desc())
+                .limit(pageSize)
+                .offset(startPage)
+                .fetch();
+
+        List<FormDTO.PagingDataDTO> pagingDTOList = forms.stream()
+                .map(Form::toPagingData)
+                .collect(Collectors.toList());
+        FormDTO.PagingDTO paging=new FormDTO.PagingDTO(hasNextPage,pagingDTOList);
+
+        return paging;
+    }
+
+
+
+
 
     /*
         title, content까지 저장
         question 작성 후 리스트 완성 후 저장
     */
     @Transactional
-    public Long createForm(FormDTO formDto, Long id){
+    public Long createForm(FormDTO.AllFormData allFormData, Long id){
 
         //폼 엔티티 데이터 저장 (of메소드 호출)
-        Form form=formDto.of();
+        Form form=allFormData.of();
 
-        List<String> datetime= formDto.getTimeout();
+        List<String> datetime= allFormData.getTimeout();
         int flag=0;
 
         //ExpireCorrespond(form,formDto);
@@ -96,9 +185,9 @@ public class FormService {
         form.AuthorSetting(author);
         form.SeparatorSetting(Separator.SEPARATOR_WRITER);
         form.CorrespondSetting(Correspond.STATUS_BEFORE);
-
+        form.TimeoutSetting(datetime);
         //question리스트 저장 , question엔티티 객체 자동 생성.
-        List<Question> questions= formDto.toQuestions(form);
+        List<Question> questions= allFormData.toQuestions(form);
         form.QuestionSetting(questions);
         formRepository.save(form);
 
@@ -127,12 +216,10 @@ public class FormService {
                 //시작
                 else if(sec>=0 && flag==0) {
                     status = Correspond.STATUS_PROCESS;
-
                 }
                 //만료
                 if(flag==1){
                     status=Correspond.STATUS_EXPIRE;
-
                 }
                 //현재 form, 카운트시간, status
                 ExpireCorrespond(form,sec,status);
@@ -200,6 +287,7 @@ public class FormService {
             throw new NotFoundFormException(id,FormId);
 
 
+
         return form_sgl;
 
 
@@ -215,11 +303,12 @@ public class FormService {
         특정 user의 특정 form을 업데이트
         (하위 객체(List) 제외)
     */
-   @Transactional
-  public Form updateSelectForm(FormDTO formDto,Long Userid, Long FormId ) {
+    @Transactional
+  public Form updateSelectForm(FormDTO.UpdateFormData updateFormData, Long Userid, Long FormId ) {
 
-       Form form=getSelectFormById(Userid,FormId);
-       form.UpdateSelectForm(formDto);
+        Form form=getSelectFormById(Userid,FormId);
+
+        form.UpdateSelectForm(updateFormData);
 
        return form;
   }
@@ -336,7 +425,4 @@ public class FormService {
         formRepository.deleteAll();
 
     }
-
-
-
 }
