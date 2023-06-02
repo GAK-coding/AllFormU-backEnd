@@ -30,6 +30,7 @@ public class Member extends BaseTime{
     private String email;
 
     private String password;
+    private String image;
 
     @OneToMany(mappedBy = "author") //변경 가능성 있음.
     private List<Form> responseForm = new ArrayList<>();
@@ -47,11 +48,12 @@ public class Member extends BaseTime{
     private Status status;
 
     @Builder
-    public Member(Long id, String nickname, String email, String password, Role role, Status status){
+    public Member(Long id, String nickname, String email, String password, String image, Role role, Status status){
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
+        this.image=image;
         this.role = role;
         this.status = status;
     }
@@ -75,6 +77,12 @@ public class Member extends BaseTime{
                 .password(this.password)
                 .build();
     }
+    public UpdateImageDTO toUpdateImageDTO(){
+        return UpdateImageDTO.builder()
+                .id(this.id)
+                .image(this.image)
+                .build();
+    }
 
     public MemberStatusInfoDTO toMemberStatusInfoDTO(){
         return MemberStatusInfoDTO.builder()
@@ -90,6 +98,7 @@ public class Member extends BaseTime{
                 .nickname(this.nickname)
                 .email(this.email)
                 .password(this.password)
+                .image(this.image)
                 .role(this.role)
                 .status(this.status)
                 .modifiedTime(super.getModifiedDate())
@@ -98,6 +107,7 @@ public class Member extends BaseTime{
     }
 
     public void UpdateMemberNickname(String newNickname){ this.nickname = newNickname; }
+    public void UpdateMemberImage(String newImage){ this.image = newImage; }
 
     public void UpdateMemberPassword(String newPwd){ this.password = newPwd; }
     public void UpdateMemberStatus(Status newStatus){ this.status = newStatus;}

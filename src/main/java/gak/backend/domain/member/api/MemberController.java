@@ -69,6 +69,13 @@ public class MemberController {
         return new ResponseEntity<>(updateNicknameDTO, HttpStatus.OK);
     }
 
+    //프로필이미지변경
+    @PatchMapping(value="/member/update/image")
+    public ResponseEntity<UpdateImageDTO> updateImage(@RequestBody @Validated UpdateImageRequest updateImageRequest){
+        UpdateImageDTO updateImageDTO = memberService.updateMemberImage(updateImageRequest);
+        return new ResponseEntity<>(updateImageDTO, HttpStatus.OK);
+    }
+
     //비밀번호 변경
     @PatchMapping(value="/member/update/password")
     public ResponseEntity<UpdatePasswordDTO> updatePassword(@RequestBody @Validated UpdatePasswordRequest updatePasswordRequest){
@@ -101,7 +108,7 @@ public class MemberController {
 //
 //        return user;
 //    }
-    @GetMapping("/api/item")
+    @GetMapping("/item")
     public List<Member> get(){
         return memberRepository.findAll();
     }
