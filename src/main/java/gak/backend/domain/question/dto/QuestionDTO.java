@@ -13,6 +13,7 @@ import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +36,7 @@ public class QuestionDTO implements Serializable{
     private String title;
     private String content;
     private Boolean required;
-    private boolean quiz;
+    private Boolean quiz;
     private Integer sectionNum;
 
 
@@ -57,6 +58,14 @@ public class QuestionDTO implements Serializable{
         this.type = type;
     }
 
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class Id_list{
+//        private Form form;
+//        private ;
+//    }
+
 
     //첫 생성 시에는 (create) 타입형식만 받아오기 때문에 다른 값들은 뭐가 들어가도 상관 x
     //보여지는 것은 title이고 title은 실제 값 저장 되야하고
@@ -67,7 +76,7 @@ public class QuestionDTO implements Serializable{
                 .title(title)
                 .content(content)
                 .required((required!=null)?required:false)
-                .quiz(quiz)
+                .quiz((quiz!=null)?quiz:false)
                 .sectionNum((sectionNum!=null)?sectionNum:0)
                 .type((type!=null)?type:Description_SHORT)
                 .build();
