@@ -4,6 +4,7 @@ import gak.backend.domain.description.dao.DescriptionRepository;
 import gak.backend.domain.description.dto.DescriptionDTO;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.model.Form;
+import gak.backend.domain.member.model.Member;
 import gak.backend.domain.question.model.Format;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
@@ -29,7 +30,7 @@ public class QuestionDTO implements Serializable{
 
     private Long id;
     private Form form;
-    private List<SelectionDTO> options =new ArrayList<>();
+    private List<SelectionDTO.AllSelectionData> options =new ArrayList<>();
     private List<DescriptionDTO> descriptions =new ArrayList<>();
     private String title;
     private String content;
@@ -37,12 +38,13 @@ public class QuestionDTO implements Serializable{
     private boolean quiz;
     private Integer sectionNum;
 
+
     @Enumerated(EnumType.STRING)
     private Format type;
 
 
     @Builder
-    public QuestionDTO(Long id, Form form, List<SelectionDTO> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, boolean quiz, Integer sectionNum, Format type) {
+    public QuestionDTO(Long id, Form form, List<SelectionDTO.AllSelectionData> options, List<DescriptionDTO> descriptions, String title, String content, Boolean required, boolean quiz, Integer sectionNum, Format type) {
         this.id = id;
         this.form = form;
         this.options = options;
@@ -80,9 +82,9 @@ public class QuestionDTO implements Serializable{
             selectionRepository.saveAll(selectionList);
         }
 
-        for (SelectionDTO selectionDTO : options) {
+        for (SelectionDTO.AllSelectionData allSelectionData : options) {
             Selection selection = Selection.builder()
-                    .content((selectionDTO.getContent() !="")? selectionDTO.getContent():"입력 값 없음")
+                    .content((allSelectionData.getContent() !="")? allSelectionData.getContent():"입력 값 없음")
                     .question(question)
                     .build();
             selectionList.add(selection);
@@ -91,10 +93,11 @@ public class QuestionDTO implements Serializable{
         return selectionList;
     }
 
-    public List<Description> toDescription(DescriptionRepository descriptionRepository,Question question) {
+    public List<Description> toDescription(DescriptionRepository descriptionRepository, Question question, Member member) {
         List<Description> descriptionList = new ArrayList<>();
         if(descriptions.size()<1){
             Description description= Description.builder()
+                    .member(member)
                     .question(question)
                     .build();
             descriptionList.add(description);
@@ -102,7 +105,8 @@ public class QuestionDTO implements Serializable{
         }
         for (DescriptionDTO descriptionDTO : descriptions) {
             Description description = Description.builder()
-                    .content((descriptionDTO.getContent()!="")? descriptionDTO.getContent():"입력 값 없음")
+                    .content((this.content!="")? this.content:"입력 값 없음")
+                    .member(member)
                     .question(question)
                     .build();
             descriptionList.add(description);
