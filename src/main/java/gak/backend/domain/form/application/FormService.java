@@ -109,14 +109,15 @@ public class FormService {
         그렇게 되면 작성자는 수정이 불가능 하기에 해당 id를 가진 form의 fix값을 false로 수정.
         * */
         List<Long> form_id = query
-                .select(Response.id)
+                .select(Response.responsor.id)
                 .from(Response)
                 .join(Response.question,question)
                 .join(question.form,form)
                 .where(form.id.eq(FormId))
                 .fetch();
 
-
+        for(Long id:form_id)
+            System.out.println("Formid: "+id);
         if(form_id.isEmpty()){
             return form_sgl.FixSetting(true);
         }
@@ -155,13 +156,27 @@ public class FormService {
                 .offset(startPage)
                 .fetch();
 
-//        List<Long> form_id = query
-//                .select(Response.responsor.id)
-//                .from(Response)
-//                .join(Response.question,question)
-//                .join(question.form,form)
-//                .where(form.id.eq(FormId))
-//                .fetch();
+
+        int response_cnt=0;
+        for(Form form_temp : forms){
+
+            List<Long> form_lst = query
+                    .select(Response.responsor.id)
+                    .from(Response)
+                    .join(Response.question,question)
+                    .join(question.form,form)
+                    .where(Response.question.form.id.eq(form_temp.getId()))
+                    .distinct()
+                    .fetch();
+
+            response_cnt=form_lst.size();
+            form_temp.ResponsorCntSetting(response_cnt);
+            response_cnt=0;
+        }
+
+
+
+
 
         List<FormDTO.PagingDataDTO> pagingDTOList = forms.stream()
                 .map(Form::toPagingData)
