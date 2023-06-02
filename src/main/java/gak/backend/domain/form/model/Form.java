@@ -50,6 +50,7 @@ public class Form extends BaseTime {
     private Correspond correspond;
     private String title;
     private String content;
+    private String FormImage;
     private List<String> timeout;
 
     //private boolean required;
@@ -57,10 +58,11 @@ public class Form extends BaseTime {
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
     @Builder
-    public Form(String title, boolean fix, String content){
+    public Form(String title, boolean fix, String content, String FormImage){
         this.title=title;
         this.fix=fix;
         this.content=content;
+        this.FormImage=FormImage;
     }
 
     public FormDTO.PagingDataDTO toPagingData(){
@@ -81,6 +83,7 @@ public class Form extends BaseTime {
         this.content=(updateFormData.getContent()!=null) ? updateFormData.getContent() : this.content;
         this.fix=(updateFormData.getFix()!=null) ? updateFormData.getFix() : this.fix;
         this.title=(updateFormData.getTitle()!=null) ? updateFormData.getTitle() : this.title;
+        this.FormImage=(updateFormData.getFormImage()!=null) ? updateFormData.getFormImage() :this.FormImage;
     }
 
 

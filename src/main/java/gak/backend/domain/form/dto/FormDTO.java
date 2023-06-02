@@ -33,6 +33,7 @@ public class FormDTO implements Serializable {
     private List<QuestionDTO> questions;
     private String title;
     private String content;
+    private String FormImage;
 
     //private List<String> timeout;
     //private List<Integer> Timeout;
@@ -69,6 +70,7 @@ public class FormDTO implements Serializable {
         private String content;
         private Boolean fix;
         private String title;
+        private String FormImage;
     }
     @Getter
     @NoArgsConstructor
@@ -88,6 +90,7 @@ public class FormDTO implements Serializable {
         private Long id;
         private String content;
         private String title;
+
     }
     @Getter
     @Builder
@@ -111,6 +114,7 @@ public class FormDTO implements Serializable {
         private List<QuestionDTO> questions;
         private String title;
         private String content;
+        private String FormImage;
         private List<String> timeout;
 
         public Form of (){
@@ -118,6 +122,7 @@ public class FormDTO implements Serializable {
                     .title(title)
                     .fix((fix!=null)?fix:false)
                     .content(content)
+                    .FormImage(FormImage)
                     .build();
         }
         public List<Question> toQuestions(Form form) {

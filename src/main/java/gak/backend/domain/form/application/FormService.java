@@ -6,6 +6,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
+import gak.backend.domain.file.application.FileService;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.exception.NotFoundCorrException;
@@ -76,6 +77,7 @@ public class FormService {
     private final MemberRepository memberRepository;
     private final SelectionRepository selectionRepository;
     private final QuestionRepository questionRepository;
+    private final FileService fileService;
 
 
 
@@ -306,8 +308,12 @@ public class FormService {
     @Transactional
   public Form updateSelectForm(FormDTO.UpdateFormData updateFormData, Long Userid, Long FormId ) {
 
+        //userid가 작성한 폼중에 해당 formid가져오기
         Form form=getSelectFormById(Userid,FormId);
-
+        //기존의 폼이미지 값이 있다면 기존값 s3에서 삭제 후 다시 업로드
+        if(form.getFormImage()!=null){
+            fileService.deleteImageByUrl(form.getFormImage());
+        }
         form.UpdateSelectForm(updateFormData);
 
        return form;
