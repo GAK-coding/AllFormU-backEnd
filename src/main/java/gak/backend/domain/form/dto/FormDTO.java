@@ -32,6 +32,7 @@ public class FormDTO implements Serializable {
     private Long authorId;
     private List<QuestionDTO> questions;
     private String title;
+    private String FormImage;
     private String content;
 
     //private List<String> timeout;
@@ -67,6 +68,7 @@ public class FormDTO implements Serializable {
     @AllArgsConstructor
     public static class UpdateFormData{
         private String content;
+        private String FormImage;
         private Boolean fix;
         private String title;
     }
@@ -115,6 +117,7 @@ public class FormDTO implements Serializable {
         private List<QuestionDTO> questions;
         private String title;
         private String content;
+        private String FormImage;
         private List<String> timeout;
 
         public Form of (){
@@ -122,6 +125,7 @@ public class FormDTO implements Serializable {
                     .title(title)
                     .fix((fix!=null)?fix:false)
                     .content(content)
+                    .FormImage(FormImage)
                     .build();
         }
         public List<Question> toQuestions(Form form) {
