@@ -46,7 +46,9 @@ public class ResponseService {
 //            throw new CanNotAccessResponse("작성자는 응답을 할 수 없습니다.");
 //        }
         //이미했던 응답자 거름
-        if(responseRepository.existsByResponsorId(saveResponseRequest.getResponsorId()) && question.getType()== Format.Selection_OPTION){
+        //중복 응답일 경우는 중복 응답이 가능 그래서 체크 박스일때를 제외함.
+        //TODO Grid 형식도 추후에 고려해줄 것.
+        if(responseRepository.existsByResponsorId(saveResponseRequest.getResponsorId()) && question.getType()!= Format.Selection_CHECKBOX){
                 throw new CanNotAccessResponse("이미 설문에 참여한 응답자 입니다.");
             }
 
