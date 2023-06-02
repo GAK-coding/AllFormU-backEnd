@@ -8,6 +8,7 @@ import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Role;
 import gak.backend.domain.question.dao.QuestionRepository;
+import gak.backend.domain.question.model.Format;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.response.dao.ResponseRepository;
 import gak.backend.domain.response.dto.ResponseDTO;
@@ -45,7 +46,7 @@ public class ResponseService {
 //            throw new CanNotAccessResponse("작성자는 응답을 할 수 없습니다.");
 //        }
         //이미했던 응답자 거름
-        if(responseRepository.existsByResponsorId(saveResponseRequest.getResponsorId())){
+        if(responseRepository.existsByResponsorId(saveResponseRequest.getResponsorId()) && question.getType()== Format.Selection_OPTION){
                 throw new CanNotAccessResponse("이미 설문에 참여한 응답자 입니다.");
             }
 
