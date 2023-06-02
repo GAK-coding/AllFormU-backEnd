@@ -68,6 +68,7 @@ public class Form extends BaseTime {
                 .id(this.id)
                 .content(this.content)
                 .title(this.title)
+                .timeout(this.timeout)
                 .build();
     }
 

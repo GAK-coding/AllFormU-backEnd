@@ -109,7 +109,7 @@ public class FormService {
         그렇게 되면 작성자는 수정이 불가능 하기에 해당 id를 가진 form의 fix값을 false로 수정.
         * */
         List<Long> form_id = query
-                .select(question.id)
+                .select(Response.id)
                 .from(Response)
                 .join(Response.question,question)
                 .join(question.form,form)
@@ -131,7 +131,8 @@ public class FormService {
 
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
         QForm form=QForm.form;
-
+        QQuestion question=QQuestion.question;
+        QResponse Response=QResponse.response;
 
         Long pageSize = 5L; // 페이지 당 데이터 개수
         Long startPage = page * pageSize; // 시작 페이지 번호
@@ -154,9 +155,18 @@ public class FormService {
                 .offset(startPage)
                 .fetch();
 
+//        List<Long> form_id = query
+//                .select(Response.responsor.id)
+//                .from(Response)
+//                .join(Response.question,question)
+//                .join(question.form,form)
+//                .where(form.id.eq(FormId))
+//                .fetch();
+
         List<FormDTO.PagingDataDTO> pagingDTOList = forms.stream()
                 .map(Form::toPagingData)
                 .collect(Collectors.toList());
+
         FormDTO.PagingDTO paging=new FormDTO.PagingDTO(hasNextPage,pagingDTOList);
 
         return paging;

@@ -88,6 +88,12 @@ public class FormDTO implements Serializable {
         private Long id;
         private String content;
         private String title;
+        private List<String> timeout=new ArrayList<>();
+        private Long responsor;
+        public void dataCnt(Long cnt) {
+            this.responsor = cnt;
+        }
+
     }
     @Getter
     @Builder
