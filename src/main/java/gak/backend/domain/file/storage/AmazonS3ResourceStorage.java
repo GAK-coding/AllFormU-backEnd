@@ -3,6 +3,7 @@ package gak.backend.domain.file.storage;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import gak.backend.domain.file.exception.StorageException;
 import lombok.RequiredArgsConstructor;
@@ -45,13 +46,23 @@ public class AmazonS3ResourceStorage {
 
     private void uploadFileToS3(String fullPath, File file) {
         try {
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, fullPath, file)
-                    .withCannedAcl(CannedAccessControlList.PublicRead);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, fullPath, file);
+
+            // Content-Disposition 헤더 설정
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentDisposition("inline");
+            putObjectRequest.setMetadata(objectMetadata);
+
+            // 공개 액세스 설정
+            putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+
             amazonS3.putObject(putObjectRequest);
         } catch (SdkClientException e) {
             throw new StorageException("Failed to upload file to Amazon S3", e);
         }
     }
+
+
 
     private void deleteLocalFile(File file) {
         if (!file.delete()) {

@@ -1,5 +1,6 @@
 package gak.backend.domain.form.api;
 
+//import com.amazonaws.services.s3.AmazonS3;
 import gak.backend.domain.description.application.DescriptionService;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.application.FormService;
@@ -10,6 +11,10 @@ import gak.backend.domain.selection.application.SelectionService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +28,11 @@ import java.util.Optional;
 public class FormController {
     private final FormService formService;
     private final QuestionService questionService;
+
+//    private final AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     /*
         프론트에서 질문 생성 시 form 생성 service 호출 -> form과 question만듦

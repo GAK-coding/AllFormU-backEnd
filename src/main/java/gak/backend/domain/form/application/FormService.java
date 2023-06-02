@@ -1,5 +1,7 @@
 package gak.backend.domain.form.application;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gak.backend.domain.description.model.Description;
@@ -31,7 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -44,6 +48,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 
 import static com.mysema.commons.lang.Assert.assertThat;
 
@@ -63,6 +68,11 @@ public class FormService {
     private final MemberRepository memberRepository;
     private final SelectionRepository selectionRepository;
     private final QuestionRepository questionRepository;
+
+//    private final AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -326,4 +336,7 @@ public class FormService {
         formRepository.deleteAll();
 
     }
+
+
+
 }
