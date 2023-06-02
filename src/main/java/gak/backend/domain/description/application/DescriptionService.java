@@ -130,6 +130,13 @@ public class DescriptionService {
 
     //========================read============================================
 
+    //memberId와 questionId로 응답 조회
+    @Transactional(readOnly = true)
+    public DescriptionInfoDTO findResponseByMemberIdAndQuestionId(Long memberId, Long questionId){
+        Description description = descriptionRepository.findByMemberIdAndQuestionId(memberId, questionId).orElseThrow(NotFoundByIdException::new);
+        return description.toDescriptionInfoDTO();
+    }
+
     //descriptionid로 해당 description 조회
     @Transactional(readOnly = true)
     public DescriptionInfoDTO getDescription(Long id) {
