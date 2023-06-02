@@ -1,5 +1,7 @@
 package gak.backend.domain.response.application;
 
+import gak.backend.domain.description.dto.DescriptionDTO;
+import gak.backend.domain.description.dto.DescriptionDTO.DescriptionInfoDTO;
 import gak.backend.domain.description.model.Description;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.model.Correspond;
@@ -8,6 +10,7 @@ import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Role;
 import gak.backend.domain.question.dao.QuestionRepository;
+import gak.backend.domain.question.model.Format;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.response.dao.ResponseRepository;
 import gak.backend.domain.response.dto.ResponseDTO;
@@ -45,7 +48,9 @@ public class ResponseService {
 //            throw new CanNotAccessResponse("작성자는 응답을 할 수 없습니다.");
 //        }
         //이미했던 응답자 거름
-        if(responseRepository.existsByResponsorId(saveResponseRequest.getResponsorId())){
+        //중복 응답일 경우는 중복 응답이 가능 그래서 체크 박스일때를 제외함.
+        //TODO Grid 형식도 추후에 고려해줄 것.
+        if(responseRepository.existsByResponsorIdAndQuestionId(saveResponseRequest.getResponsorId(), saveResponseRequest.getQuestionId()) && question.getType()!= Format.Selection_CHECKBOX){
                 throw new CanNotAccessResponse("이미 설문에 참여한 응답자 입니다.");
             }
 
@@ -79,6 +84,21 @@ public class ResponseService {
             responsesSimpleInfoDTOs.add(responseSimpleInfoDTO);
         }
         return responsesSimpleInfoDTOs;
+    }
+    //TODO checkbox용 컨트롤러를 만들기 -> 하나의 문제에 대한 응답자수는 멤버의 갯수로 세어져야함.
+
+    //체크박스 조회//member입장에서 조회하는 것. 자신이 한 문제에서 몇번들을 찍었는지 확인
+    @Transactional(readOnly = true)
+    public ResponseListInfoDTO findResponsesByMemberIdAndQuestionId(Long memberId, Long questionId){
+        List<Response> responses = responseRepository.findByResponsorIdAndQuestionId(memberId, questionId);
+        List<ResponseSimpleInfoDTO> rsList = new ArrayList<>();
+        for(Response r : responses){
+            rsList.add(r.toResponseSimpleInfoDTO());
+        }
+        return ResponseListInfoDTO.builder()
+                .responseList(rsList)
+                .count(rsList.size())
+                .build();
     }
 
     //폼아이디와 멤버 아이디로 응답 설문 불러오기
