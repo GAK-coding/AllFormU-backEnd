@@ -33,6 +33,12 @@ public class FileController {
         return ResponseEntity.ok(objectUrl);
     }
 
+//    @DeleteMapping("/{fileName:.+}")
+//    public ResponseEntity<String> deleteImage(@PathVariable String fileName) {
+//        fileService.deleteImage(fileName);
+//        return ResponseEntity.ok("Image deleted successfully");
+//    }
+
 }
 
 

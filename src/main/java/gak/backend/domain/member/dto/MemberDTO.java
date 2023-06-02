@@ -20,6 +20,7 @@ public class MemberDTO {
         private String nickname;
         private String email;
         private String password;
+        private String image;
         //private Role role; //생성자인지 응답자인지 받음.
 
 
@@ -28,6 +29,7 @@ public class MemberDTO {
                     .nickname(nickname)
                     .email(email)
                     .password(password)
+                    .image(image)
                     .nickname(nickname)
                     .role(Role.Role_Responsor)
                     .status(Status.STATUS_MEMBER) //멤버가 생성된다는 것은 회원가입 -> 이것은 멤버 상태로 한다는 뜻
@@ -61,6 +63,16 @@ public class MemberDTO {
     }
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateImageRequest{
+        private Long id;
+        private String newImage;
+    }
+
+
+
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -77,6 +89,15 @@ public class MemberDTO {
     public static class UpdateNicknameDTO{
         private Long id;
         private String nickname;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateImageDTO{
+        private Long id;
+        private String image;
     }
 
     @Getter
@@ -115,8 +136,10 @@ public class MemberDTO {
         private String nickname;
         private String email;
         private String password;
+        private String image;
         private Role role;
         private Status status;
+
         private LocalDateTime createdTime;
         private LocalDateTime modifiedTime;
 

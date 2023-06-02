@@ -1,5 +1,6 @@
 package gak.backend.domain.member.application;
 
+import gak.backend.domain.file.application.FileService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.exception.DormantMemberException;
 import gak.backend.domain.member.exception.ExistMemberException;
@@ -44,6 +45,7 @@ D(삭제):
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final FileService fileService;
 
     //TODD 버튼 따로 뺄거니까 컨트롤러, 서비스 새로 로직 생성.
     //상태가 멤버인 계정이 있는지 확인하는 서비스 로직
@@ -202,6 +204,24 @@ public class MemberService {
     }
     //===========================================Delete(사실 멤버는 삭제가 없음.) 업데이트임======================================
 
+    //멤버 프로필사진 수정
+    @Transactional
+    public UpdateImageDTO updateMemberImage(UpdateImageRequest updateImageRequest) {
+
+        Member member = memberRepository.findById(updateImageRequest.getId()).orElseThrow(NotFoundMemberByEmailException::new);
+
+        // 기존 이미지 값이 "/images/userProfile.png"이 아닌 경우 삭제
+        if (member.getImage() != null && !member.getImage().equals("/images/userProfile.png")) {
+            fileService.deleteImageByUrl(member.getImage());
+        }
+
+        member.UpdateMemberImage(updateImageRequest.getNewImage());
+        log.info(memberRepository.findById(updateImageRequest.getId()).orElseThrow(NotFoundByIdException::new)+"gn");
+
+        UpdateImageDTO updateImageDTO = member.toUpdateImageDTO();
+        return updateImageDTO;
+    }
+    //"/images/userProfile.png"==기본이미지 춘식이면 바로 이미지 업데이트 / 춘식이가 아닌 사용자가 이전에 s3에 올린 이미지를 다른 이미지로 수정하는거면 기존 이미지 삭제
     //휴면 계정으로 전환
     @Transactional
     public MemberStatusInfoDTO changeMemberStatusDormant(Long id){
