@@ -10,6 +10,8 @@ import java.util.List;
 public interface DescriptionRepository extends JpaRepository<Description, Long> {
     List<Description> findByQuestionId(Long question_id);
 
+    boolean existsByMemberIdAndQuestionId(Long memberId, Long questionId);
+
 
     int countDescriptionByQuestionId(Long questionId);
 

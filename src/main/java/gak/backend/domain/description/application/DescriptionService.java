@@ -71,22 +71,25 @@ public class DescriptionService {
 //    }
     //====================================description 생성================================
     @Transactional
-    public DescriptionInfoDTO createDescription(DescriptionSaveRequest descriptionSaveRequest, Long QuestionId) {
+    public DescriptionInfoDTO createDescription(DescriptionSaveRequest descriptionSaveRequest, Long questionId) {
         //description은 응답자와 생성자로 나뉘기 때문에 form의 memberId와 똑같으면 멤버 구분 해놓고 정답을 처리해야되는 column으로 박아야할지 아니면 돌아가면서 찾아야할지
         //그럼 이론상 두번 돌아가는 거라서 좀 그렇다.
         //근데 question에서 질문의 형식으로 description을 갖고 있는데 이건 응답도 갖고 있는거니까 question이랑 떼어놔야할것같음.
         //member가 작성자인 동시에 응답자일수도 있기 대문에 STATUS로 상태를 비교하는 건 안좋은 것 같음.
-        Question question = questionRepository.findById(QuestionId).orElseThrow(NotFoundByIdException::new);
+        Question question = questionRepository.findById(questionId).orElseThrow(NotFoundByIdException::new);
         Member member = memberRepository.findById(descriptionSaveRequest.getMember_id()).orElseThrow(NotFoundByIdException::new);
         Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
         Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-        List<Description> descriptions = descriptionRepository.findByQuestionId(QuestionId);
+        List<Description> descriptions = descriptionRepository.findByQuestionId(questionId);
 
-        //이미 응답한 사람이면 못하게 막아야함.
-        for (Description description : descriptions) {
-            if (description.getMember().getId() == member.getId()) {
-                throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
-            }
+        //이미 응답한 사람이면 못하게 막아야함.-> 비효율적 TODO repository 추가해서 코드 최적화 하기
+//        for (Description description : descriptions) {
+//            if (description.getMember().getId() == member.getId()) {
+//                throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
+//            }
+//        }
+        if(descriptionRepository.existsByMemberIdAndQuestionId(descriptionSaveRequest.getMember_id(), questionId)){
+            throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
         }
 
         //응답자면 멤버 상태 변경 (한사람이 설문 생성자 이면서 다른쪽에서는 응답자일 수 있어서 이렇게 구별)
@@ -106,11 +109,11 @@ public class DescriptionService {
 
         Question question_sgl = query
                 .selectFrom(qQuestion)
-                .where(qQuestion.question.id.eq(QuestionId))
+                .where(qQuestion.question.id.eq(questionId))
                 .fetchOne();
 
         if (question_sgl == null) {
-            throw new NotFoundDescriptionException(QuestionId);
+            throw new NotFoundDescriptionException(questionId);
         }
         if (member.getRole() == Role.Role_Admin) {
             Description description = descriptionSaveRequest.of(author, question_sgl);
