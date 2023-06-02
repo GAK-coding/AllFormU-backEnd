@@ -29,6 +29,13 @@ public class ResponseController {
 
     }
     //===================응답 조회======================
+
+    //checkbox용 응답에 대한 결과 확인하기 , 근데 객관식도활용 가능함.
+    @GetMapping(value="/response/{question_id}/{responsor_id}")
+    public ResponseListInfoDTO findResponseByMemberIdAndQuestionId(@PathVariable(name="question_id")Long questionId, @PathVariable(name="responsor_id")Long responsorId){
+        ResponseListInfoDTO responseListInfoDTO = responseService.findResponsesByMemberIdAndQuestionId(responsorId,questionId);
+        return responseListInfoDTO;
+    }
     //questionId로 응답들 불러오기
     @GetMapping(value = "/response/{question_id}")
     public ResponseEntity<List<ResponseSimpleInfoDTO>> findResponseByQuestionId(@PathVariable(name="question_id") Long questionId){

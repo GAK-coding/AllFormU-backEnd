@@ -39,6 +39,16 @@ public class ResponseDTO {
         private Long question_id;
         private int num;
     }
+    //체크박스일 경우 자신이 응답한 것들 조회 및 갯수 -> 즉 1번 문제에 1,3,5 총 3개의 답을 보냈다 를 포함하는 정보
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ResponseListInfoDTO{
+        private List<ResponseSimpleInfoDTO> responseList;
+        private int count;
+
+    }
     @Builder
     @Getter
     @AllArgsConstructor
