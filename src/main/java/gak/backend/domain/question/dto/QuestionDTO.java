@@ -36,7 +36,7 @@ public class QuestionDTO implements Serializable{
     private String title;
     private String content;
     private Boolean required;
-    private boolean quiz;
+    private Boolean quiz;
     private Integer sectionNum;
 
 
@@ -76,7 +76,7 @@ public class QuestionDTO implements Serializable{
                 .title(title)
                 .content(content)
                 .required((required!=null)?required:false)
-                .quiz(quiz)
+                .quiz((quiz!=null)?quiz:false)
                 .sectionNum((sectionNum!=null)?sectionNum:0)
                 .type((type!=null)?type:Description_SHORT)
                 .build();

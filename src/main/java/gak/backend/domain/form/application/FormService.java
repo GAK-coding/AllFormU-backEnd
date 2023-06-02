@@ -8,6 +8,7 @@ import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
+import gak.backend.domain.form.exception.NotFoundCorrException;
 import gak.backend.domain.form.exception.NotFoundFormException;
 import gak.backend.domain.form.exception.NotFoundMemberException;
 import gak.backend.domain.form.model.Correspond;
@@ -21,6 +22,7 @@ import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.exception.NotFoundQuestionException;
 import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
+import gak.backend.domain.response.model.QResponse;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.model.QSelection;
 import gak.backend.domain.selection.model.Selection;
@@ -82,6 +84,48 @@ public class FormService {
 
 
 
+
+    @Transactional
+    public boolean fixable(Long FormId){
+
+        JPAQueryFactory query=new JPAQueryFactory(entityManager);
+        QForm form=QForm.form;
+        QQuestion question=QQuestion.question;
+        QResponse Response=QResponse.response;
+
+
+        Form form_sgl = query
+                .selectFrom(form)
+                .where(form.id.eq(FormId))
+                .fetchOne();
+
+
+        if(form_sgl==null)
+            throw new NotFoundFormException("Not found Form Id");
+        /*
+        수정 버튼을 누르면 해당 FormId를 받아옴
+        그리고 response 테이블을 조회하고 각각의 questionId에 대응하는 form을 조회하고
+        그 form의 id와 수정 버튼이 눌린 form의 id가 일치하면 응답이 하나라도 있는 것
+        그렇게 되면 작성자는 수정이 불가능 하기에 해당 id를 가진 form의 fix값을 false로 수정.
+        * */
+        List<Long> form_id = query
+                .select(question.id)
+                .from(Response)
+                .join(Response.question,question)
+                .join(question.form,form)
+                .where(form.id.eq(FormId))
+                .fetch();
+
+
+        if(form_id.isEmpty()){
+            return form_sgl.FixSetting(true);
+        }
+
+
+
+
+        return form_sgl.FixSetting(false);
+    }
     @Transactional
     public FormDTO.PagingDTO Paging(Long page){
 
@@ -141,7 +185,7 @@ public class FormService {
         form.AuthorSetting(author);
         form.SeparatorSetting(Separator.SEPARATOR_WRITER);
         form.CorrespondSetting(Correspond.STATUS_BEFORE);
-
+        form.TimeoutSetting(datetime);
         //question리스트 저장 , question엔티티 객체 자동 생성.
         List<Question> questions= allFormData.toQuestions(form);
         form.QuestionSetting(questions);

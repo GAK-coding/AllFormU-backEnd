@@ -50,6 +50,7 @@ public class Form extends BaseTime {
     private Correspond correspond;
     private String title;
     private String content;
+    private List<String> timeout;
 
     //private boolean required;
 
@@ -86,11 +87,15 @@ public class Form extends BaseTime {
     public void QuestionSetting(List<Question> questions) {
         this.questions = questions;
     }
-    public void FixSetting(boolean fix){
+    public boolean FixSetting(boolean fix){
         this.fix=fix;
+        return fix;
     }
     public void SeparatorSetting(Separator separator){
         this.separator=separator;
+    }
+    public void TimeoutSetting(List<String> timeout){
+        this.timeout=timeout;
     }
     public void CorrespondSetting(Correspond correspond){
         this.correspond=correspond;

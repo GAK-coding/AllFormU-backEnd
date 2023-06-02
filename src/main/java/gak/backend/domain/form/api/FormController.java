@@ -85,6 +85,10 @@ public class FormController {
         return formService.getSelectFormById(authorid,Formid);
 
     }
+    @PutMapping("/form/updateFix/{FormId}")
+    public boolean getFix(@PathVariable("FormId")Long FormId){
+        return formService.fixable(FormId);
+    }
     @PutMapping("/form/updateSelectform/{UserId}/{FormId}")
     public Form getId(@RequestBody FormDTO.UpdateFormData updateFormData, @PathVariable("UserId")Long userid, @PathVariable("FormId")Long formid){
         return formService.updateSelectForm(updateFormData,userid,formid);
