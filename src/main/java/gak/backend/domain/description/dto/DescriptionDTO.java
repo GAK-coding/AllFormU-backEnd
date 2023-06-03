@@ -17,7 +17,7 @@ public class DescriptionDTO{
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DescriptionSaveRequest{
-        private Long member_id;
+        //private Long member_id;
         private Long question_id;
         private String content;
 
