@@ -19,7 +19,7 @@ public class ResponseJdbcRepository {
 
     public void batchInsert(List<Response> responses){
         String sql = "INSERT INTO response" +
-                "(created_date, modified_date, num, question_id, member_id) VALUES(?, ?, ?, ?,?)";
+                "(created_date, modified_date, num, question_id, member_id) VALUES(?, ?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
