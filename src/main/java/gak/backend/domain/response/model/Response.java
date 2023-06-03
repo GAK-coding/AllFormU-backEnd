@@ -1,5 +1,6 @@
 package gak.backend.domain.response.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
@@ -29,10 +30,12 @@ public class Response extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
+    @JsonIgnore
     private Member responsor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="question_id")
+    @JsonIgnore
     private Question question;
 
     private int num;
