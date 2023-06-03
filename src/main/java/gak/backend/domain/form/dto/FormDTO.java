@@ -57,7 +57,7 @@ public class FormDTO implements Serializable {
     @AllArgsConstructor
     public static class UpdateFormData{
         private String content;
-        private String Fimage;
+        private String fimage;
         private Boolean fix;
         private String title;
     }
@@ -79,6 +79,7 @@ public class FormDTO implements Serializable {
         private Long id;
         private String content;
         private String title;
+        private String fimage;
         private List<String> timeout=new ArrayList<>();
         private int responsor;
 
