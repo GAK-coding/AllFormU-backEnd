@@ -24,7 +24,7 @@ public class Description extends BaseTime {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quesion_id")
+    @JoinColumn(name = "question_id")
     private Question question;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,14 +38,14 @@ public class Description extends BaseTime {
     public DescriptionSimpleInfoDTO toDescriptionSimpleInfoDTO(){
         return DescriptionSimpleInfoDTO.builder()
                 .id(this.id)
-                .member_id(this.member.getId())
+                .responsor_id(this.member.getId())
                 .build();
     }
 
     public DescriptionInfoDTO toDescriptionInfoDTO(){
         return DescriptionInfoDTO.builder()
                 .id(this.id)
-                .member_id(this.member.getId())
+                .responsor_id(this.member.getId())
                 .question_id(this.question.getId())
                 .content(this.content)
                 .build();
