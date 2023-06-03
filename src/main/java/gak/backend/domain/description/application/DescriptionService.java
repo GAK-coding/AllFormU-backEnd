@@ -1,6 +1,7 @@
 package gak.backend.domain.description.application;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import gak.backend.domain.description.dao.DescriptionJdbcRepository;
 import gak.backend.domain.description.dao.DescriptionRepository;
 import gak.backend.domain.description.dto.DescriptionDTO;
 import gak.backend.domain.description.exception.CanNotDeleteDescription;
@@ -20,6 +21,7 @@ import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.exception.NotFoundQuestionException;
 import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
+import gak.backend.domain.response.dto.ResponseDTO;
 import gak.backend.domain.selection.exception.NotFoundSelectionException;
 import gak.backend.domain.selection.model.QSelection;
 import gak.backend.domain.selection.model.Selection;
@@ -45,6 +47,7 @@ import static gak.backend.domain.description.dto.DescriptionDTO.*;
 public class DescriptionService {
     @PersistenceContext
     private EntityManager entityManager;
+    private final DescriptionJdbcRepository descriptionJdbcRepository;
     private final DescriptionRepository descriptionRepository;
     private final QuestionRepository questionRepository;
     private final FormRepository formRepository;
@@ -71,68 +74,212 @@ public class DescriptionService {
 //    }
     //====================================description 생성================================
     @Transactional
-    public DescriptionInfoDTO createDescription(DescriptionSaveRequest descriptionSaveRequest, Long questionId) {
+    public String createDescription(Long formId, Long memberId, List<DescriptionSaveRequest> descriptionSaveRequests) {
         //description은 응답자와 생성자로 나뉘기 때문에 form의 memberId와 똑같으면 멤버 구분 해놓고 정답을 처리해야되는 column으로 박아야할지 아니면 돌아가면서 찾아야할지
         //그럼 이론상 두번 돌아가는 거라서 좀 그렇다.
         //근데 question에서 질문의 형식으로 description을 갖고 있는데 이건 응답도 갖고 있는거니까 question이랑 떼어놔야할것같음.
         //member가 작성자인 동시에 응답자일수도 있기 대문에 STATUS로 상태를 비교하는 건 안좋은 것 같음.
-        Question question = questionRepository.findById(questionId).orElseThrow(NotFoundByIdException::new);
-        Member member = memberRepository.findById(descriptionSaveRequest.getMember_id()).orElseThrow(NotFoundByIdException::new);
-        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+        List<DescriptionInfoDTO> descriptionInfoDTOs = new ArrayList<>();
+        List<Description> descriptions = new ArrayList<>();
+        //객체를 만들기 위해서 saveRequest -> entity
+        int responseCnt = descriptionSaveRequests.size();
+
+
+        //author를 알기 위해서 pathVariable로 formId를 받자 -> 그럼 for문 안에서 불필요한 쿼리를 막을 수 있다.
+        Form form = formRepository.findById(formId).orElseThrow(NotFoundByIdException::new);
         Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-        List<Description> descriptions = descriptionRepository.findByQuestionId(questionId);
-
-        //이미 응답한 사람이면 못하게 막아야함.-> 비효율적 TODO repository 추가해서 코드 최적화 하기
-//        for (Description description : descriptions) {
-//            if (description.getMember().getId() == member.getId()) {
-//                throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
-//            }
-//        }
-        if(descriptionRepository.existsByMemberIdAndQuestionId(descriptionSaveRequest.getMember_id(), questionId)){
-            throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
-        }
-
-        //응답자면 멤버 상태 변경 (한사람이 설문 생성자 이면서 다른쪽에서는 응답자일 수 있어서 이렇게 구별)
-        //설문 생성시에 벌크로 들어오면 descripton 작성자가 누군지 안들어가고 자동으로 memberid에 들어가야함. 안그럼 널값이 들어감 미친 이걸 깨달았다니
-        if (member.getId() == author.getId()) {
-            member.UpdateMemberRole(Role.Role_Admin);
-        } else {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        if (memberId != form.getAuthor().getId()) {
+            log.info("responsor");
             member.UpdateMemberRole(Role.Role_Responsor);
             if (form.getCorrespond() != Correspond.STATUS_PROCESS) {
                 throw new CanNotResponseDescription("설문 응답 시간이 아닙니다.");
             }
+            for(DescriptionSaveRequest ds : descriptionSaveRequests){
+                //응답했으면 폼 아니어도 걸러졌음. 그래서 성능괜찮을 듯 무조건 같은 질문이 생기게 됨.
+                if(descriptionRepository.existsByMemberIdAndQuestionId(memberId, ds.getQuestion_id())){
+                    throw new CanNotResponseDescription("이미 설문에 응답한 응답자입니다.");
+                }
+                //TODO 이것도 나중에 최적화하기
+                //bulk insert진행 -> 나중에 성능 향상을 위함.
+                Question question = questionRepository.findById(ds.getQuestion_id()).orElseThrow(NotFoundByIdException::new);
+                descriptions.add(ds.of(member, question));
+            }
+            descriptionJdbcRepository.batchInsert(descriptions);
         }
 
 
-        QQuestion qQuestion = QQuestion.question;
-        JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
-        Question question_sgl = query
-                .selectFrom(qQuestion)
-                .where(qQuestion.question.id.eq(questionId))
-                .fetchOne();
+        for (DescriptionSaveRequest descriptionSaveRequest : descriptionSaveRequests) {
+            Question question = questionRepository.findById(descriptionSaveRequest.getQuestion_id()).orElseThrow(NotFoundByIdException::new);
+            if (memberId == form.getAuthor().getId()) {
+                member.UpdateMemberRole(Role.Role_Admin);
+                QQuestion qQuestion = QQuestion.question;
+                JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
-        if (question_sgl == null) {
-            throw new NotFoundDescriptionException(questionId);
+                Question question_sgl = query
+                        .selectFrom(qQuestion)
+                        .where(qQuestion.question.id.eq(descriptionSaveRequest.getQuestion_id()))
+                        .fetchOne();
+
+                if (question_sgl == null) {
+                    throw new NotFoundDescriptionException(member.getId());
+                }
+
+                Description description = descriptionSaveRequest.of(author, question_sgl);
+                Description saveDescription = descriptionRepository.save(description);
+                DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
+                break;
+            }
+            //Member member = memberRepository.findById(descriptionSaveRequest.getMember_id()).orElseThrow(NotFoundByIdException::new);
+//            Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+//            Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+
+            //응답을 제출한 후에는 다시 응답을 따로 보내는 일이 없기 때문에 우선 formId와 멤버 아이디로 중복 응답을 확인하는게 나을 듯.
+//            if (descriptionRepository.existsByMemberIdAndQuestionId(descriptionSaveRequest.getMember_id(), descriptionSaveRequest.getQuestion_id())) {
+//                throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
+//            }
+
+            //응답자면 멤버 상태 변경 (한사람이 설문 생성자 이면서 다른쪽에서는 응답자일 수 있어서 이렇게 구별)
+            //설문 생성시에 벌크로 들어오면 descripton 작성자가 누군지 안들어가고 자동으로 memberid에 들어가야함. 안그럼 널값이 들어감 미친 이걸 깨달았다니
+//            if (member.getId() == author.getId()) {
+//                member.UpdateMemberRole(Role.Role_Admin);
+//            } else {
+//                member.UpdateMemberRole(Role.Role_Responsor);
+//                if (form.getCorrespond() != Correspond.STATUS_PROCESS) {
+//                    throw new CanNotResponseDescription("설문 응답 시간이 아닙니다.");
+//                }
+//            }
+
+//            if (member.getRole() == Role.Role_Admin) {
+//
+//                QQuestion qQuestion = QQuestion.question;
+//                JPAQueryFactory query = new JPAQueryFactory(entityManager);
+//
+//                Question question_sgl = query
+//                        .selectFrom(qQuestion)
+//                        .where(qQuestion.question.id.eq(descriptionSaveRequest.getQuestion_id()))
+//                        .fetchOne();
+//
+//                if (question_sgl == null) {
+//                    throw new NotFoundDescriptionException(descriptionSaveRequest.getMember_id());
+//                }
+//
+//                Description description = descriptionSaveRequest.of(author, question_sgl);
+//                Description saveDescription = descriptionRepository.save(description);
+//                DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
+//                //return descriptionInfoDTO;}
+//                Description description = descriptionSaveRequest.of(member, question);
+//                Description saveDescription = descriptionRepository.save(description);
+//                descriptionInfoDTOs.add(description.toDescriptionInfoDTO());
+//            }
         }
-        if (member.getRole() == Role.Role_Admin) {
-            Description description = descriptionSaveRequest.of(author, question_sgl);
-            Description saveDescription = descriptionRepository.save(description);
-            DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
-            return descriptionInfoDTO;
-        }
-        Description description = descriptionSaveRequest.of(member, question_sgl);
-        Description saveDescription = descriptionRepository.save(description);
-        DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
 
-        return descriptionInfoDTO;
+        return "Insert Success";
     }
+
+    //성능 비교할 때 한번 써보기
+//    @Transactional
+//    public List<DescriptionInfoDTO> createDescription(Long formId, Long memberId, List<DescriptionSaveRequest> descriptionSaveRequests) {
+//        //description은 응답자와 생성자로 나뉘기 때문에 form의 memberId와 똑같으면 멤버 구분 해놓고 정답을 처리해야되는 column으로 박아야할지 아니면 돌아가면서 찾아야할지
+//        //그럼 이론상 두번 돌아가는 거라서 좀 그렇다.
+//        //근데 question에서 질문의 형식으로 description을 갖고 있는데 이건 응답도 갖고 있는거니까 question이랑 떼어놔야할것같음.
+//        //member가 작성자인 동시에 응답자일수도 있기 대문에 STATUS로 상태를 비교하는 건 안좋은 것 같음.
+//        List<DescriptionInfoDTO> descriptionInfoDTOs = new ArrayList<>();
+//        List<Description> descriptions = new ArrayList<>();
+//        int responseCnt = descriptionSaveRequests.size();
+//
+//        //author를 알기 위해서 pathVariable로 formId를 받자 -> 그럼 for문 안에서 불필요한 쿼리를 막을 수 있다.
+//        Form form = formRepository.findById(formId).orElseThrow(NotFoundByIdException::new);
+//        Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+//        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+//
+//
+//        for (DescriptionSaveRequest descriptionSaveRequest : descriptionSaveRequests) {
+//            Question question = questionRepository.findById(descriptionSaveRequest.getQuestion_id()).orElseThrow(NotFoundByIdException::new);
+//            //Member member = memberRepository.findById(descriptionSaveRequest.getMember_id()).orElseThrow(NotFoundByIdException::new);
+////            Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+////            Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+//
+//            //응답을 제출한 후에는 다시 응답을 따로 보내는 일이 없기 때문에 우선 formId와 멤버 아이디로 중복 응답을 확인하는게 나을 듯.
+////            if (descriptionRepository.existsByMemberIdAndQuestionId(descriptionSaveRequest.getMember_id(), descriptionSaveRequest.getQuestion_id())) {
+////                throw new CanNotResponseDescription("이미 응답한 사용자입니다.");
+////            }
+//            if (memberId == form.getAuthor().getId()) {
+//                member.UpdateMemberRole(Role.Role_Admin);
+//                QQuestion qQuestion = QQuestion.question;
+//                JPAQueryFactory query = new JPAQueryFactory(entityManager);
+//
+//                Question question_sgl = query
+//                        .selectFrom(qQuestion)
+//                        .where(qQuestion.question.id.eq(descriptionSaveRequest.getQuestion_id()))
+//                        .fetchOne();
+//
+//                if (question_sgl == null) {
+//                    throw new NotFoundDescriptionException(member.getId());
+//                }
+//
+//                Description description = descriptionSaveRequest.of(author, question_sgl);
+//                Description saveDescription = descriptionRepository.save(description);
+//                DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
+//                break;
+//            }
+//            else {
+//                member.UpdateMemberRole(Role.Role_Responsor);
+//                if (form.getCorrespond() != Correspond.STATUS_PROCESS) {
+//                    throw new CanNotResponseDescription("설문 응답 시간이 아닙니다.");
+//                }
+//                Description description = descriptionSaveRequest.of(member, question);
+//                descriptions.add(description);
+//                //Description saveDescription = descriptionRepository.save(description);
+//                descriptionInfoDTOs.add(description.toDescriptionInfoDTO());
+//            }
+//
+//            //응답자면 멤버 상태 변경 (한사람이 설문 생성자 이면서 다른쪽에서는 응답자일 수 있어서 이렇게 구별)
+//            //설문 생성시에 벌크로 들어오면 descripton 작성자가 누군지 안들어가고 자동으로 memberid에 들어가야함. 안그럼 널값이 들어감 미친 이걸 깨달았다니
+////            if (member.getId() == author.getId()) {
+////                member.UpdateMemberRole(Role.Role_Admin);
+////            } else {
+////                member.UpdateMemberRole(Role.Role_Responsor);
+////                if (form.getCorrespond() != Correspond.STATUS_PROCESS) {
+////                    throw new CanNotResponseDescription("설문 응답 시간이 아닙니다.");
+////                }
+////            }
+//
+////            if (member.getRole() == Role.Role_Admin) {
+////
+////                QQuestion qQuestion = QQuestion.question;
+////                JPAQueryFactory query = new JPAQueryFactory(entityManager);
+////
+////                Question question_sgl = query
+////                        .selectFrom(qQuestion)
+////                        .where(qQuestion.question.id.eq(descriptionSaveRequest.getQuestion_id()))
+////                        .fetchOne();
+////
+////                if (question_sgl == null) {
+////                    throw new NotFoundDescriptionException(descriptionSaveRequest.getMember_id());
+////                }
+////
+////                Description description = descriptionSaveRequest.of(author, question_sgl);
+////                Description saveDescription = descriptionRepository.save(description);
+////                DescriptionInfoDTO descriptionInfoDTO = description.toDescriptionInfoDTO();
+////                //return descriptionInfoDTO;}
+////                Description description = descriptionSaveRequest.of(member, question);
+////                Description saveDescription = descriptionRepository.save(description);
+////                descriptionInfoDTOs.add(description.toDescriptionInfoDTO());
+////            }
+//        }
+//        //TODO 이때 그냥 리스트로 묶어서 저장해버리는거 생각해보기 -> 디비에는 리스트가 없지만 관련 로직 생각해보기
+//        descriptionRepository.saveAll(descriptions);
+//
+//        return descriptionInfoDTOs;
+//    }
 
     //========================read============================================
 
     //memberId와 questionId로 응답 조회
     @Transactional(readOnly = true)
-    public DescriptionInfoDTO findResponseByMemberIdAndQuestionId(Long memberId, Long questionId){
+    public DescriptionInfoDTO findResponseByMemberIdAndQuestionId(Long memberId, Long questionId) {
         Description description = descriptionRepository.findByMemberIdAndQuestionId(memberId, questionId).orElseThrow(NotFoundByIdException::new);
         return description.toDescriptionInfoDTO();
     }
@@ -241,14 +388,14 @@ public class DescriptionService {
 
         for (Description ds : descriptions) {
             //for (String option : descriptionOp) {
-                int num = descriptionOp.indexOf(ds.getContent());
-                if (num > 0) {//항목에 있음.
-                    dsList.get(num).add(ds.toDescriptionSimpleInfoDTO());
-                } else {//항목에 없음
-                    dsList.add(new ArrayList<DescriptionSimpleInfoDTO>());
-                    descriptionOp.add(ds.getContent());
-                    dsList.get(descriptionOp.size()-1).add(ds.toDescriptionSimpleInfoDTO());
-                }
+            int num = descriptionOp.indexOf(ds.getContent());
+            if (num > 0) {//항목에 있음.
+                dsList.get(num).add(ds.toDescriptionSimpleInfoDTO());
+            } else {//항목에 없음
+                dsList.add(new ArrayList<DescriptionSimpleInfoDTO>());
+                descriptionOp.add(ds.getContent());
+                dsList.get(descriptionOp.size() - 1).add(ds.toDescriptionSimpleInfoDTO());
+            }
             //}
         }
         //size 각각 배열에 넣기

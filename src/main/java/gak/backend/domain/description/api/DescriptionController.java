@@ -36,9 +36,11 @@ public class DescriptionController {
     //quiz가 false일때 answer은 null
 
     //description생성
-    @PostMapping(value = "/description/createDescription/{questionId}")
-    public DescriptionInfoDTO add(@RequestBody @Validated DescriptionSaveRequest descriptionSaveRequest, @PathVariable(name="questionId")Long questionId){
-        return descriptionService.createDescription(descriptionSaveRequest,questionId);
+    @PostMapping(value = "/description/createDescription/{form_id}/{member_id}")
+    public ResponseEntity<String> add(@PathVariable(name = "form_id")Long formId, @PathVariable(name = "member_id")Long memberId, @RequestBody @Validated List<DescriptionSaveRequest> descriptionSaveRequests){
+        //int responseCnt = descriptionSaveRequests.size();
+        String s = descriptionService.createDescription(formId, memberId,descriptionSaveRequests);
+        return new ResponseEntity<>(s,HttpStatus.OK);
     }
 
 
