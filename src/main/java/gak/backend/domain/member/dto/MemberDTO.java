@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 public class MemberDTO {
     @Getter
-    //@Builder
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSaveRequest{
@@ -39,6 +39,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginReqeust{
@@ -47,6 +48,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class EmailReqest{
@@ -55,6 +57,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdateNicknameRequest{
