@@ -28,6 +28,12 @@ public class ResponseController {
         return new ResponseEntity<>(s, HttpStatus.CREATED);
 
     }
+//    @PostMapping(value="/response")
+//    public ResponseEntity<ResponseInfoDTO> createResponse(@RequestBody @Validated SaveResponseRequest saveResponseRequest){
+//        ResponseInfoDTO r  = responseService.createResponse(saveResponseRequest);
+//        return new ResponseEntity<>(r, HttpStatus.CREATED);
+//
+//    }
     //===================응답 조회======================
 
     //checkbox용 응답에 대한 결과 확인하기 , 근데 객관식도활용 가능함.

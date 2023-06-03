@@ -69,6 +69,29 @@ public class ResponseService {
         return "Insert Success";
     }
 
+//    @Transactional
+//    public ResponseInfoDTO createResponse(SaveResponseRequest saveResponseRequest){
+//        //존재하는 멤버, 문제인지 확인
+//        Member responsor = memberRepository.findById(saveResponseRequest.getResponsorId()).orElseThrow(NotFoundByIdException::new);
+//        Question question = questionRepository.findById(saveResponseRequest.getQuestionId()).orElseThrow(NotFoundByIdException::new);
+//        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
+//        if(form.getCorrespond()==Correspond.STATUS_PROCESS) {
+//            responsor.UpdateMemberRole(Role.Role_Responsor);
+//            //문제 유형마다 다르게 답변이 저장되어야함.
+//            if (question.getType().equals("SELECT")) {
+//                //TODO 여기에서 Grid, 복수형과 차별점을 둘 것.
+//            }
+//            Response response = saveResponseRequest.toEntity(responsor, question);
+//            responseRepository.save(response);
+//            ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
+//
+//            return responseInfoDTO;
+//        }
+//        else{
+//            throw new CanNotAccessResponse("설문 응답 시간이 아닙니다.");
+//        }
+//    }
+
     //==========================Read=================================
 
     //Question아이디로 응답 불러오기

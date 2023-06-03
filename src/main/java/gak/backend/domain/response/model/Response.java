@@ -35,6 +35,7 @@ public class Response extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="question_id")
+    @JsonIgnore
     private Question question;
 
     private int num;

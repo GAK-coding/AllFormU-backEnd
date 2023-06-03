@@ -16,6 +16,7 @@ public class ResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SaveResponseRequest{
+        private Long responsorId;
         private Long questionId;
         private int num;
 
