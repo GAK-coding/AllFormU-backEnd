@@ -42,6 +42,7 @@ public class Form extends BaseTime {
     private Correspond correspond;
     private String title;
     private String fimage;
+    private String fcolor;
     private String content;
     private List<String> timeout; //시작시간, 마감시간 추가
     private int responsor_count; //응답자 수 추가
@@ -51,11 +52,13 @@ public class Form extends BaseTime {
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
     @Builder
-    public Form(String title, Boolean fix, String content,String fimage){
+    public Form(String title, Boolean fix, String content,String fimage,String fcolor){
         this.title=title;
         this.fix=fix;
         this.content=content;
         this.fimage =fimage;
+        this.fcolor=fcolor;
+
     }
 
     public FormDTO.PagingDataDTO toPagingData(){
@@ -63,6 +66,7 @@ public class Form extends BaseTime {
                 .id(this.id)
                 .content(this.content)
                 .title(this.title)
+                .fimage(this.fimage)
                 .timeout(this.timeout)
                 .responsor(this.responsor_count)
                 .build();
@@ -79,6 +83,7 @@ public class Form extends BaseTime {
         this.fix=(updateFormData.getFix()!=null) ? updateFormData.getFix() : this.fix;
         this.title=(updateFormData.getTitle()!=null) ? updateFormData.getTitle() : this.title;
         this.fimage =(updateFormData.getFimage()!=null) ? updateFormData.getFimage() : this.fimage;
+        this.fcolor=(updateFormData.getFcolor()!=null) ? updateFormData.getFcolor() :this.fcolor;
 
     }
 

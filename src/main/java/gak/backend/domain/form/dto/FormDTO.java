@@ -21,7 +21,8 @@ public class FormDTO implements Serializable {
     private Long authorId;
     private List<QuestionDTO> questions;
     private String title;
-    private String FormImage;
+    private String fimage;
+    private String fcolor;
     private String content;
 
     //private List<String> timeout;
@@ -58,6 +59,7 @@ public class FormDTO implements Serializable {
     public static class UpdateFormData{
         private String content;
         private String fimage;
+        private String fcolor;
         private Boolean fix;
         private String title;
     }
@@ -108,6 +110,8 @@ public class FormDTO implements Serializable {
         private String title;
         private String content;
         private String fimage;
+
+        private String fcolor;
         private List<String> timeout;
 
         public Form of (){
@@ -116,6 +120,7 @@ public class FormDTO implements Serializable {
                     .fix((fix!=null)?fix:false)
                     .content(content)
                     .fimage(fimage)
+                    .fcolor(fcolor)
                     .build();
         }
         public List<Question> toQuestions(Form form) {
