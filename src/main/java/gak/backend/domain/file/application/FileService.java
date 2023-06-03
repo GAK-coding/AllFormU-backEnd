@@ -4,6 +4,8 @@ package gak.backend.domain.file.application;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gak.backend.domain.file.dto.fileDTO;
 import gak.backend.domain.file.storage.AmazonS3ResourceStorage;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.core.io.Resource;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +37,18 @@ public class FileService {
     public String uploadFile(MultipartFile multipartFile) {
         fileDTO fileDetail = fileDTO.multipartOf(multipartFile);
         amazonS3ResourceStorage.store(fileDetail.getPath(), multipartFile);
-        return generateObjectUrl(fileDetail.getPath());
+        String url = generateObjectUrl(fileDetail.getPath());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(Map.of("url", url));
+        } catch (JsonProcessingException e) {
+            // JSON 변환 중에 오류가 발생한 경우 예외 처리
+            json = "{}";
+        }
+
+        return json;
     }
 
     private String generateObjectUrl(String path) {

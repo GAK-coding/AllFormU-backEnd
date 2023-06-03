@@ -211,7 +211,7 @@ public class MemberService {
         Member member = memberRepository.findById(updateImageRequest.getId()).orElseThrow(NotFoundMemberByEmailException::new);
 
         // 기존 이미지 값이 "/images/userProfile.png"이 아닌 경우 삭제
-        if (member.getImage() != null && !member.getImage().equals("/images/userProfile.png")) {
+        if (!member.getImage().equals("/images/userProfile.png")) {
             fileService.deleteImageByUrl(member.getImage());
         }
 

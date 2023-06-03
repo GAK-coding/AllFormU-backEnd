@@ -1,14 +1,12 @@
 package gak.backend.domain.form.application;
 
 
-import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import gak.backend.domain.description.model.Description;
 import gak.backend.domain.description.model.QDescription;
+import gak.backend.domain.file.application.FileService;
 import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.form.dto.FormDTO;
-import gak.backend.domain.form.exception.NotFoundCorrException;
 import gak.backend.domain.form.exception.NotFoundFormException;
 import gak.backend.domain.form.exception.NotFoundMemberException;
 import gak.backend.domain.form.model.Correspond;
@@ -17,47 +15,27 @@ import gak.backend.domain.form.model.QForm;
 import gak.backend.domain.form.model.Separator;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.model.Member;
-import gak.backend.domain.member.model.QMember;
 import gak.backend.domain.question.dao.QuestionRepository;
-import gak.backend.domain.question.exception.NotFoundQuestionException;
 import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.response.model.QResponse;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.model.QSelection;
-import gak.backend.domain.selection.model.Selection;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import javax.swing.text.html.Option;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.mysema.commons.lang.Assert.assertThat;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 /*
@@ -76,6 +54,7 @@ public class FormService {
     private final MemberRepository memberRepository;
     private final SelectionRepository selectionRepository;
     private final QuestionRepository questionRepository;
+    private final FileService fileService;
 
 
 
@@ -333,8 +312,12 @@ public class FormService {
     @Transactional
   public Form updateSelectForm(FormDTO.UpdateFormData updateFormData, Long Userid, Long FormId ) {
 
+        //userid가 작성한 폼중에 해당 formid가져오기
         Form form=getSelectFormById(Userid,FormId);
-
+        //기존의 폼이미지 값이 있다면 기존값 s3에서 삭제 후 다시 업로드
+        if(form.getFimage()!=null){
+            fileService.deleteImageByUrl(form.getFimage());
+        }
         form.UpdateSelectForm(updateFormData);
 
        return form;
