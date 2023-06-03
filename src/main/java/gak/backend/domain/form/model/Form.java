@@ -1,22 +1,14 @@
 package gak.backend.domain.form.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import gak.backend.domain.form.dto.FormDTO;
-import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
-import gak.backend.domain.member.model.Status;
 import gak.backend.domain.model.BaseTime;
-import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 @Entity
@@ -49,7 +41,7 @@ public class Form extends BaseTime {
     @Column(name = "Correspond_status")
     private Correspond correspond;
     private String title;
-    private String FormImage;
+    private String fimage;
     private String content;
     private List<String> timeout; //시작시간, 마감시간 추가
     private int responsor_count; //응답자 수 추가
@@ -59,11 +51,11 @@ public class Form extends BaseTime {
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
     @Builder
-    public Form(String title, Boolean fix, String content,String FormImage){
+    public Form(String title, Boolean fix, String content,String fimage){
         this.title=title;
         this.fix=fix;
         this.content=content;
-        this.FormImage=FormImage;
+        this.fimage =fimage;
     }
 
     public FormDTO.PagingDataDTO toPagingData(){
@@ -86,7 +78,7 @@ public class Form extends BaseTime {
         this.content=(updateFormData.getContent()!=null) ? updateFormData.getContent() : this.content;
         this.fix=(updateFormData.getFix()!=null) ? updateFormData.getFix() : this.fix;
         this.title=(updateFormData.getTitle()!=null) ? updateFormData.getTitle() : this.title;
-        this.FormImage=(updateFormData.getFormImage()!=null) ? updateFormData.getFormImage() : this.FormImage;
+        this.fimage =(updateFormData.getFimage()!=null) ? updateFormData.getFimage() : this.fimage;
 
     }
 
