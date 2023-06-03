@@ -7,6 +7,7 @@ import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
 import gak.backend.domain.model.BaseTime;
+import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.model.Question;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,9 +21,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Form extends BaseTime {
     @Id
     @GeneratedValue
@@ -51,32 +50,58 @@ public class Form extends BaseTime {
     private Correspond correspond;
     private String title;
     private String content;
-
+    private List<String> timeout; //시작시간, 마감시간 추가
+    private int responsor_count; //응답자 수 추가
 
     //private boolean required;
 
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
+    @Builder
+    public Form(String title, boolean fix, String content){
+        this.title=title;
+        this.fix=fix;
+        this.content=content;
+    }
+
+    public FormDTO.PagingDataDTO toPagingData(){
+        return FormDTO.PagingDataDTO.builder()
+                .id(this.id)
+                .content(this.content)
+                .title(this.title)
+                .timeout(this.timeout)
+                .responsor(this.responsor_count)
+                .build();
+    }
+
+
     public void AuthorSetting(Member author){
         this.author=author;
     }
 
-    public void UpdateSelectForm(FormDTO formDTO){
+    public void UpdateSelectForm(FormDTO.UpdateFormData updateFormData){
 
-        this.content=(formDTO.getContent()!=null) ? formDTO.getContent() : this.content;
-        this.fix=(formDTO.getFix()!=null) ? formDTO.getFix() : this.fix;
-        this.title=(formDTO.getTitle()!=null) ? formDTO.getTitle() : this.title;
+        this.content=(updateFormData.getContent()!=null) ? updateFormData.getContent() : this.content;
+        this.fix=(updateFormData.getFix()!=null) ? updateFormData.getFix() : this.fix;
+        this.title=(updateFormData.getTitle()!=null) ? updateFormData.getTitle() : this.title;
     }
 
 
     public void QuestionSetting(List<Question> questions) {
         this.questions = questions;
     }
-    public void FixSetting(boolean fix){
+    public void ResponsorCntSetting(int responsor_count){
+        this.responsor_count=responsor_count;
+    }
+    public boolean FixSetting(boolean fix){
         this.fix=fix;
+        return fix;
     }
     public void SeparatorSetting(Separator separator){
         this.separator=separator;
+    }
+    public void TimeoutSetting(List<String> timeout){
+        this.timeout=timeout;
     }
     public void CorrespondSetting(Correspond correspond){
         this.correspond=correspond;
