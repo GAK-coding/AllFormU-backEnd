@@ -39,11 +39,11 @@ public class FormController {
 
 
 
-    @GetMapping("form/pages/")
-    public FormDTO.PagingDTO Paging(@RequestParam("page")Long page){
+    @GetMapping("form/pages/{UserId}/{page}")
+    public FormDTO.PagingDTO Paging(@PathVariable("UserId")Long UserId,@PathVariable("page")Long page){
 
 
-        return formService.Paging(page);
+        return formService.Paging(UserId,page);
     }
 
 

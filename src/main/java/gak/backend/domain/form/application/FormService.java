@@ -107,7 +107,7 @@ public class FormService {
         return form_sgl.FixSetting(false);
     }
     @Transactional
-    public FormDTO.PagingDTO Paging(Long page){
+    public FormDTO.PagingDTO Paging(Long UserId,Long page){
 
         JPAQueryFactory query=new JPAQueryFactory(entityManager);
         QForm form=QForm.form;
@@ -119,8 +119,9 @@ public class FormService {
 
         Long totalDataCount = query
                 .selectFrom(form)
+                .where(form.author.id.eq(UserId))
                 .fetchCount();
-
+        System.out.println("total:"+totalDataCount);
         if (startPage >= totalDataCount) {
             //데이터가 없는 거임
         }
@@ -130,6 +131,7 @@ public class FormService {
 
         List<Form> forms = query
                 .selectFrom(form)
+                .where(form.author.id.eq(UserId))
                 .orderBy(form.id.desc())
                 .limit(pageSize)
                 .offset(startPage)
