@@ -114,6 +114,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class EmailDTO{
