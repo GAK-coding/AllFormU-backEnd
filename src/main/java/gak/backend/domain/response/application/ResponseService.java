@@ -12,6 +12,7 @@ import gak.backend.domain.member.model.Role;
 import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.model.Format;
 import gak.backend.domain.question.model.Question;
+import gak.backend.domain.response.dao.ResponseJdbcRepository;
 import gak.backend.domain.response.dao.ResponseRepository;
 import gak.backend.domain.response.dto.ResponseDTO;
 import gak.backend.domain.response.dto.ResponseDTO.*;
@@ -32,43 +33,41 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResponseService {
     private final ResponseRepository responseRepository;
+    private final ResponseJdbcRepository responseJdbcRepository;
     private final MemberRepository memberRepository;
     private final QuestionRepository questionRepository;
     private final FormRepository formRepository;
 
     //=========================Create===============================
     @Transactional
-    public ResponseInfoDTO createResponse(SaveResponseRequest saveResponseRequest){
+    public String createResponse(Long formId, Long responsorId, List<SaveResponseRequest> saveResponseRequests){
         //존재하는 멤버, 문제인지 확인
-        Member responsor = memberRepository.findById(saveResponseRequest.getResponsorId()).orElseThrow(NotFoundByIdException::new);
-        Question question = questionRepository.findById(saveResponseRequest.getQuestionId()).orElseThrow(NotFoundByIdException::new);
-        Form form = formRepository.findById(question.getForm().getId()).orElseThrow(NotFoundByIdException::new);
-        List<Response> responses = responseRepository.findByQuestionId(question.getId());
+        Member responsor = memberRepository.findById(responsorId).orElseThrow(NotFoundByIdException::new);
+        Form form = formRepository.findById(formId).orElseThrow(NotFoundByIdException::new);
+        List<Response> responses = new ArrayList<>();
 //        if(responsor.getId()==form.getAuthor().getId()){
 //            throw new CanNotAccessResponse("작성자는 응답을 할 수 없습니다.");
 //        }
         //이미했던 응답자 거름
         //중복 응답일 경우는 중복 응답이 가능 그래서 체크 박스일때를 제외함.
         //TODO Grid 형식도 추후에 고려해줄 것.
-        if(responseRepository.existsByResponsorIdAndQuestionId(saveResponseRequest.getResponsorId(), saveResponseRequest.getQuestionId()) && question.getType()!= Format.Selection_CHECKBOX){
+        for(SaveResponseRequest saveResponseRequest : saveResponseRequests) {
+            Question question = questionRepository.findById(saveResponseRequest.getQuestionId()).orElseThrow(NotFoundByIdException::new);
+            //중복응답 고려 무조건 첫째에서 걸려져서 for문에 대한 성능 신경 안써도 됨.
+            if (responseRepository.existsByResponsorIdAndQuestionId(responsorId, question.getId())&& question.getType() != Format.Selection_CHECKBOX) {
                 throw new CanNotAccessResponse("이미 설문에 참여한 응답자 입니다.");
             }
+            if (form.getCorrespond() == Correspond.STATUS_PROCESS) {
+                responsor.UpdateMemberRole(Role.Role_Responsor);
 
-        if(form.getCorrespond()==Correspond.STATUS_PROCESS) {
-            responsor.UpdateMemberRole(Role.Role_Responsor);
-            //문제 유형마다 다르게 답변이 저장되어야함.
-            if (question.getType().equals("SELECT")) {
-                //TODO 여기에서 Grid, 복수형과 차별점을 둘 것.
+                Response response = saveResponseRequest.toEntity(responsor, question);
+                responses.add(response);
+            } else {
+                throw new CanNotAccessResponse("설문 응답 시간이 아닙니다.");
             }
-            Response response = saveResponseRequest.toEntity(responsor, question);
-            responseRepository.save(response);
-            ResponseInfoDTO responseInfoDTO = response.toResponseInfoDTO();
-
-            return responseInfoDTO;
         }
-        else{
-            throw new CanNotAccessResponse("설문 응답 시간이 아닙니다.");
-        }
+        responseJdbcRepository.batchInsert(responses);
+        return "Insert Success";
     }
 
     //==========================Read=================================

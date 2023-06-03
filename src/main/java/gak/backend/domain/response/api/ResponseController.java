@@ -22,10 +22,10 @@ public class ResponseController {
     private final ResponseService responseService;
 
     //====================응답 생성==================
-    @PostMapping(value="/response")
-    public ResponseEntity<ResponseInfoDTO> createResponse(@RequestBody @Validated SaveResponseRequest saveResponseRequest){
-        ResponseInfoDTO responseInfoDTO = responseService.createResponse(saveResponseRequest);
-        return new ResponseEntity<>(responseInfoDTO, HttpStatus.CREATED);
+    @PostMapping(value="/response/{form_id}/{responsor_id}")
+    public ResponseEntity<String> createResponse(@PathVariable(name = "form_id")Long formId, @PathVariable(name = "responsor_id")Long responsorId, @RequestBody @Validated List<SaveResponseRequest> saveResponseRequests){
+        String s = responseService.createResponse(formId, responsorId, saveResponseRequests);
+        return new ResponseEntity<>(s, HttpStatus.CREATED);
 
     }
     //===================응답 조회======================
