@@ -36,51 +36,59 @@ public class DescriptionController {
     //quiz가 false일때 answer은 null
 
     //description생성
-    @PostMapping("/description/createDescription/{questionid}")
-    public DescriptionInfoDTO add(@RequestBody @Validated DescriptionSaveRequest descriptionSaveRequest, @PathVariable(name="questionid")Long questionId){
-
-        return descriptionService.createDescription(descriptionSaveRequest,questionId);
+    @PostMapping(value = "/description/createDescription/{form_id}/{member_id}")
+    public ResponseEntity<String> add(@PathVariable(name = "form_id")Long formId, @PathVariable(name = "member_id")Long memberId, @RequestBody @Validated List<DescriptionSaveRequest> descriptionSaveRequests){
+        //int responseCnt = descriptionSaveRequests.size();
+        String s = descriptionService.createDescription(formId, memberId,descriptionSaveRequests);
+        return new ResponseEntity<>(s,HttpStatus.OK);
     }
 
 
     //===============================read===========================
 
+    //memberId와 DescriptionId로 자신이 응답한거 조회
+    @GetMapping(value = "/description/{questionId}/{memberId}")
+    public ResponseEntity<DescriptionInfoDTO> findResponseByMemberIdAndQuestionId(@PathVariable(name = "questionId")Long questionId, @PathVariable(name = "memberId")Long memberId){
+        DescriptionInfoDTO descriptionInfoDTO = descriptionService.findResponseByMemberIdAndQuestionId(memberId, questionId);
+        return new ResponseEntity<>(descriptionInfoDTO, HttpStatus.OK);
+    }
+
     //descriptionId로 description 조회
-    @GetMapping("/description/getDescription/{description_id}")
-    public ResponseEntity<DescriptionInfoDTO> getId(@PathVariable("description_id")Long id){
+    @GetMapping(value = "/description/getDescription/{description_id}")
+    public ResponseEntity<DescriptionInfoDTO> getId(@PathVariable(name = "description_id")Long id){
         DescriptionInfoDTO descriptionInfoDTO = descriptionService.getDescription(id);
         return new ResponseEntity<>(descriptionInfoDTO, HttpStatus.OK);
     }
 
     //quesstion_id로 description조회
-    @GetMapping("/description/{question_id}")
-    public ResponseEntity<List<DescriptionInfoDTO>> getIdByQ(@PathVariable("question_id")Long question_id){
+    @GetMapping(value = "/description/{question_id}")
+    public ResponseEntity<List<DescriptionInfoDTO>> getIdByQ(@PathVariable(name = "question_id")Long question_id){
         List<DescriptionInfoDTO> descriptionInfoDTO = descriptionService.getDescriptionByQuestionId(question_id);
         return new ResponseEntity<>(descriptionInfoDTO, HttpStatus.OK);
     }
 
     //해당 문제의 응답자 수 확인
-    @GetMapping("/description/statistic/{question_id}/count")
+    @GetMapping(value = "/description/statistic/{question_id}/count")
     public ResponseEntity<Integer> countDescriptionsByQuestionId(@PathVariable(name = "question_id") Long quesitonId){
         int num = descriptionService.countDescriptionsByQuestionId(quesitonId);
         return new ResponseEntity<>(num, HttpStatus.OK);
     }
 
     //퀴즈 & 통계 -> 정담자 출력
-    @GetMapping("/description/quiz/{question_id}")
+    @GetMapping(value = "/description/quiz/{question_id}")
     public List<DescriptionSimpleInfoDTO> findQuizRightDescriptions(@PathVariable(name = "question_id") Long questionId){
         return descriptionService.findQuizRightDescriptions(questionId);
     }
 
     //통계 -> 각 항목별 응답자 수와 리스트
-    @GetMapping("/description/statistic/{question_id}")
+    @GetMapping(value = "/description/statistic/{question_id}")
     public DescriptionStatisticDTO statistic(@PathVariable(name = "question_id") Long questionId){
         return descriptionService.statistic(questionId);
     }
 
     //=====================update=================================
 
-    @PutMapping("/description/updateContent/{questionid}/{descriptionid}")
+    @PutMapping(value = "/description/updateContent/{questionid}/{descriptionid}")
     public ResponseEntity<Description> updateDescriptionAnswer(@PathVariable(value = "questionid") Long QuestionId,
                                                                @PathVariable(value = "descriptionid") Long DescriptionId,
                                                                @RequestBody Map<String, String> requestBody){
@@ -91,8 +99,8 @@ public class DescriptionController {
     }
 
     //==================delete======================
-    @DeleteMapping("/description/deleteDescription/{description_id}")
-    public ResponseEntity<String> deleteId(@PathVariable(value="description_id")Long descriptionId, @RequestBody DescriptionDTO.DeleteDescriptionDTO deleteDescriptionDTO){
+    @DeleteMapping(value = "/description/deleteDescription/{description_id}")
+    public ResponseEntity<String> deleteId(@PathVariable(name="description_id")Long descriptionId, @RequestBody DescriptionDTO.DeleteDescriptionDTO deleteDescriptionDTO){
         String s = descriptionService.deleteSelectionById(deleteDescriptionDTO, descriptionId);
         return new ResponseEntity<>(s, HttpStatus.OK);
     }
