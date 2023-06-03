@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
@@ -135,6 +136,17 @@ public class MemberService {
 
 
 //================================================Read==========================================
+
+    //멤버 전체 조회
+    @Transactional(readOnly = true)
+    public List<MemberInfoDTO> readTotalMemberInfoDTO(){
+        List<Member> members = memberRepository.findAll();
+        List<MemberInfoDTO> mList = new ArrayList<>();
+        for(Member m : members){
+            mList.add(m.toMemberInfoDTO());
+        }
+        return mList;
+    }
 
     //아이디로 멤버 객체 조회
     @Transactional(readOnly = true)
