@@ -164,7 +164,7 @@ public class QuestionService {
             formId에 해당하는 모든 질문을 조회
         */
     @Transactional
-    public List<Question> getAllQuestion(Long FormId, Long QuestionId){
+    public List<Question> getAllQuestion(Long FormId){
 
         QQuestion qQuestion = QQuestion.question;
         QForm qForm=QForm.form;
