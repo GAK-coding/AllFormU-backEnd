@@ -33,8 +33,8 @@ public class ResponseJdbcRepository {
                 ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
                 ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
                 ps.setInt(3, responses.get(i).getNum());
-                ps.setLong(4, responses.get(i).getResponsor().getId());
-                ps.setLong(5, responses.get(i).getQuestion().getId());
+                ps.setLong(4, responses.get(i).getQuestion().getId());
+                ps.setLong(5, responses.get(i).getResponsor().getId());
                 log.info("fin");
             }
 
