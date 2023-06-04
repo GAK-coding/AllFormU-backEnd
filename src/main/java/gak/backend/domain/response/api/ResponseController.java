@@ -22,12 +22,18 @@ public class ResponseController {
     private final ResponseService responseService;
 
     //====================응답 생성==================
-    @PostMapping(value="/response")
-    public ResponseEntity<ResponseInfoDTO> createResponse(@RequestBody @Validated SaveResponseRequest saveResponseRequest){
-        ResponseInfoDTO responseInfoDTO = responseService.createResponse(saveResponseRequest);
-        return new ResponseEntity<>(responseInfoDTO, HttpStatus.CREATED);
+    @PostMapping(value="/response/{form_id}/{responsor_id}")
+    public ResponseEntity<String> createResponse(@PathVariable(name = "form_id")Long formId, @PathVariable(name = "responsor_id")Long responsorId, @RequestBody @Validated List<SaveResponseRequest> saveResponseRequests){
+        String s = responseService.createResponse(formId, responsorId, saveResponseRequests);
+        return new ResponseEntity<>(s, HttpStatus.CREATED);
 
     }
+//    @PostMapping(value="/response")
+//    public ResponseEntity<ResponseInfoDTO> createResponse(@RequestBody @Validated SaveResponseRequest saveResponseRequest){
+//        ResponseInfoDTO r  = responseService.createResponse(saveResponseRequest);
+//        return new ResponseEntity<>(r, HttpStatus.CREATED);
+//
+//    }
     //===================응답 조회======================
 
     //checkbox용 응답에 대한 결과 확인하기 , 근데 객관식도활용 가능함.

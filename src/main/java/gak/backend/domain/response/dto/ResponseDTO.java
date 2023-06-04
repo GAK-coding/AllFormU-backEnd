@@ -24,7 +24,7 @@ public class ResponseDTO {
             return Response.builder()
                     .responsor(member)
                     .question(question)
-                    .num(num)
+                    .num(this.num)
                     .build();
         }
     }
