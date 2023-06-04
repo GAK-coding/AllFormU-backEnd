@@ -25,7 +25,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class Question extends BaseTime {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
     private Long id;
 

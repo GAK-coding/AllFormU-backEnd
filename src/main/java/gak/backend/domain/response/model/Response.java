@@ -24,18 +24,16 @@ import static gak.backend.domain.response.dto.ResponseDTO.*;
 @NoArgsConstructor
 public class Response extends BaseTime {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="response_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
-    @JsonIgnore
     private Member responsor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="question_id")
-    @JsonIgnore
     private Question question;
 
     private int num;
