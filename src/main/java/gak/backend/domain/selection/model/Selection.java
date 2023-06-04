@@ -38,10 +38,11 @@ public class Selection extends BaseTime {
     //퀴즈형식인지 아닌지
 //    private boolean quiz;
 
-    public void create(String content,Boolean answer){
+    public void createLinear(Question question,String content){
+        this.question=question;
         this.content=content;
-        this.answer=answer;
-//        this.quiz=quiz;
+//      this.answer=answer;
+//      this.quiz=quiz;
     }
     public SelectionDTO.SelectionInfoDTO SelectionInfoDTO(){
         return SelectionDTO.SelectionInfoDTO.builder()

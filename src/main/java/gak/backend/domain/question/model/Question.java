@@ -25,7 +25,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class Question extends BaseTime {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
     private Long id;
 
@@ -85,6 +85,7 @@ public class Question extends BaseTime {
     public void UpdateSelectQuestion(QuestionDTO questionDTO){
         this.title=(questionDTO.getTitle() !=null)? questionDTO.getTitle():this.title;
         this.required=(questionDTO.getRequired() !=null)? questionDTO.getRequired():this.required;
+        this.quiz=(questionDTO.getQuiz()!=null)? questionDTO.getQuiz():this.quiz;
         this.sectionNum=(questionDTO.getSectionNum() !=null)? questionDTO.getSectionNum():this.sectionNum;
         this.type=(questionDTO.getType() !=null)? questionDTO.getType():this.type;
 

@@ -21,7 +21,7 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @NoArgsConstructor
 public class Member extends BaseTime{
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 

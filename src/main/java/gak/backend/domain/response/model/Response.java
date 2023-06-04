@@ -1,5 +1,6 @@
 package gak.backend.domain.response.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.model.BaseTime;
 import gak.backend.domain.question.model.Question;
@@ -23,7 +24,7 @@ import static gak.backend.domain.response.dto.ResponseDTO.*;
 @NoArgsConstructor
 public class Response extends BaseTime {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="response_id")
     private Long id;
 
@@ -48,18 +49,19 @@ public class Response extends BaseTime {
     public ResponseInfoDTO toResponseInfoDTO(){
         return ResponseInfoDTO.builder()
                 .id(this.id)
-                .responsorId(this.responsor.getId())
-                .questionId(this.question.getId())
+                .responsor_id(this.responsor.getId())
+                .question_id(this.question.getId())
                 .num(this.num)
                 .createdTime(super.getCreatedDate())
                 .modifiedTime(super.getModifiedDate())
                 .build();
     }
 
-    public ResponseSimpleInfoDTO toResponseSimpleInfoDTO(Member responsor, Question question){
+    public ResponseSimpleInfoDTO toResponseSimpleInfoDTO(){
         return ResponseSimpleInfoDTO.builder()
-                .responsorId(responsor.getId())
-                .questionId(question.getId())
+                .id(this.id)
+                .responsor_id(this.responsor.getId())
+                .question_id(this.question.getId())
                 .num(this.num)
                 .build();
     }
