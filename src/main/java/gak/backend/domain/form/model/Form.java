@@ -32,7 +32,7 @@ public class Form extends BaseTime {
     @OneToMany(mappedBy = "form",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
-
+    private List<String> sectionName; //sectionName 추가
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status")
     private Separator separator;
@@ -52,12 +52,13 @@ public class Form extends BaseTime {
     private boolean fix; // 수정가능 : 0 수정 불가능 : 1
 
     @Builder
-    public Form(String title, Boolean fix, String content,String fimage,String fcolor){
+    public Form(String title, Boolean fix, String content,String fimage,String fcolor,List<String> sectionName){
         this.title=title;
         this.fix=fix;
         this.content=content;
         this.fimage =fimage;
         this.fcolor=fcolor;
+        this.sectionName=sectionName;
 
     }
 
