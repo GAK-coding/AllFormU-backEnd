@@ -113,6 +113,7 @@ public class FormService {
         QForm form=QForm.form;
         QQuestion question=QQuestion.question;
         QResponse Response=QResponse.response;
+        QDescription description=QDescription.description;
 
         Long pageSize = 5L; // 페이지 당 데이터 개수
         Long startPage = page * pageSize; // 시작 페이지 번호
@@ -139,21 +140,43 @@ public class FormService {
 
 
         int response_cnt=0;
-        for(Form form_temp : forms){
-
-            List<Long> form_lst = query
-                    .select(Response.responsor.id)
-                    .from(Response)
-                    .join(Response.question,question)
-                    .join(question.form,form)
-                    .where(Response.question.form.id.eq(form_temp.getId()))
-                    .distinct()
-                    .fetch();
-
-            response_cnt=form_lst.size();
-            form_temp.ResponsorCntSetting(response_cnt);
-            response_cnt=0;
-        }
+//
+//        for(Form form_temp : forms){
+//
+//            List<Long> form_lst = query
+//                    .select(Response.responsor.id)
+//                    .from(Response)
+//                    .join(Response.question,question)
+//                    .join(question.form,form)
+//                    .where(Response.question.form.id.eq(form_temp.getId()))
+//                    .distinct()
+//                    .fetch();
+//
+//            List<Long> form_lst_1 = query
+//                    .select(description.member.id)
+//                    .from(description)
+//                    .join(description.question,question)
+//                    .join(question.form,form)
+//                    .where(description.question.form.id.eq(form_temp.getId()))
+//                    .where(description.content.isNotEmpty())
+//                    .distinct()
+//                    .fetch();
+//
+//            //selection과 description의 각각의 리스트에서 memberid가 중복될 때 해당 값을 하나로 합치고 하나의 리스트로 출력.
+//            //즉 중복없이 오로지 응답자 유뮤 파악 후 해당 인원 수만 가져올 수 있음.
+//            Set<Long> mergedSet = new HashSet<>(form_lst);
+//            mergedSet.addAll(form_lst_1);
+//
+//            // 정렬된 새로운 리스트 생성
+//            List<Long> mergedList = new ArrayList<>(mergedSet);
+//            mergedList.sort(null);
+//
+//            response_cnt=mergedList.size();
+//
+//            form_temp.ResponsorCntSetting(response_cnt);
+//            response_cnt=0;
+//        }
+        CountResponsor(forms,response_cnt);
 
 
 
@@ -168,7 +191,54 @@ public class FormService {
         return paging;
     }
 
+    public void CountResponsor(List<Form> forms, int response_cnt) {
 
+
+        JPAQueryFactory query = new JPAQueryFactory(entityManager);
+        QForm form = QForm.form;
+        QQuestion question = QQuestion.question;
+        QResponse Response = QResponse.response;
+        QDescription description = QDescription.description;
+
+        for (Form form_temp : forms) {
+
+            List<Long> form_lst = query
+                    .select(Response.responsor.id)
+                    .from(Response)
+                    .join(Response.question, question)
+                    .join(question.form, form)
+                    .where(Response.question.form.id.eq(form_temp.getId()))
+                    .distinct()
+                    .fetch();
+
+            List<Long> form_lst_1 = query
+                    .select(description.member.id)
+                    .from(description)
+                    .join(description.question, question)
+                    .join(question.form, form)
+                    .where(description.question.form.id.eq(form_temp.getId()))
+                    .where(description.content.isNotEmpty())
+                    .distinct()
+                    .fetch();
+
+            //selection과 description의 각각의 리스트에서 memberid가 중복될 때 해당 값을 하나로 합치고 하나의 리스트로 출력.
+            //즉 중복없이 오로지 응답자 유뮤 파악 후 해당 인원 수만 가져올 수 있음.
+            Set<Long> mergedSet = new HashSet<>(form_lst);
+            mergedSet.addAll(form_lst_1);
+
+            // 정렬된 새로운 리스트 생성
+            List<Long> mergedList = new ArrayList<>(mergedSet);
+            mergedList.sort(null);
+
+            response_cnt = mergedList.size();
+
+            form_temp.ResponsorCntSetting(response_cnt);
+            response_cnt = 0;
+
+
+        }
+
+    }
 
 
 
@@ -272,6 +342,11 @@ public class FormService {
         else if(forms==null)
             throw new NotFoundFormException(id);
 
+        int response_cnt=0;
+        CountResponsor(forms,response_cnt);
+
+
+
         return forms;
     }
 
@@ -291,6 +366,13 @@ public class FormService {
 
         if(form_sgl==null)
             throw new NotFoundFormException(id,FormId);
+
+        List<Form>cnt_list=new ArrayList<>();
+        cnt_list.add(form_sgl);
+        int response_cnt=0;
+        CountResponsor(cnt_list,response_cnt);
+
+
 
 
 
