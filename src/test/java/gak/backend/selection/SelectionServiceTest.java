@@ -7,6 +7,7 @@ import gak.backend.domain.member.application.MemberService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.question.application.QuestionService;
 import gak.backend.domain.question.dao.QuestionRepository;
+import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.application.SelectionService;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.member.MemberServiceTest;
@@ -49,15 +50,25 @@ public class SelectionServiceTest {
     //그냥 하나씩 하기 귀찮으니까 박아놓음
     public SelectionDTO.AllSelectionData SelectionSaveRequest1(){
         return SelectionDTO.AllSelectionData.builder()
+                .question(new Question())
                 .content("객관식 내용")
                 .answer(true)
+                .build();
+    }
+
+    public SelectionDTO.SelectionInfoDTO SelectionSaveRequestInfo(){
+        return SelectionDTO.SelectionInfoDTO.builder()
+                .id(1L)
+                .content("객관식 내용")
                 .build();
     }
 
     @Test
     @DisplayName("객관식 생성")
     public void createSelectionFailByDormantTest() throws Exception{
-
+        SelectionDTO.AllSelectionData allSelectionData=SelectionSaveRequest1();
+        Question que=new Question();
+        selectionService.createSelection(allSelectionData,que.getId());
     }
 
 

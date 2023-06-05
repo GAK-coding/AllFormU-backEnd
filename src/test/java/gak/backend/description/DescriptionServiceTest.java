@@ -5,13 +5,16 @@ import gak.backend.domain.description.dao.DescriptionRepository;
 import gak.backend.domain.description.dto.DescriptionDTO;
 import gak.backend.domain.form.application.FormService;
 import gak.backend.domain.form.dao.FormRepository;
+import gak.backend.domain.form.model.Form;
 import gak.backend.domain.member.application.MemberService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
+import gak.backend.domain.member.model.Member;
 import gak.backend.domain.question.application.QuestionService;
 import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.selection.application.SelectionService;
 import gak.backend.domain.selection.dao.SelectionRepository;
+import gak.backend.domain.selection.dto.SelectionDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,6 +66,11 @@ public class DescriptionServiceTest {
     @Test
     @DisplayName("주관식 생성")
     public void createDescriptionFailByDormantTest() throws Exception{
+        DescriptionDTO.DescriptionSaveRequest DescriptionSaveRequest1=DescriptionSaveRequest1();
+        Form form=new Form();
+        Member member=new Member();
+        //List<DescriptionSaveRequest> descriptionSaveRequests뭐로 받아와야하지
+        //descriptionService.createDescription(form.getId(),member.getId(),DescriptionSaveRequest1)
 
     }
 
