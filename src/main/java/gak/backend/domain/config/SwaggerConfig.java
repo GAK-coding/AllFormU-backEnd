@@ -43,6 +43,26 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder().group("description").pathsToMatch(paths)
                 .build();
     }
+    @Bean
+    public GroupedOpenApi responseOpenApi() {
+        String[] paths = {"/response/**"};
+        return GroupedOpenApi.builder().group("response").pathsToMatch(paths)
+                .build();
+    }
+//    @Bean
+//    public GroupedOpenApi sectionOpenApi() {
+//        String[] paths = {"/section/**"};
+//        return GroupedOpenApi.builder().group("section").pathsToMatch(paths)
+//                .build();
+//    }it
+    @Bean
+    public GroupedOpenApi filesOpenApi() {
+        String[] paths = {"/files/**"};
+        return GroupedOpenApi.builder().group("files").pathsToMatch(paths)
+                .build();
+    }
+
+
 }
 
 
