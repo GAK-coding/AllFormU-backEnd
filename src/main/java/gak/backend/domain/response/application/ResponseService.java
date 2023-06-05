@@ -58,6 +58,10 @@ public class ResponseService {
         //TODO Grid 형식도 추후에 고려해줄 것.
         for (SaveResponseRequest saveResponseRequest : saveResponseRequests) {
             Question question = questionRepository.findById(saveResponseRequest.getQuestionId()).orElseThrow(NotFoundByIdException::new);
+            //폼에 해당하는 질문이 아닐 경우 예외
+            if(form.getId()!=question.getForm().getId()){
+                throw new CanNotAccessResponse("form에 해당하는 질문이 아닙니다.");
+            }
             //중복응답 고려 무조건 첫째에서 걸려져서 for문에 대한 성능 신경 안써도 됨.
             if (responseRepository.existsByResponsorIdAndQuestionId(responsorId, question.getId()) && question.getType() != Format.Selection_CHECKBOX) {
                 throw new CanNotAccessResponse("이미 설문에 참여한 응답자 입니다.");
