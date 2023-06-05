@@ -33,7 +33,7 @@
 //    @Bean
 //    public WebSecurityCustomizer webSecurityCustomizer(){
 //        return (web) -> web.ignoring()
-//                .antMatchers("/favicon.ico");
+//                .requestMatchers("/favicon.ico");
 //    }
 //
 //    @Bean
@@ -41,11 +41,11 @@
 //        return new BCryptPasswordEncoder();
 //    }
 //
-//    @Override
-//    public void configure(WebSecurity web){
-//        web
-//                .ignoring()
-//    }
+////    @
+////    public void configure(WebSecurity web){
+////        web
+////                .ignoring()
+////    }
 //
 //    @Bean
 //    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -63,15 +63,38 @@
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //
 //                //HttpServletRequest를 사용하는 요청들에 대한 접근 제한 설정
+//                //로그인, 회원가입 등은 토큰이 없는 상태에서 요청이 들어오기 때문에 다 수용.
 //                .and()
 //                .authorizeRequests()
-//                .antMatchers("/authenticate").permitAll()
+//                .requestMatchers("/register").permitAll()
+//                .requestMatchers("/oauth2").permitAll()
+//                .requestMatchers("/authenticate").permitAll()
+//
+//                //.anyRequest().permitAll()
+//                .anyRequest().authenticated()
 //
 //                //JwtSecurityConfig
 //                .and()
 //                .apply(new JwtSecurityConfig(tokenProvider))
 //
-//                .and().build();
+//
+//                .and()
+//                .oauth2Login()
+//                .authorizationEndpoint()
+//                .baseUri("/oauth2/authorization")
+//                .authorizationRequestRepository()
+//                .and()
+//                .redirectionEndpoint()
+//                .baseUri()
+//                .and()
+//                .userInfoEndpoint()
+//                .userService()
+//                .and()
+//                .successHandler()
+//                .failureHandler();
+//
+//
+//        return http.build();
 //
 //    }
 //

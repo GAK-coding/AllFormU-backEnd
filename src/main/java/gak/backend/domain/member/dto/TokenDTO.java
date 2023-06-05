@@ -1,11 +1,13 @@
 package gak.backend.domain.member.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 //클라이언트에게 토큰을 보내기 위한 DTO
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TokenDTO {

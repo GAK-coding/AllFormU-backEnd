@@ -1,6 +1,8 @@
 //package gak.backend.global.jwt;
 //
 //import com.fasterxml.jackson.databind.ser.Serializers;
+//import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+//import gak.backend.domain.member.dto.TokenDTO;
 //import io.jsonwebtoken.*;
 //import io.jsonwebtoken.security.Keys;
 //import lombok.Value;
@@ -14,6 +16,7 @@
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.User;
+//import org.springframework.security.core.userdetails.UserDetails;
 //import org.springframework.stereotype.Component;
 //
 //import java.security.Key;
@@ -47,37 +50,54 @@
 //    }
 //
 //    //token create algorithm
-//    public String createToken(Authentication authentication) {
+//    public TokenDTO createToken(Authentication authentication) {
+//        //권한 가져오기
 //        String authorities = authentication.getAuthorities().stream()
 //                .map(GrantedAuthority::getAuthority)
 //                .collect(Collectors.joining(","));
+//
 //        long now = (new Date()).getTime();
+//        //accesstoken 생성
 //        Date validity = new Date(now + this.tokenValidityInMilliseconds);
-//        return Jwts.builder()
+//        String accessToken = Jwts.builder()
 //                .setSubject(authentication.getName())
 //                .claim(AUTHORITIES_KEY, authorities)
 //                .signWith(key, SignatureAlgorithm.HS512)
 //                .setExpiration(validity)
 //                .compact();
+//
+//        //Refresh Token 생성
+//        String refreshToken = Jwts.builder()
+//                .setExpiration(new Date(now + this.))
+//                .signWith(key, SignatureAlgorithm.HS512)
+//                .compact();
+//
+//        return TokenDTO.builder()
+//                .grantType("Bearer")
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .build();
 //    }
 //
 //
 //    //인증 정보 조회
-//    public Authentication getAuthentication(String token) {
+//    public Authentication getAuthentication(String accesstoken) {
 //        Claims claims = Jwts
 //                .parserBuilder()
 //                .setSigningKey(key)
 //                .build()
-//                .parseClaimsJws(token)
+//                .parseClaimsJws(accesstoken)
 //                .getBody();
 //
+//        //클레임(pay에서 권한 정보 가져오기
 //        Collection<? extends GrantedAuthority> authorities =
 //                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
 //                        .map(SimpleGrantedAuthority::new)
 //                        .collect(Collectors.toList());
 //
-//        User principal = new User(claims.getSubject(), "", authorities);
-//        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+//        //UserDetails 객체를 만들어서 Authentication 반환
+//        UserDetails principal = new User(claims.getSubject(), "", authorities);
+//        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
 //    }
 //
 //    //token의 유효성 검증
