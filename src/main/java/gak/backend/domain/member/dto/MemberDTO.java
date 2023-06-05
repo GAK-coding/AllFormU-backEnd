@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class MemberDTO {
     @Getter
@@ -147,6 +148,29 @@ public class MemberDTO {
         private LocalDateTime createdTime;
         private LocalDateTime modifiedTime;
 
+    }
+
+    //JWT 관련 추가
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class OperatorDTO{
+        private Long memberId;
+        private String email;
+        private String nickname;
+        private String password;
+        private String isUse;
+        private Set<AuthDTO> authorities;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AuthDTO{
+        private Long memberId;
+        private String nickname;
     }
 
 //    @Getter

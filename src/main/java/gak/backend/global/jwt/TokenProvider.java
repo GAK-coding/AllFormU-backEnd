@@ -5,6 +5,7 @@
 //import io.jsonwebtoken.security.Keys;
 //import lombok.Value;
 //import lombok.extern.slf4j.Slf4j;
+//import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.InitializingBean;
 //import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
@@ -20,14 +21,13 @@
 //import java.util.Base64;
 //import java.util.Collection;
 //import java.util.Date;
-//import java.util.logging.Logger;
 //import java.util.stream.Collectors;
 //
 ////Token의 생성, 인증정보 조회, 유효성 검증, 암호화 설정 등의 역할을 수행하는 class
 //@Component
 //@Slf4j
 //public class TokenProvider implements InitializingBean {
-//    private final Logger logger = LoggerFactory.getLogger((TokenProvider.class);
+//    private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 //    private static final String AUTHORITIES_KEY = "NeighborAPI";
 //    private final String secret;
 //    private final long tokenValidityInMilliseconds;

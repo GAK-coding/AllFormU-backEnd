@@ -61,6 +61,7 @@
 //                .and()
 //                .sessionManagement()
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//
 //                //HttpServletRequest를 사용하는 요청들에 대한 접근 제한 설정
 //                .and()
 //                .authorizeRequests()
@@ -68,7 +69,10 @@
 //
 //                //JwtSecurityConfig
 //                .and()
-//                .apply(new JwtSecurityConfig(tokenProvider));
+//                .apply(new JwtSecurityConfig(tokenProvider))
+//
+//                .and().build();
+//
 //    }
 //
 //
