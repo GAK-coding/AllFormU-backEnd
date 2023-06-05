@@ -8,8 +8,10 @@ import gak.backend.domain.member.application.MemberService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.question.application.QuestionService;
 import gak.backend.domain.question.dao.QuestionRepository;
+import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.selection.application.SelectionService;
 import gak.backend.domain.selection.dao.SelectionRepository;
+import gak.backend.domain.selection.dto.SelectionDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,4 +47,9 @@ public class QuestionServiceTest {
         descriptionRepository.deleteAll();
         selectionRepository.deleteAll();
     }
+
+//    public QuestionDTO QuestionSaveRequest1(){
+//        return QuestionDTO.builder()
+//
+//    }
 }
