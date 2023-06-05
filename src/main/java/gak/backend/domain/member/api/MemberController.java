@@ -61,6 +61,15 @@ public class MemberController {
         return new ResponseEntity<>(mList, HttpStatus.OK);
     }
 
+    //member email로 자신이 등록했던 계정들 확인
+    //공개되면 안되니까 바디에 담아서 감
+    @GetMapping(value = "member/readMemberByEmail")
+    public ResponseEntity<List<Member>> findMembersByEmail(@RequestBody @Validated EmailDTO emailDTO){
+        List<Member> members = memberService.readMembersByEmail(emailDTO);
+        return new ResponseEntity<>(members, HttpStatus.OK);
+    }
+
+
     //멤버 아이디로 멤버 조회_infoDTO임
     @GetMapping(value="/member/read/{member_id}")
     public ResponseEntity<MemberInfoDTO> readMember(@PathVariable(name="member_id") Long id){
@@ -68,7 +77,6 @@ public class MemberController {
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
     }
 
-    //TODO 닉네임 수정 로직 검토
     @PatchMapping(value="/member/update/nickname")
     public ResponseEntity<UpdateNicknameDTO> updateNickname(@RequestBody @Validated UpdateNicknameRequest updateNicknameRequest){
         UpdateNicknameDTO updateNicknameDTO = memberService.updateMemberNickname(updateNicknameRequest);
