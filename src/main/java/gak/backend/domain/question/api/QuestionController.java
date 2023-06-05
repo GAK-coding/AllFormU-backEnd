@@ -35,10 +35,10 @@ public class QuestionController {
         /*
             formId에 해당하는 모든 질문을 조회
         */
-    @GetMapping("/question/getAllQuestion/{FormId}/{QuestionId}")
-    public List<Question> getAllQuestion(@PathVariable("FormId")Long FormId,@PathVariable("QuestionId")Long QuestionId){
+    @GetMapping("/question/getAllQuestion/{FormId}")
+    public List<Question> getAllQuestion(@PathVariable("FormId")Long FormId){
 
-        return questionService.getAllQuestion(FormId,QuestionId);
+        return questionService.getAllQuestion(FormId);
     }
         /*
             formId에 해당하는 특정 question 조회
