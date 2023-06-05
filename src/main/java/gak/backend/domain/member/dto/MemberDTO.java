@@ -7,18 +7,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
 public class MemberDTO {
     @Getter
-    //@Builder
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSaveRequest{
         private String nickname;
         private String email;
         private String password;
+        private String image;
         //private Role role; //생성자인지 응답자인지 받음.
 
 
@@ -27,6 +29,7 @@ public class MemberDTO {
                     .nickname(nickname)
                     .email(email)
                     .password(password)
+                    .image(image)
                     .nickname(nickname)
                     .role(Role.Role_Responsor)
                     .status(Status.STATUS_MEMBER) //멤버가 생성된다는 것은 회원가입 -> 이것은 멤버 상태로 한다는 뜻
@@ -36,6 +39,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginReqeust{
@@ -44,6 +48,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class EmailReqest{
@@ -52,6 +57,7 @@ public class MemberDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdateNicknameRequest{
@@ -60,6 +66,17 @@ public class MemberDTO {
     }
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateImageRequest{
+        private Long id;
+        private String newImage;
+    }
+
+
+
+    @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePasswordRequest{
@@ -81,10 +98,27 @@ public class MemberDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class UpdateImageDTO{
+        private Long id;
+        private String image;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UpdatePasswordDTO{
         private Long id;
         private String password;
 
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EmailDTO{
+        private String email;
     }
 
     @Getter
@@ -106,10 +140,22 @@ public class MemberDTO {
         private String nickname;
         private String email;
         private String password;
+        private String image;
         private Role role;
         private Status status;
+
         private LocalDateTime createdTime;
         private LocalDateTime modifiedTime;
 
     }
+
+//    @Getter
+//    @Builder
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class MemberResponseDTO{
+//        private HttpStatus httpStatus;
+//        private String message;
+//    }
+
 }

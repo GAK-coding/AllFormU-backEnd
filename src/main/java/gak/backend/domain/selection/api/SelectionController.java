@@ -22,10 +22,16 @@ public class SelectionController {
     private final SelectionService selectionService;
 
     //Selection 생성
-    @PostMapping("/selection/createSelection")
-    public String add(@RequestBody SelectionDTO selectionDTO){
-        selectionService.createSelection(selectionDTO);
-        return "create selection";
+    @PostMapping("/selection/createSelection/{questionid}")
+    public List<SelectionDTO.SelectionInfoDTO> add(@RequestBody SelectionDTO.AllSelectionData allSelectionData, @PathVariable("questionid")Long QuestionId){
+
+        return selectionService.createSelection(allSelectionData,QuestionId);
+    }
+
+    @PostMapping("/selection/createLinear/{questionId}")
+    public List<SelectionDTO.SelectionInfoDTO> addLinear(@RequestBody SelectionDTO.LinearInfoDTO linearInfoDTO,@PathVariable("questionId")Long QuestionId){
+
+        return selectionService.createLinear(linearInfoDTO,QuestionId);
     }
 
     //Selection 조회
@@ -42,11 +48,11 @@ public class SelectionController {
     }
 
     //객관식 수정
-    @PutMapping("/selection/updateContent/{id}")
-    public ResponseEntity<Selection> updateSelectionContent(@PathVariable(value="id")Long id,
+    @PutMapping("/selection/updateContent/{questionid}/{selectionid}")
+    public ResponseEntity<Selection> updateSelectionContent(@PathVariable(value="questionid")Long QuestionId,@PathVariable(value="selectionid")Long SelectionId,
                                                             @RequestBody Map<String, String> requestBody){
         String updateContent=requestBody.get("content");
-        final Selection updatedSelection=selectionService.updateContent(id,updateContent);
+        final Selection updatedSelection=selectionService.updateContent(QuestionId,SelectionId,updateContent);
         return ResponseEntity.ok(updatedSelection);
     }
 
@@ -58,6 +64,7 @@ public class SelectionController {
         final Selection updatedSelection=selectionService.updateAnswer(id,updateAnswer);
         return ResponseEntity.ok(updatedSelection);
     }
+
 
     //객관식 하나 삭제
     @DeleteMapping("/selection/deleteSelection/{id}")

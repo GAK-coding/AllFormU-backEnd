@@ -31,7 +31,7 @@ public class MemberExceptionHandler {
         log.debug("이미 존재하는 회원입니다.");
         final ErrorResponse errorResponse = ErrorResponse.builder()
                 .httpStatus(HttpStatus.CONFLICT)
-                .message("이미 존재하는 회원입니다.")
+                .message("해당 이메일은 이미 존재하는 이메일로, 등록된 회원입니다.")
                 .build();
         return ResponseEntity.ok(errorResponse);
     }

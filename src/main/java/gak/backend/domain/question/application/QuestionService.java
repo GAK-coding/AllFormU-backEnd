@@ -9,6 +9,7 @@ import gak.backend.domain.form.dto.FormDTO;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.form.model.QForm;
 import gak.backend.domain.member.dao.MemberRepository;
+import gak.backend.domain.member.model.Member;
 import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.dto.QuestionDTO;
 import gak.backend.domain.question.exception.NotFoundQuestionException;
@@ -16,6 +17,7 @@ import gak.backend.domain.question.model.QQuestion;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.dao.SelectionRepository;
 import gak.backend.domain.selection.model.QSelection;
+import gak.backend.global.error.exception.NotFoundByIdException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -23,8 +25,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import static gak.backend.domain.form.dto.FormDTO.*;
 
 @Service
 @Slf4j
@@ -46,11 +51,13 @@ public class QuestionService {
             를 question엔티티의 모든 하위 List에 저장.
         */
     @Transactional
-    public Long createInit(FormDTO formDTO,Long id,Long FormId){
+    public Long createInit(AllFormData allFormData, Long id, Long FormId){
 
 
         List<Question> questions = questionRepository.findByFormId(FormId);
-        List<QuestionDTO> questionDto=formDTO.getQuestions();
+        List<QuestionDTO> questionDto=allFormData.getQuestions();
+        Form form = formRepository.findById(FormId).orElseThrow(NotFoundByIdException::new);
+        Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
 
         if (questions==null)
             throw new NotFoundQuestionException("Question not found");
@@ -60,13 +67,13 @@ public class QuestionService {
         List<Question> Questions=new ArrayList<>();
         for (Question question : questions) {
             int count=0; //question 객체 하나 추가 될 때마다 해당 questionDTO 삭제 하기 위함.
-            if (!formDTO.getQuestions().isEmpty()) {
+            if (!allFormData.getQuestions().isEmpty()) {
                 for (QuestionDTO questionDTO : questionDto) {
                     if(question.getType()==questionDTO.getType())//같은 질문항목
                     {
                         if(question.getType().name().startsWith("Description"))//주관식일때
                         {
-                            question.DescriptionsSetting(questionDTO.toDescription(descriptionRepository, question));
+                            question.DescriptionsSetting(questionDTO.toDescription(descriptionRepository, question, author));
                             questionDto.remove(count);//예를들어 description_short가 여러 개면 해당 DTO를 사용하고 지워줘야 중복 값 안생김
                             break;
                         }
@@ -113,13 +120,14 @@ public class QuestionService {
         List<Question> question_list=form.getQuestions();
         //List<Question> question_list=new ArrayList<>();
         List<Long> QuestionID=new ArrayList<>();
+        Member author = memberRepository.findById(form.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
 
         //받은 question 데이터를 엔티티에 저장.
         for(QuestionDTO temp_question : questionDTO){
             Question question=temp_question.of(form);
 
             if(temp_question.getType().name().startsWith("Description"))
-                question.DescriptionsSetting(temp_question.toDescription(descriptionRepository,question));
+                question.DescriptionsSetting(temp_question.toDescription(descriptionRepository,question, author));
             else
                 question.OptionsSetting(temp_question.toSelection(selectionRepository, question));
 
@@ -142,12 +150,13 @@ public class QuestionService {
             (selection과 같은 하위 list 제외한)
         */
     @Transactional
-    public QuestionDTO UpdateSelectQuestion(QuestionDTO questionDTO,Long FormId,Long QuestionId){
+    public Question UpdateSelectQuestion(QuestionDTO questionDTO,Long FormId,Long QuestionId){
+
 
         Question question_List=getSelectQuestion(FormId,QuestionId);
         question_List.UpdateSelectQuestion(questionDTO);
 
-        return questionDTO;
+        return question_List;
 
 
     }
@@ -190,7 +199,7 @@ public class QuestionService {
         Question question_sgl = query
                 .selectFrom(qQuestion)
                 .where(qQuestion.question.id.eq(QuestionId)
-                        .and(qForm.author.id.eq(FormId)))
+                        .and(qForm.id.eq(FormId)))
                 .fetchOne();
 
         if(question_sgl==null){
