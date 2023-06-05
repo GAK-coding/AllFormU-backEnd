@@ -1,25 +1,14 @@
 package gak.backend.domain.form.dto;
 
-import gak.backend.domain.form.model.Correspond;
 import gak.backend.domain.form.model.Form;
-import gak.backend.domain.form.model.Separator;
-import gak.backend.domain.member.dao.MemberRepository;
-import gak.backend.domain.member.model.Member;
-import gak.backend.domain.member.model.Status;
 import gak.backend.domain.question.model.Question;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import gak.backend.domain.question.dto.QuestionDTO;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 
@@ -32,6 +21,8 @@ public class FormDTO implements Serializable {
     private Long authorId;
     private List<QuestionDTO> questions;
     private String title;
+    private String fimage;
+    private String fcolor;
     private String content;
 
     //private List<String> timeout;
@@ -67,6 +58,8 @@ public class FormDTO implements Serializable {
     @AllArgsConstructor
     public static class UpdateFormData{
         private String content;
+        private String fimage;
+        private String fcolor;
         private Boolean fix;
         private String title;
     }
@@ -88,6 +81,7 @@ public class FormDTO implements Serializable {
         private Long id;
         private String content;
         private String title;
+        private String fimage;
         private List<String> timeout=new ArrayList<>();
         private int responsor;
 
@@ -115,6 +109,10 @@ public class FormDTO implements Serializable {
         private List<QuestionDTO> questions;
         private String title;
         private String content;
+        private String fimage;
+        private List<String> sectionName;
+
+        private String fcolor;
         private List<String> timeout;
 
         public Form of (){
@@ -122,6 +120,9 @@ public class FormDTO implements Serializable {
                     .title(title)
                     .fix((fix!=null)?fix:false)
                     .content(content)
+                    .fimage(fimage)
+                    .fcolor(fcolor)
+                    .sectionName(sectionName)
                     .build();
         }
         public List<Question> toQuestions(Form form) {

@@ -54,6 +54,12 @@ public class MemberController {
         MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
     }
+    //멤버 전체조회
+    @GetMapping(value = "/member/readTotalMember")
+    public ResponseEntity<List<MemberInfoDTO>> readTotalMember(){
+        List<MemberInfoDTO> mList = memberService.readTotalMemberInfoDTO();
+        return new ResponseEntity<>(mList, HttpStatus.OK);
+    }
 
     //멤버 아이디로 멤버 조회_infoDTO임
     @GetMapping(value="/member/read/{member_id}")
@@ -67,6 +73,13 @@ public class MemberController {
     public ResponseEntity<UpdateNicknameDTO> updateNickname(@RequestBody @Validated UpdateNicknameRequest updateNicknameRequest){
         UpdateNicknameDTO updateNicknameDTO = memberService.updateMemberNickname(updateNicknameRequest);
         return new ResponseEntity<>(updateNicknameDTO, HttpStatus.OK);
+    }
+
+    //프로필이미지변경
+    @PatchMapping(value="/member/update/image")
+    public ResponseEntity<UpdateImageDTO> updateImage(@RequestBody @Validated UpdateImageRequest updateImageRequest){
+        UpdateImageDTO updateImageDTO = memberService.updateMemberImage(updateImageRequest);
+        return new ResponseEntity<>(updateImageDTO, HttpStatus.OK);
     }
 
     //비밀번호 변경
@@ -101,7 +114,7 @@ public class MemberController {
 //
 //        return user;
 //    }
-    @GetMapping("/api/item")
+    @GetMapping("/item")
     public List<Member> get(){
         return memberRepository.findAll();
     }

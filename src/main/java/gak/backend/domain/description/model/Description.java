@@ -17,7 +17,7 @@ import static gak.backend.domain.description.dto.DescriptionDTO.*;
 @AllArgsConstructor
 public class Description extends BaseTime {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "description_id")
     private Long id;
 
