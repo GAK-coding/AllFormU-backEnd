@@ -1,6 +1,5 @@
 package gak.backend.domain.member.dto;
 
-import gak.backend.domain.member.model.Authority;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Role;
 import gak.backend.domain.member.model.Status;
@@ -8,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -24,8 +22,7 @@ public class MemberDTO {
         private String email;
         private String password;
         private String image;
-        private Authority authority;
-        //private Role role; //생성자인지 응답자인지 받음.
+        private Role role; //생성자인지 응답자인지 관리자인지 받음.
 
 
         public void passwordEncryption(PasswordEncoder passwordEncoder){
@@ -38,7 +35,6 @@ public class MemberDTO {
                     .password(password)
                     .image(image)
                     .nickname(nickname)
-                    .authority(Authority.ROLE_USER)//기본은 무조건 그냥 USER로 박아놓기. -> 아직은 관리자 없음.
                     .role(Role.Role_Responsor)
                     .status(Status.STATUS_MEMBER) //멤버가 생성된다는 것은 회원가입 -> 이것은 멤버 상태로 한다는 뜻
                     .build();

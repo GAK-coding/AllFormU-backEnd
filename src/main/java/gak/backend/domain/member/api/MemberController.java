@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import gak.backend.global.error.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class MemberController {
     private final MemberService memberService;
     //private final RegisterMailService registerMailService;
     private final MailService mailService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     //회원가입
     @PostMapping(value="/member/register")
     public ResponseEntity<MemberInfoDTO> createMember(@RequestBody @Validated MemberSaveRequest memberSaveRequest){
