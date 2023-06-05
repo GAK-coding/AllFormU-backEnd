@@ -54,6 +54,12 @@ public class MemberController {
         MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
         return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
     }
+    //멤버 전체조회
+    @GetMapping(value = "/member/readTotalMember")
+    public ResponseEntity<List<MemberInfoDTO>> readTotalMember(){
+        List<MemberInfoDTO> mList = memberService.readTotalMemberInfoDTO();
+        return new ResponseEntity<>(mList, HttpStatus.OK);
+    }
 
     //멤버 아이디로 멤버 조회_infoDTO임
     @GetMapping(value="/member/read/{member_id}")

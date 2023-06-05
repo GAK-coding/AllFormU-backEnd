@@ -110,6 +110,7 @@ public class FormDTO implements Serializable {
         private String title;
         private String content;
         private String fimage;
+        private List<String> sectionName;
 
         private String fcolor;
         private List<String> timeout;
@@ -121,6 +122,7 @@ public class FormDTO implements Serializable {
                     .content(content)
                     .fimage(fimage)
                     .fcolor(fcolor)
+                    .sectionName(sectionName)
                     .build();
         }
         public List<Question> toQuestions(Form form) {
