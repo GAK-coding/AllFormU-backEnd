@@ -63,7 +63,7 @@ public class QuestionServiceTest {
     @DisplayName("Question 생성 테스트")
     public void createQuestion() {
         // given
-        Form form = new Form(); // Form 객체를 생성하고 적절한 값으로 초기화해주세요
+        Form form = new Form();
         String title = "질문 제목";
         String content = "질문 내용";
         Boolean required = true;
@@ -95,6 +95,49 @@ public class QuestionServiceTest {
 
 
     }
+    @Test
+    @DisplayName("Question 수정 테스트")
+    public void updateQuestionTest() {
+        // given
+        Form form = new Form();
+        Question question = new Question();
+        String newTitle = "새로운 질문 제목";
+        String newContent = "새로운 질문 내용";
+//        Boolean newRequired = false;
+//        Boolean newQuiz = true;
+//        Integer newSectionNum = 2;
+        Format newType = Format.Description_LONG;
+
+        // when
+        question.setTitle(newTitle);
+        question.setContent(newContent);
+        question.setForm(form);
+        question.setType(newType);
+
+        // then
+        Assertions.assertThat(question.getTitle()).isEqualTo(newTitle);
+        Assertions.assertThat(question.getContent()).isEqualTo(newContent);
+        Assertions.assertThat(question.getForm()).isEqualTo(form);
+        //Assertions.assertThat(question.getRequired()).isEqualTo(newRequired);
+        //Assertions.assertThat(question.getQuiz()).isEqualTo(newQuiz);
+        //Assertions.assertThat(question.getSectionNum()).isEqualTo(newSectionNum);
+        Assertions.assertThat(question.getType()).isEqualTo(newType);
+    }
+
+    @Test
+    @DisplayName("Question 삭제 테스트")
+    public void deleteQuestionTest() {
+        // given
+        Form form = new Form();
+        Question question = new Question();
+
+        // when
+        form.getQuestions().remove(question);
+
+        // then
+        Assertions.assertThat(form.getQuestions()).doesNotContain(question);
+    }
+
 
 
 }
