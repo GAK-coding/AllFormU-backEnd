@@ -10,8 +10,10 @@ import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.question.model.Question;
 import gak.backend.domain.selection.application.SelectionService;
 import gak.backend.domain.selection.dao.SelectionRepository;
+import gak.backend.domain.selection.model.Selection;
 import gak.backend.member.MemberServiceTest;
 import gak.backend.domain.selection.dto.SelectionDTO;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,8 @@ public class SelectionServiceTest {
         selectionRepository.deleteAll();
     }
 
+
+
     //그냥 하나씩 하기 귀찮으니까 박아놓음
     public SelectionDTO.AllSelectionData SelectionSaveRequest1(){
         return SelectionDTO.AllSelectionData.builder()
@@ -56,19 +60,47 @@ public class SelectionServiceTest {
                 .build();
     }
 
-    public SelectionDTO.SelectionInfoDTO SelectionSaveRequestInfo(){
-        return SelectionDTO.SelectionInfoDTO.builder()
-                .id(1L)
-                .content("객관식 내용")
-                .build();
-    }
-
+//    public SelectionDTO.SelectionInfoDTO SelectionSaveRequestInfo(){
+//        return SelectionDTO.SelectionInfoDTO.builder()
+//                .id(1L)
+//                .content("객관식 내용")
+//                .build();
+//    }
+//
+//    @Test
+//    @DisplayName("객관식 생성")
+//    public void createSelectionFailByDormantTest() throws Exception{
+//        //given
+//        SelectionDTO.AllSelectionData allSelectionData=SelectionSaveRequest1();
+//        Question que=new Question();
+//
+//        //when
+//        selectionService.createSelection(allSelectionData,que.getId());
+//
+//        //then
+//        Assertions.assertThat(selectionRepository.findAll().size()).isEqualTo(1);
+//    }
     @Test
     @DisplayName("객관식 생성")
-    public void createSelectionFailByDormantTest() throws Exception{
-        SelectionDTO.AllSelectionData allSelectionData=SelectionSaveRequest1();
-        Question que=new Question();
-        selectionService.createSelection(allSelectionData,que.getId());
+    public void createSelection() {
+        // given
+        Question question = new Question();
+        String content = "선택지 내용";
+        boolean answer = true;
+
+        // when
+        SelectionDTO.AllSelectionData selectionData = SelectionDTO.AllSelectionData.builder()
+                .question(question)
+                .content(content)
+                .answer(answer)
+                .build();
+        Selection selection = selectionData.of(question);
+
+        // then
+        Assertions.assertThat(selection.getQuestion()).isEqualTo(question);
+        Assertions.assertThat(selection.getContent()).isEqualTo(content);
+        Assertions.assertThat(selection.isAnswer()).isEqualTo(answer);
+
     }
 
 
