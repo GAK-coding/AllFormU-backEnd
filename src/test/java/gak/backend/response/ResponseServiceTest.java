@@ -5,6 +5,8 @@ import gak.backend.domain.form.dao.FormRepository;
 import gak.backend.domain.member.application.MemberService;
 import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
+import gak.backend.domain.member.model.Member;
+import gak.backend.domain.question.model.Question;
 import gak.backend.domain.response.dto.ResponseDTO.ResponseSimpleInfoDTO;
 import gak.backend.domain.response.dto.ResponseDTO.ResponseListInfoDTO;
 import gak.backend.domain.response.dto.ResponseDTO.ResponseInfoDTO;
@@ -13,9 +15,13 @@ import gak.backend.domain.question.dao.QuestionRepository;
 import gak.backend.domain.response.application.ResponseService;
 import gak.backend.domain.response.dao.ResponseRepository;
 import gak.backend.domain.response.dto.ResponseDTO;
+import gak.backend.domain.response.model.Response;
 import gak.backend.domain.selection.application.SelectionService;
 import gak.backend.domain.selection.dao.SelectionRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -65,16 +71,40 @@ public class ResponseServiceTest {
 //                .responseList()
 //    }
 
-    public ResponseInfoDTO ResponseSaveRequest3(){
-        return ResponseInfoDTO.builder()
-                .id(1L)
-                .responsor_id(1L)
-                .question_id(1L)
-                .num(1)
-                //.createdTime()
-                //.modifiedTime()
-                .build();
+//    public ResponseInfoDTO ResponseSaveRequest3(){
+//        return ResponseInfoDTO.builder()
+//                .id(1L)
+//                .responsor_id(1L)
+//                .question_id(1L)
+//                .num(1)
+//                //.createdTime()
+//                //.modifiedTime()
+//                .build();
+//    }
+    @Test
+    @DisplayName("Response 객체 생성 테스트")
+    public void createResponse() {
+        // given
+        Member member = new Member();
+        Question question = new Question();
+        int num = 3;
+
+        // when
+        Response response = new ResponseDTO.SaveResponseRequest(member.getId(), question.getId(), num)
+                .toEntity(member, question);
+
+        // then
+        Assertions.assertThat(response.getResponsor()).isEqualTo(member);
+        Assertions.assertThat(response.getQuestion()).isEqualTo(question);
+        Assertions.assertThat(response.getNum()).isEqualTo(num);
+
+
     }
+
+
+
+
+
 
 
 
