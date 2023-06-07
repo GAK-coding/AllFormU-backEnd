@@ -156,8 +156,11 @@ public class ResponseService {
         }
         //배열의 인덱스가 옵션들의 인덱스
         for (Response response : responses) {
-            //size를 -1안해도 되는이유는 그냥 바로 그 넘버에 접근하기 때문. description은 인덱스에 접ㅇ
-            statistic.get(response.getNum()).add(response.toResponseSimpleInfoDTO()); //인덱스에 맞는 count를 증가시킴
+            if(response.getNum()!=-1) {
+                //size를 -1안해도 되는이유는 그냥 바로 그 넘버에 접근하기 때문. description은 인덱스에 접ㅇ
+                statistic.get(response.getNum()).add(response.toResponseSimpleInfoDTO()); //인덱스에 맞는 count를 증가시킴
+            }
+            else continue;
         }
         //각각의 갯수 계산
         int[] nums = new int[question.getOptions().size()];
