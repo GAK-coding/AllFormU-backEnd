@@ -14,4 +14,5 @@ public class TokenDTO {
     private String grantType; //JWT 인증 타입(Bearer 사용) -> HTTP헤어에 prefix로 붙여주는 타입이기도 함.
     private String accessToken;
     private String refreshToken;
+
 }

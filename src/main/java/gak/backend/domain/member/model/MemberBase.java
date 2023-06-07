@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Getter
 @Entity
-@NoArgsConstructor
+//@NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)

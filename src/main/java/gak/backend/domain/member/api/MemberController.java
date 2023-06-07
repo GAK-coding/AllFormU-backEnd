@@ -3,15 +3,29 @@ package gak.backend.domain.member.api;
 import gak.backend.domain.member.application.MemberService;
 //import gak.backend.domain.member.application.RegisterMailService;
 import gak.backend.domain.member.dao.MemberRepository;
+import gak.backend.domain.member.dao.RefreshTokenDao;
 import gak.backend.domain.member.dto.MemberDTO;
+import gak.backend.domain.member.dto.TokenDTO;
 import gak.backend.domain.member.model.Member;
+import gak.backend.domain.member.model.UserPrincipal;
 import gak.backend.global.error.ErrorResponse;
+import gak.backend.global.error.exception.NotFoundByIdException;
+import gak.backend.global.jwt.TokenProvider;
 import gak.backend.global.service.MailService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import gak.backend.global.error.ErrorResponse;
@@ -27,10 +41,11 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @RequiredArgsConstructor
 @Validated
 public class MemberController {
+
     private final MemberService memberService;
     //private final RegisterMailService registerMailService;
     private final MailService mailService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    //private final BCryptPasswordEncoder bCryptPasswordEncoder;
     //회원가입
     @PostMapping(value="/member/register")
     public ResponseEntity<MemberInfoDTO> createMember(@RequestBody @Validated MemberSaveRequest memberSaveRequest){
@@ -50,12 +65,33 @@ public class MemberController {
         return new ResponseEntity<>(code, HttpStatus.OK);
     }
 
-    //로그인
-    @PostMapping(value="/member")
-    public ResponseEntity<MemberInfoDTO> loginMember(@RequestBody @Validated LoginReqeust loginReqeust){
-        MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
-        return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
+    //로그인==============================================
+//    @PostMapping(value="/member")
+//    public ResponseEntity<MemberInfoDTO> loginMember(@RequestBody @Validated LoginReqeust loginReqeust){
+//        MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
+//        return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
+//    }
+    @PostMapping(value="/member/login")
+    public ResponseEntity<MemberInfoTokenDTO> loginMember(@RequestBody @Validated LoginReqeust loginReqeust, HttpServletResponse response, HttpServletRequest request){
+       //로그인 정보로 AuthenticationToken 생성
+        MemberDTO.MemberInfoTokenDTO memberInfoTokenDTO = memberService.loginMember(loginReqeust, response, request);
+        return new ResponseEntity<>(memberInfoTokenDTO, HttpStatus.OK);
+//        MemberInfoDTO memberInfoDTO = memberService.loginMember(loginReqeust);
+//        return new ResponseEntity<>(memberInfoDTO, HttpStatus.OK);
     }
+    //구글 로그인
+//    @PostMapping(value="/member/oauth")
+//    public ResponseEntity<MemberInfoDTO> loginOAuth(Authentication authentication, @AuthenticationPrincipal UserPrinciple userPrinciple){
+//        UserPrincipal principle = (UserPrincipal) authentication.getPrincipal();
+//        if(principle.getMember().getProvider()==null){
+//            log.info("Local login" + principle);
+//        }
+//        else{
+//            log.info("OAuth2 login" + principle);
+//        }
+//        Member member = principle.getMember();
+//        return new ResponseEntity<>(member.toMemberInfoDTO(), HttpStatus.OK);
+//    }
     //멤버 전체조회
     @GetMapping(value = "/member/readTotalMember")
     public ResponseEntity<List<MemberInfoDTO>> readTotalMember(){
@@ -133,5 +169,7 @@ public class MemberController {
 //    public Optional<Member> getId(@PathVariable("id")Long id){
 //        return memberRepository.findById(id);
 //    }
+
+
 
 }

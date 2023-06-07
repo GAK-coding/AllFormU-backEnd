@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -24,7 +26,7 @@ public class MemberDTO {
         private String image;
         private Role role; //생성자인지 응답자인지 관리자인지 받음.
 
-
+        @Bean
         public void passwordEncryption(PasswordEncoder passwordEncoder){
             this.password = passwordEncoder.encode(password);
         }
@@ -35,7 +37,7 @@ public class MemberDTO {
                     .password(password)
                     .image(image)
                     .nickname(nickname)
-                    .role(Role.Role_Responsor)
+                    //.role(Role.Role_Responsor)
                     .status(Status.STATUS_MEMBER) //멤버가 생성된다는 것은 회원가입 -> 이것은 멤버 상태로 한다는 뜻
                     .build();
 
@@ -49,6 +51,10 @@ public class MemberDTO {
     public static class LoginReqeust{
         private String email;
         private String password;
+
+        public UsernamePasswordAuthenticationToken toAuthentication(){
+            return new UsernamePasswordAuthenticationToken(email, password);
+        }
     }
 
     @Getter
@@ -152,6 +158,24 @@ public class MemberDTO {
         private LocalDateTime modifiedTime;
 
     }
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MemberInfoTokenDTO{
+        private Long id;
+        private String nickname;
+        private String email;
+        private String password;
+        private String image;
+        private Role role;
+        private Status status;
+        TokenDTO tokenDTO;
+
+        private LocalDateTime createdTime;
+        private LocalDateTime modifiedTime;
+
+    }
 
     //JWT 관련 추가
     @Builder
@@ -173,6 +197,16 @@ public class MemberDTO {
     @NoArgsConstructor
     public static class AuthDTO{
         private Long memberId;
+        private String nickname;
+    }
+
+    //구글 요청
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SaveMemberGoogleRequest{
+        private String email;
         private String nickname;
     }
 

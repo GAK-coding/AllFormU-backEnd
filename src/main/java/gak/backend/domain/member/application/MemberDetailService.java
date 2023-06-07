@@ -4,6 +4,7 @@ import gak.backend.domain.member.dao.MemberRepository;
 import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.dto.MemberDTO.MemberSaveRequest;
 import gak.backend.domain.member.dto.MemberDTO.OperatorDTO;
+import gak.backend.domain.member.exception.DormantMemberException;
 import gak.backend.domain.member.model.Member;
 import gak.backend.domain.member.model.Status;
 import gak.backend.global.error.exception.NotFoundByIdException;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
 
 @Service
 @Slf4j
@@ -41,9 +43,12 @@ public class MemberDetailService implements UserDetailsService{
         List<Member> members = memberRepository.findMembersByEmail(email);
         Member member=null;
         for(Member m : members){
-            if(m.getStatus()== Status.STATUS_MEMBER){
+            if(m.getStatus()== Status.STATUS_MEMBER) {
                 member = m;
                 break;
+            }
+            else if(m.getStatus()==Status.STATUS_DORMANT){
+                throw new DormantMemberException("휴면 계정입니다. 회원가입 해주세요.");
             }
         }
         if(member==null){

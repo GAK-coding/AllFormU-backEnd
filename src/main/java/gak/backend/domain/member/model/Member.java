@@ -3,6 +3,7 @@ package gak.backend.domain.member.model;
 import gak.backend.domain.form.model.Form;
 import gak.backend.domain.member.application.MemberService;
 import gak.backend.domain.member.dto.MemberDTO;
+import gak.backend.domain.member.dto.TokenDTO;
 import gak.backend.domain.model.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
@@ -101,6 +102,21 @@ public class Member extends MemberBase{
                 .image(this.getImage())
                 .role(this.getRole())
                 .status(this.getStatus())
+                .modifiedTime(super.getModifiedDate())
+                .createdTime(super.getCreatedDate())
+                .build();
+    }
+
+    public MemberInfoTokenDTO toMemberInfoTokenDTO(TokenDTO tokenDTO){
+        return MemberInfoTokenDTO.builder()
+                .id(this.getId())
+                .nickname(this.getNickname())
+                .email(this.getEmail())
+                .password(this.getPassword())
+                .image(this.getImage())
+                .role(this.getRole())
+                .status(this.getStatus())
+                .tokenDTO(tokenDTO)
                 .modifiedTime(super.getModifiedDate())
                 .createdTime(super.getCreatedDate())
                 .build();
