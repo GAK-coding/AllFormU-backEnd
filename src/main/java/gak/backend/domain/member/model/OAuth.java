@@ -13,6 +13,6 @@
 //@Slf4j
 //@Getter
 //@NoArgsConstructor
-//public class OAuth implements OAuth2User extends baseTime{
+//public class OAuth2 implements OAuth2User extends baseTime{
 //    private String email;
 //    private Role
