@@ -1,9 +1,7 @@
 package gak.backend.domain.member.exception.handler;
 
-import gak.backend.domain.member.exception.DormantMemberException;
-import gak.backend.domain.member.exception.ExistMemberException;
-import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
-import gak.backend.domain.member.exception.NotMatchPasswordException;
+import gak.backend.domain.member.exception.*;
+import gak.backend.domain.member.model.Member;
 import gak.backend.global.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -52,6 +50,15 @@ public class MemberExceptionHandler {
         final ErrorResponse errorResponse = ErrorResponse.builder()
                 .httpStatus(HttpStatus.BAD_REQUEST)
                 .message("휴면 계정입니다. 재회원가입을 통해 휴면 상태를 해제해주세요.")
+                .build();
+        return ResponseEntity.ok(errorResponse);
+    }
+
+    @ExceptionHandler(MemberException.class)
+    protected final ResponseEntity<ErrorResponse> handleMemberException(MemberException e, WebRequest webRequest){
+        final ErrorResponse errorResponse = ErrorResponse.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .message(e.getMessage())
                 .build();
         return ResponseEntity.ok(errorResponse);
     }

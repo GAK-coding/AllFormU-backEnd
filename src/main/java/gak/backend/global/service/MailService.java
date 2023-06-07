@@ -5,6 +5,7 @@ import gak.backend.domain.member.dto.MemberDTO;
 import gak.backend.domain.member.dto.MemberDTO.EmailReqest;
 import gak.backend.domain.member.exception.NotFoundMemberByEmailException;
 import gak.backend.domain.member.model.Member;
+import gak.backend.domain.member.model.Status;
 import gak.backend.global.GlobalMethod;
 import gak.backend.global.error.ErrorResponse;
 import jakarta.mail.Message;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -122,9 +124,19 @@ public class MailService {
             throw new IllegalArgumentException("Failed to send email", e);
         }
         if(emailReqest.getNum()==1){
-            Member member = memberRepository.findByEmail(emailReqest.getEmail()).orElseThrow(NotFoundMemberByEmailException::new);
-            member.UpdateMemberPassword(authNum);
-            log.info("임시 비번"+ member.getPassword());
+            Member member;
+            List<Member> memberList = memberRepository.findMembersByEmail(emailReqest.getEmail());
+            for(Member m : memberList) {
+                if(m.getStatus() == Status.STATUS_MEMBER){
+                    member = m;
+                    member.UpdateMemberPassword(authNum);
+                    log.info("임시 비번"+ member.getPassword());
+                    break;
+                }
+                else{
+                    throw new NotFoundMemberByEmailException();
+                }
+            }
         }
         return ErrorResponse.builder()
                 .httpStatus(HttpStatus.OK)
