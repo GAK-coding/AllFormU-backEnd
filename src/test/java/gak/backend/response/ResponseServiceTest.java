@@ -98,7 +98,13 @@ public class ResponseServiceTest {
         Assertions.assertThat(response.getQuestion()).isEqualTo(question);
         Assertions.assertThat(response.getNum()).isEqualTo(num);
 
+
     }
+
+
+
+
+
 
 
 
