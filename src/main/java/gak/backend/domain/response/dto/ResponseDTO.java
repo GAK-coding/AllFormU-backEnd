@@ -54,8 +54,8 @@ public class ResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class StatisticResponseDTO{
-        private List<List<ResponseSimpleInfoDTO>> responses;
-        private int[] nums;
+        private List<List<ResponseSimpleInfoDTO>> response;
+        private int[] num;
     }
 
     @Getter

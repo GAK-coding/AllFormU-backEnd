@@ -165,8 +165,8 @@ public class ResponseService {
             nums[i] = statistic.get(i).size();
         }
         return StatisticResponseDTO.builder()
-                .responses(statistic)
-                .nums(nums)
+                .response(statistic)
+                .num(nums)
                 .build();
     }
 
