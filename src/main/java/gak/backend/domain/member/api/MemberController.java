@@ -16,14 +16,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.hibernate5.SpringSessionContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
 import gak.backend.global.error.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +45,7 @@ import static gak.backend.domain.member.dto.MemberDTO.*;
 @RequiredArgsConstructor
 @Validated
 public class MemberController {
+    //TODO !!!!!!!getMemberId코드 만들어서 리팩토링하기!!!!!!!111
 
     private final MemberService memberService;
     //private final RegisterMailService registerMailService;
@@ -170,6 +175,14 @@ public class MemberController {
 //        return memberRepository.findById(id);
 //    }
 
+    //============로그아웃=============
+
+    @PostMapping(value = "/member/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        //로그아웃 시에는 null 확인할 필요 없을 듯.
+        memberService.logout(response, request);
+        return new ResponseEntity<>("로그아웃되었습니다.", HttpStatus.OK);
+    }
 
 
 }
