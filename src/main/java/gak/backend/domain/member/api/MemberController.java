@@ -184,5 +184,12 @@ public class MemberController {
         return new ResponseEntity<>("로그아웃되었습니다.", HttpStatus.OK);
     }
 
+    //===========토큰 재발급=======
+    @PostMapping(value="/member/auth/reissue")
+    public ResponseEntity<TokenDTO> reissue(HttpServletRequest request, HttpServletResponse response){
+        TokenDTO tokenDTO = memberService.reissue(request, response);
+        return new ResponseEntity<>(tokenDTO, HttpStatus.OK);
+    }
+
 
 }
